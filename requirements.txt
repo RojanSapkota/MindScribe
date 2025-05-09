@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pydantic
+motor
+passlib[bcrypt]
+bcrypt==3.1.7
+python-dotenv
+pillow
+python-multipart
+groq
