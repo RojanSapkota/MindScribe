@@ -28,8 +28,8 @@
 **Backend**:  
 - Python (Flask or FastAPI)  
 - Whisper API for speech-to-text  
-- GPT (via OpenAI or OpenRouter) for responses  
-- Firebase/Supabase for auth & storage (optional)
+- GPT (via OpenAI/Groq) for responses  
+- MongoDB for storage (optional)
 
 ---
 
