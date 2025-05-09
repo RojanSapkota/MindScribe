@@ -3,3 +3,4 @@ An AI-powered voice journaling and emotional insight app for teen mental wellnes
 
 
 ![](https://github-readme-stats.hackclub.dev/api/wakatime?username=2003&api_domain=hackatime.hackclub.com&theme=shadow_green&custom_title=Hackatime+Stats&layout=compact&cache_seconds=0&langs_count=8)
+![](https://hackatime-badge.hackclub.com/U08RHUDMF9T/MindScribe)
