@@ -34,7 +34,7 @@
 ---
 
 ## 🏁 Goal  
-Built with ❤️ by ![Rojan Sapkota](https://github.com/RojanSapkota)
+Built with ❤️ by [Rojan Sapkota](https://github.com/RojanSapkota)
 
 ---
 
