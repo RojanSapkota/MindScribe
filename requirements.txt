@@ -8,3 +8,9 @@ python-dotenv
 pillow
 python-multipart
 groq
+Faiss-CPU
+NumPy
+Sentence-Transformers
+Langchain
+Langchain-Core
+langchain-community
