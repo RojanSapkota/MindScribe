@@ -284,6 +284,92 @@ body {
 .theme-purple { background: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 100%); }
 .theme-blue { background: linear-gradient(135deg, #bfdbfe 0%, #60a5fa 100%); }
 
+/* THEME SUPPORT */
+.theme-light {
+  background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%) !important;
+  color: #222 !important;
+}
+.theme-dark {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+  color: #f8fafc !important;
+}
+.theme-purple {
+  background: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 100%) !important;
+  color: #312e81 !important;
+}
+.theme-blue {
+  background: linear-gradient(135deg, #bfdbfe 0%, #60a5fa 100%) !important;
+  color: #1e3a8a !important;
+}
+.theme-dark .thought-card,
+.theme-dark .analytics-card,
+.theme-dark .user-profile-card,
+.theme-dark .glass-card,
+.theme-dark .modal-content {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #f8fafc !important;
+}
+.theme-dark .bottom-nav {
+  background: rgba(15, 23, 42, 0.95) !important;
+}
+.theme-dark .nav-item {
+  color: #94a3b8 !important;
+}
+.theme-dark .nav-item.active {
+  color: #f8fafc !important;
+}
+.theme-dark .tab {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #f8fafc !important;
+}
+.theme-dark .history-section {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+}
+.theme-dark .history-entry,
+.theme-dark .history-entry-modern {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #f8fafc !important;
+}
+.theme-dark .entry-date {
+  color: #cbd5e1 !important;
+}
+.theme-dark .sentiment-meter {
+  background: #334155 !important;
+}
+.theme-dark .sentiment-scale {
+  color: #94a3b8 !important;
+}
+.theme-dark .topic-badge {
+  background: #334155 !important;
+  color: #e0e7ff !important;
+}
+.theme-dark .loading-spinner {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  border-left-color: var(--primary-light) !important;
+}
+.theme-dark .empty-state i {
+  color: #334155 !important;
+}
+.theme-dark .empty-state p {
+  color: #94a3b8 !important;
+}
+.theme-purple .thought-card,
+.theme-purple .analytics-card,
+.theme-purple .user-profile-card,
+.theme-purple .glass-card,
+.theme-purple .modal-content {
+  background: rgba(196, 181, 253, 0.8) !important;
+  color: #312e81 !important;
+}
+.theme-blue .thought-card,
+.theme-blue .analytics-card,
+.theme-blue .user-profile-card,
+.theme-blue .glass-card,
+.theme-blue .modal-content {
+  background: rgba(191, 219, 254, 0.8) !important;
+  color: #1e3a8a !important;
+}
+
 @media (max-width: 480px) {
   .settings-group {
     max-width: 98vw;
