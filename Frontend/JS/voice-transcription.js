@@ -20,6 +20,9 @@ let finalTranscript = '';
 let interimTranscript = '';
 let currentUser = null;
 
+// Set API base URL for backend
+const API_BASE_URL = 'http://127.0.0.1:8000';
+
 // DOM elements 
 document.addEventListener('DOMContentLoaded', () => {
   const recordBtn = document.getElementById('recordBtn');
@@ -45,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (stopBtn) {
     stopBtn.addEventListener('click', stopRecording);
   }
+
 
   if (loginBtn) {
     loginBtn.addEventListener('click', () => {
@@ -311,8 +315,8 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Use the logged in user's email
       const userEmail = currentUser.email;
-        // Use the full URL to the API server
-      const apiUrl = 'http://127.0.0.1:8000/transcribe';
+      // Use the full URL to the API server
+      const apiUrl = `${API_BASE_URL}/transcribe`;
       
       // Create FormData object to match backend expectations
       const formData = new FormData();
@@ -324,22 +328,48 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'POST',
         // Don't set Content-Type header, browser will set it with boundary for FormData
         body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
-      }      // Parse the JSON response
+      });      if (!response.ok) {
+        // Try to get detailed error message from the server response
+        const errorText = await response.text();
+        let errorMessage = `Server error: ${response.status}`;
+        try {
+          const errorData = JSON.parse(errorText);
+          if (errorData.detail) {
+            errorMessage = errorData.detail;
+          }
+        } catch (e) {
+          // If the response is not JSON, use the raw error text if available
+          if (errorText) {
+            errorMessage = errorText;
+          }
+        }
+        throw new Error(errorMessage);
+      }
+        // Get the raw response from the server
       const responseData = await response.text();
+      console.log("Raw response from server:", responseData);
       
       // Try to parse the response as JSON
       let analysisData;
       try {
         // The response might be a string that needs parsing
         analysisData = JSON.parse(responseData);
-        console.log("Analysis data:", analysisData);
+        console.log("Analysis data (parsed):", analysisData);
       } catch (e) {
         console.error("Error parsing JSON response:", e, "Raw response:", responseData);
-        throw new Error("Invalid response from server. Could not parse JSON.");
+        console.log("Attempting to parse as nested JSON...");
+        
+        // Try to see if the response itself is a valid JSON string
+        try {
+          // Sometimes the LLM might return a JSON string with escape characters
+          // Let's clean it up if needed
+          const cleanedResponse = responseData.replace(/\\"/g, '"').replace(/^"/, '').replace(/"$/, '');
+          analysisData = JSON.parse(cleanedResponse);
+          console.log("Successfully parsed nested JSON:", analysisData);
+        } catch (nestedError) {
+          console.error("Failed to parse nested JSON:", nestedError);
+          throw new Error("Invalid response from server. Could not parse JSON.");
+        }
       }
       
       if (transcriptBox) {

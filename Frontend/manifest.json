@@ -2,7 +2,7 @@
   "name": "MindScribe",
   "short_name": "MindScribe",
   "description": "AI-powered voice journaling app",
-  "start_url": "/Frontend/HTML/index.html",
+  "start_url": "HTML/index.html",
   "display": "standalone",
   "background_color": "#5D5FEF",
   "theme_color": "#5D5FEF",

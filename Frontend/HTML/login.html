@@ -85,12 +85,14 @@
           <button type="submit" class="btn">Sign Up</button>
           <p class="signin-link">Already have an account? <a href="#" id="signin-link">Sign in</a></p>
           <div class="form-message" id="signup-message"></div>
-        </form>
-
-        <!-- OTP Verification Form -->
+        </form>        <!-- OTP Verification Form -->
         <form class="otp-form" id="otp-form">
-          <h2>Verify your email</h2>
-          <p class="otp-info">We've sent a verification code to your email. Please enter it below to verify your account.</p>
+          <div class="otp-header">
+            <i class="fas fa-envelope-circle-check otp-icon"></i>
+            <h2>Verify your email</h2>
+            <p class="otp-info">We've sent a verification code to</p>
+            <p class="otp-email" id="otpEmailDisplay">example@email.com</p>
+          </div>
           <div class="otp-container">
             <input type="text" maxlength="1" class="otp-input" required>
             <input type="text" maxlength="1" class="otp-input" required>
@@ -100,7 +102,9 @@
             <input type="text" maxlength="1" class="otp-input" required>
           </div>
           <p class="resend-otp">Didn't receive the code? <a href="#" id="resend-otp">Resend OTP</a></p>
-          <button type="submit" class="btn">Verify</button>
+          <button type="submit" class="btn">
+            <i class="fas fa-check-circle"></i> Verify & Create Account
+          </button>
           <div class="form-message" id="otp-message"></div>
         </form>
 
@@ -114,8 +118,19 @@
           </div>
           <button type="submit" class="btn">Send Reset Link</button>
           <p class="back-to-login"><a href="#" id="back-to-login">Back to login</a></p>
-          <div class="form-message" id="forgot-message"></div>
-        </form>
+          <div class="form-message" id="forgot-message"></div>        </form>
+
+        <!-- Success Message -->
+        <div class="success-form" id="success-form">
+          <div class="success-container">
+            <div class="success-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Registration Successful!</h2>
+            <p>Your account has been created successfully.</p>
+            <p>Redirecting to app...</p>
+          </div>
+        </div>
       </div>
     </div>
 

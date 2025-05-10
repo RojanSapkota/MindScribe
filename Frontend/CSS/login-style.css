@@ -405,16 +405,37 @@ label {
   height: 50px;
   text-align: center;
   font-size: 18px;
+  font-weight: 600;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   background-color: #f5f7fa;
-  transition: border-color var(--transition);
+  transition: all var(--transition);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .otp-input:focus {
   border-color: var(--primary-color);
   outline: none;
   background-color: #fafaff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.otp-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.otp-icon {
+  font-size: 40px;
+  color: var(--primary-color);
+  margin-bottom: 15px;
+}
+
+.otp-email {
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-top: 5px;
 }
 
 .resend-otp {
@@ -449,6 +470,53 @@ label {
 
 .terms-container a:hover {
   text-decoration: underline;
+}
+
+/* Success Message */
+.success-form {
+  display: none;
+  text-align: center;
+  padding: 20px;
+}
+
+.success-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+}
+
+.success-icon {
+  font-size: 60px;
+  color: var(--success-color);
+  margin-bottom: 20px;
+  animation: pulse 1.5s infinite;
+}
+
+.success-container h2 {
+  color: var(--success-color);
+  margin-bottom: 15px;
+}
+
+.success-container p {
+  color: var(--gray-color);
+  margin-bottom: 8px;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
 }
 
 /* Loading animation */
