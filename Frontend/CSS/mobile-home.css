@@ -323,6 +323,45 @@ body {
   color: #f8fafc !important;
 }
 .theme-dark .history-section {
+  background: linear-gradient(135deg, #181f2a 0%, #232946 100%) !important;
+}
+.theme-dark .history-container {
+  background: rgba(36, 41, 56, 0.96) !important;
+  box-shadow: 0 8px 32px rgba(30,41,59,0.18);
+}
+.theme-dark .history-entry-modern {
+  background: rgba(36, 41, 56, 0.98) !important;
+  color: #e0e7ef !important;
+  border-left: 6px solid #6366F1 !important;
+}
+.theme-dark .history-entry-modern.positive { border-left-color: #10B981 !important; }
+.theme-dark .history-entry-modern.negative { border-left-color: #EF4444 !important; }
+.theme-dark .history-entry-modern.neutral { border-left-color: #F59E0B !important; }
+.theme-dark .entry-header,
+.theme-dark .entry-summary {
+  color: #e0e7ef !important;
+}
+.theme-dark .entry-date {
+  color: #a5b4fc !important;
+}
+.theme-dark .entry-transcript {
+  color: #a5b4fc !important;
+}
+.theme-dark .topic-badge {
+  background: #232946 !important;
+  color: #a5b4fc !important;
+}
+.theme-dark .empty-state {
+  background: rgba(36, 41, 56, 0.85) !important;
+  color: #a5b4fc !important;
+}
+.theme-dark .empty-state i {
+  color: #6366F1 !important;
+}
+.theme-dark .empty-state p {
+  color: #a5b4fc !important;
+}
+.theme-dark .history-section {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
 }
 .theme-dark .history-entry,
@@ -1305,17 +1344,24 @@ input:checked + .toggle-slider:before {
 
 .empty-state {
   padding: 40px 20px;
+  background: rgba(245,247,255,0.7);
+  border-radius: 16px;
+  color: #6366F1;
+  font-size: 1.1rem;
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+  margin-top: 20px;
 }
 
 .empty-state i {
-  font-size: 3rem;
-  color: #ccc;
-  margin-bottom: 15px;
+  font-size: 2.5rem;
+  color: #c7d2fe;
+  margin-bottom: 10px;
 }
 
 .empty-state p {
-  color: #666;
-  margin-bottom: 20px;
+  color: #6366F1;
+  margin-bottom: 10px;
 }
 
 .insights-list {
@@ -1457,6 +1503,122 @@ body.dark-mode .empty-state i {
 
 body.dark-mode .empty-state p {
   color: #94a3b8;
+}
+
+/* Modern History Section Styles */
+.history-section {
+  background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%) !important;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+.history-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto 20px auto;
+  background: rgba(255,255,255,0.85);
+  border-radius: 22px;
+  box-shadow: 0 8px 32px rgba(93,95,239,0.08);
+  padding: 24px 0 8px 0;
+}
+.history-header-bar {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  margin-bottom: 10px;
+  padding: 0 0 10px 0;
+}
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+.history-entry-modern {
+  background: rgba(255,255,255,0.98);
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(93,95,239,0.07);
+  margin-bottom: 0;
+  padding: 18px 18px 12px 18px;
+  position: relative;
+  border-left: 6px solid #6366F1;
+  transition: box-shadow 0.2s, background 0.2s, border 0.2s;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.04rem;
+  color: #222;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.history-entry-modern.positive { border-left-color: #10B981; }
+.history-entry-modern.negative { border-left-color: #EF4444; }
+.history-entry-modern.neutral { border-left-color: #F59E0B; }
+.history-entry-modern:hover {
+  box-shadow: 0 6px 24px rgba(93,95,239,0.13);
+  background: linear-gradient(90deg, #e0e7ff 60%, #f8fafc 100%);
+}
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+.entry-summary {
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 2px;
+  font-size: 1.08rem;
+  letter-spacing: 0.01em;
+}
+.entry-date {
+  font-size: 0.85rem;
+  color: #6366F1;
+  font-weight: 500;
+  opacity: 0.85;
+}
+.entry-transcript {
+  color: #6366F1;
+  font-size: 0.97rem;
+  margin-bottom: 2px;
+  font-style: italic;
+  opacity: 0.85;
+  line-height: 1.6;
+}
+.entry-topics {
+  margin-bottom: 2px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.topic-badge {
+  background: #e0e7ff;
+  color: #6366F1;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+.entry-mood {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.93rem;
+  font-weight: 600;
+  color: #6366F1;
+}
+.entry-mood .fa-smile { color: #10B981; }
+.entry-mood .fa-frown { color: #EF4444; }
+.entry-mood .fa-meh { color: #F59E0B; }
+.entry-expand {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: none;
+  border: none;
+  color: #6366F1;
+  font-size: 1.1rem;
+  cursor: pointer;
+  z-index: 2;
 }
 
 /* History section styles */
