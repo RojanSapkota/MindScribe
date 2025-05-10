@@ -331,6 +331,21 @@ async def analyze_text(user_email: str = Form(...), transcript: str = Form(...),
         logging.error(f"Unexpected error during transcription: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error during transcription!")
 
+@app.post("/analytics")
+async def analytics(user_email: str = Form(...), analysis_id: str = Form(...)):
+    try:
+        user = await user_collection.find_one({"email": user_email})
+        if not user:
+            raise HTTPException(status_code=400, detail="User not found")
+
+        analysis = await analysis_collection.find_one({"_id": analysis_id})
+        if not analysis:
+            raise HTTPException(status_code=400, detail="Analysis not found")
+
+        return JSONResponse(content={"analysis": analysis})
+    except Exception as e:
+        logging.error(f"Error fetching analytics: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error during analytics retrieval!")
 
 @app.get("/")
 def read_root():
