@@ -1,1 +1,4 @@
 .env
+faiss_index
+__pycache__/
+stored_chunks.pkl
