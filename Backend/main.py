@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Optional
 from motor.motor_asyncio import AsyncIOMotorClient
-# Removed passlib import to fix compatibility issue
 import logging
 import json
 from PIL import Image
@@ -28,10 +27,8 @@ API_KEY = os.getenv("LLM_API_KEY")
 if not API_KEY:
     raise ValueError("LLM Environment variable is not set.")
 
-# FastAPI app setup
 app = FastAPI()
 
-# Enable CORS for all origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -40,10 +37,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Logging setup
 logging.basicConfig(level=logging.INFO)
 
-# MongoDB setup
 MONGO_URL = os.getenv("MONGO_URL")
 if not MONGO_URL:
     raise ValueError("MONGO_URL environment variable is not set.")
@@ -52,9 +47,6 @@ db = client['mindscribe']
 user_collection = db['users']
 analysis_collection = db['analysis']
 sentiment_collection = db['sentiment']
-
-# We'll use bcrypt directly instead of through passlib's CryptContext
-# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 smtp_server = os.getenv("smtp_server")
 smtp_port = int(os.getenv("smtp_port"))
@@ -72,19 +64,25 @@ class OTPVerification(BaseModel):
     email: str
     otp: str
 
-
 class UserLogin(BaseModel):
     email: str
     password: str
 
-otp_store = {}
+class ForgotPasswordRequest(BaseModel):
+    email: str
 
-# Function to generate OTP
+class ForgotPasswordReset(BaseModel):
+    email: str
+    otp: str
+    new_password: str
+
+otp_store = {}
+forgot_password_otp_store = {}
+
 def generate_otp(length=6):
     """Generate a random OTP of specified length"""
     return ''.join(random.choices(string.digits, k=length))
 
-# Function to send OTP via email
 async def send_otp_email(email: str, otp: str):
     if not smtp_user or not smtp_password:
         logging.warning("Email credentials not set, skipping email")
@@ -117,7 +115,6 @@ async def send_otp_email(email: str, otp: str):
         
         msg.attach(MIMEText(body, 'html'))
         
-        # Add plain text alternative for better deliverability and accessibility
         text_body = f"""
         Welcome to Mindscribe!
         
@@ -142,21 +139,18 @@ async def send_otp_email(email: str, otp: str):
         return False
 
 def hash_password(password: str) -> str:
-    # Use bcrypt directly to avoid passlib compatibility issues
     password_bytes = password.encode('utf-8')
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password_bytes, salt)
     return hashed.decode('utf-8')
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    # Use bcrypt directly to avoid passlib compatibility issues
     password_bytes = plain_password.encode('utf-8')
     hashed_bytes = hashed_password.encode('utf-8')
     return bcrypt.checkpw(password_bytes, hashed_bytes)
 
 @app.post("/register-init")
 async def register_init(user: User):
-    # Check if the user already exists
     existing_user = await user_collection.find_one({"email": user.email})
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -179,7 +173,6 @@ async def register_init(user: User):
     
     return JSONResponse(content=response)
 
-
 @app.post("/verify-otp")
 async def verify_otp(verification: OTPVerification):
     email = verification.email
@@ -188,13 +181,12 @@ async def verify_otp(verification: OTPVerification):
     if email not in otp_store:
         raise HTTPException(status_code=400, detail="Invalid or expired OTP verification. Please register again.")
     
-    # Check OTP validity
     stored_data = otp_store[email]
     if stored_data["otp"] != submitted_otp:
         raise HTTPException(status_code=400, detail="Invalid OTP code")
     
     time_diff = datetime.now() - stored_data["created_at"]
-    if time_diff.total_seconds() > 600:  # 10 minutes
+    if time_diff.total_seconds() > 600:
         del otp_store[email]
         raise HTTPException(status_code=400, detail="OTP has expired. Please register again.")
     
@@ -214,39 +206,66 @@ async def verify_otp(verification: OTPVerification):
     
     return JSONResponse(content={"message": "Account created successfully", "email": email})
 
-
 @app.post("/login")
 async def login(user: UserLogin):
     try:
-        # Find user by email
         existing_user = await user_collection.find_one({"email": user.email})
         if not existing_user:
             raise HTTPException(status_code=400, detail="Invalid email or password")
             
-        # Verify password
         if not verify_password(user.password, existing_user['password']):
             raise HTTPException(status_code=400, detail="Invalid email or password")
 
-        return JSONResponse(content={"message": "Login successful"})
+        # Return a token (for now, just the email)
+    
+        return JSONResponse(content={"message": "Login successful", "token": user.email})
     except Exception as e:
         logging.error(f"Login error: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error during login")
 
+@app.post("/forgot-password-request")
+async def forgot_password_request(data: ForgotPasswordRequest):
+    user = await user_collection.find_one({"email": data.email})
+    if not user:
+        raise HTTPException(status_code=400, detail="Email not found")
+    otp = generate_otp()
+    forgot_password_otp_store[data.email] = {
+        "otp": otp,
+        "created_at": datetime.now()
+    }
+    email_sent = await send_otp_email(data.email, otp)
+    if not email_sent:
+        raise HTTPException(status_code=500, detail="Failed to send OTP email. Please try again later.")
+    return {"message": "OTP sent to your email"}
+
+@app.post("/forgot-password-reset")
+async def forgot_password_reset(data: ForgotPasswordReset):
+    record = forgot_password_otp_store.get(data.email)
+    if not record or record["otp"] != data.otp:
+        raise HTTPException(status_code=400, detail="Invalid or expired OTP")
+    time_diff = datetime.now() - record["created_at"]
+    if time_diff.total_seconds() > 600:
+        del forgot_password_otp_store[data.email]
+        raise HTTPException(status_code=400, detail="OTP has expired")
+    hashed_password = hash_password(data.new_password)
+    await user_collection.update_one({"email": data.email}, {"$set": {"password": hashed_password}})
+    del forgot_password_otp_store[data.email]
+    return {"message": "Password reset successful"}
+
 @app.options("/transcribe")
 async def options_transcribe(request: Request):
     # Handle CORS preflight
+
     return JSONResponse(status_code=200, content={})
 
 @app.post("/transcribe")
 async def analyze_text(user_email: str = Form(...), transcript: str = Form(...), timestamp: str = Form(...)):
     try:
-        # Check if the user exists
         user = await user_collection.find_one({"email": user_email})
         if not user:
             logging.warning(f"Transcribe attempt for non-existent user: {user_email}")
             raise HTTPException(status_code=400, detail="User not found")
 
-        # Call Groq API for analysis
         try:
             client = Groq(api_key=os.environ.get("LLM_API_KEY"))
         except Exception as e:
@@ -285,17 +304,14 @@ async def analyze_text(user_email: str = Form(...), transcript: str = Form(...),
             )
             result_text = response.choices[0].message.content.strip()
         except Exception as e:
-            logging.error(f"Groq API call failed: {e}")
-            raise HTTPException(status_code=502, detail="AI analysis service error")
+            raise HTTPException(status_code=502, detail="AI analysis service error!")
 
-        # Try to parse the LLM result to ensure it's valid JSON
         try:
             parsed_json = json.loads(result_text)
         except json.JSONDecodeError as json_error:
             logging.error(f"Error parsing LLM response as JSON: {json_error}. Response: {result_text}")
-            raise HTTPException(status_code=500, detail="Invalid JSON response from LLM")
+            raise HTTPException(status_code=500, detail="Invalid JSON response from LLM!")
 
-        # Save analysis result to MongoDB
         try:
             analysis_data = {
                 "user_email": user_email,
@@ -308,13 +324,13 @@ async def analyze_text(user_email: str = Form(...), transcript: str = Form(...),
             logging.error(f"Failed to save analysis to DB: {db_error}")
 
 
-        # Return the validated JSON directly
         return parsed_json
     except HTTPException as he:
         raise he
     except Exception as e:
         logging.error(f"Unexpected error during transcription: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error during transcription")
+        raise HTTPException(status_code=500, detail="Internal server error during transcription!")
+
 
 @app.get("/")
 def read_root():
