@@ -51,6 +51,8 @@ client = AsyncIOMotorClient(MONGO_URL)
 db = client['mindscribe']
 user_collection = db['users']
 analysis_collection = db['analysis']
+sentiment_collection = db['sentiment']
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
