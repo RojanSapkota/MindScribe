@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindScribe Launcher</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #F1F5F9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      color: #1E293B;
+    }
+    .container {
+      max-width: 600px;
+      background-color: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      text-align: center;
+    }
+    h1 {
+      color: #5D5FEF;
+      margin-bottom: 20px;
+    }
+    .logo {
+      font-size: 48px;
+      margin-bottom: 20px;
+      color: #5D5FEF;
+    }
+    .button {
+      background-color: #5D5FEF;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.2s;
+      margin: 10px;
+      display: inline-block;
+      text-decoration: none;
+    }
+    .button:hover {
+      background-color: #4a4be0;
+      transform: translateY(-2px);
+    }
+    .status {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .status.online {
+      background-color: #DCFCE7;
+      color: #166534;
+    }
+    .status.offline {
+      background-color: #FEE2E2;
+      color: #991B1B;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">🎙️</div>
+    <h1>MindScribe</h1>
+    <p>AI-powered voice journaling application</p>
+    
+    <div id="status" class="status">Checking server status...</div>
+    
+    <div style="margin-top: 30px;">
+      <a href="HTML/index.html" class="button" id="launchBtn" disabled>Launch App</a>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const statusDiv = document.getElementById('status');
+      const launchBtn = document.getElementById('launchBtn');
+      
+      try {
+        // Check if the server is running
+        const response = await fetch('http://localhost:8000/', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          statusDiv.textContent = '✅ Server is online and ready!';
+          statusDiv.className = 'status online';
+          launchBtn.disabled = false;
+        } else {
+          throw new Error(`Server responded with status: ${response.status}`);
+        }
+      } catch (error) {
+        console.error('Error connecting to server:', error);
+        statusDiv.textContent = '❌ Server is offline. Please start the backend server first.';
+        statusDiv.className = 'status offline';
+        launchBtn.disabled = true;
+      }
+    });
+  </script>
+</body>
+</html>
