@@ -1,18 +1,5 @@
 // MindScribe Voice Transcription
 
-// Register service worker for PWA functionality
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('../service-worker.js')
-      .then(registration => {
-        console.log('ServiceWorker registration successful');
-      })
-      .catch(error => {
-        console.log('ServiceWorker registration failed: ', error);
-      });
-  });
-}
-
 // Global variables
 let recognition = null;
 let isRecording = false;
@@ -34,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginBtn = document.getElementById('loginBtn');
   const logoutBtn = document.getElementById('logoutBtn');
 
-  // Check if user is logged in
+  // Check if user is logged in on page load
   checkAuthStatus();
   
   // Initialize speech recognition
