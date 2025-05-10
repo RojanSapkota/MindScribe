@@ -1,3 +1,6 @@
+// Set up API base URL - defined at top level so it's accessible to all scripts
+const API_BASE_URL = 'http://127.0.0.1:8000';
+
 // Variables and DOM elements
 const thoughts = [
   "You are stronger than you think. Every day is a new beginning.",
@@ -830,9 +833,6 @@ function showAnalysisModal(transcript, analysis) {
     });
   }, 100);
 }
-
-// Set up API base URL
-const API_BASE_URL = 'http://127.0.0.1:8000';
 
 // Event listeners for history section
 document.getElementById('navHistory')?.addEventListener('click', () => {

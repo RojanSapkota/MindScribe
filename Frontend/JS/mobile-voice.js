@@ -5,8 +5,7 @@ let finalTranscript = '';
 let interimTranscript = '';
 let currentUser = localStorage.getItem('userEmail');
 
-// Set API base URL for backend
-const API_BASE_URL = 'http://127.0.0.1:8000';
+// Use API_BASE_URL from mobile-home.js
 
 // DOM Elements
 const recordingModal = document.getElementById('recordingModal');
@@ -17,7 +16,7 @@ const saveTranscriptBtn = document.getElementById('saveTranscriptBtn');
 const recordingAnimation = document.getElementById('recordingAnimation');
 const interimTranscriptElement = document.getElementById('interimTranscript');
 const finalTranscriptElement = document.getElementById('finalTranscript');
-const newEntryBtn = document.getElementById('newEntryBtn');
+// Using newEntryBtn from mobile-home.js instead of redeclaring
 
 // Initialize speech recognition
 function initializeSpeechRecognition() {
