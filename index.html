@@ -24,6 +24,15 @@
       padding: 30px;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       text-align: center;
+      opacity: 0;
+      transform: translateY(40px);
+      animation: fadeSlideIn 1s cubic-bezier(0.23, 1, 0.32, 1) 0.2s forwards;
+    }
+    @keyframes fadeSlideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     h1 {
       color: #5D5FEF;
@@ -33,6 +42,18 @@
       font-size: 48px;
       margin-bottom: 20px;
       color: #5D5FEF;
+      animation: bounce 1.2s infinite alternate cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+    @keyframes bounce {
+      0% {
+        transform: translateY(0) scale(1);
+      }
+      60% {
+        transform: translateY(-10px) scale(1.1);
+      }
+      100% {
+        transform: translateY(0) scale(1);
+      }
     }
     .button {
       background-color: #5D5FEF;
@@ -46,10 +67,26 @@
       margin: 10px;
       display: inline-block;
       text-decoration: none;
+      position: relative;
+      overflow: hidden;
     }
     .button:hover {
       background-color: #4a4be0;
       transform: translateY(-2px);
+    }
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple-effect 0.6s linear;
+      background-color: rgba(255,255,255,0.5);
+      pointer-events: none;
+    }
+    @keyframes ripple-effect {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
     }
     .status {
       margin-top: 20px;
@@ -105,6 +142,20 @@
         statusDiv.textContent = '❌ Server is offline. Please start the backend server first.';
         statusDiv.className = 'status offline';
         launchBtn.disabled = true;
+      }
+
+      // Ripple effect for button
+      if (launchBtn) {
+        launchBtn.addEventListener('click', function(e) {
+          const rect = this.getBoundingClientRect();
+          const ripple = document.createElement('span');
+          ripple.className = 'ripple';
+          ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) + 'px';
+          ripple.style.left = (e.clientX - rect.left - rect.width/2) + 'px';
+          ripple.style.top = (e.clientY - rect.top - rect.height/2) + 'px';
+          this.appendChild(ripple);
+          setTimeout(() => ripple.remove(), 600);
+        });
       }
     });
   </script>

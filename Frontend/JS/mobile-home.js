@@ -422,9 +422,9 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Modal for new entry button
-newEntryBtn.addEventListener('click', () => {
-  alert('New journal entry feature coming soon!');
-});
+//newEntryBtn.addEventListener('click', () => {
+//  alert('New journal entry feature coming soon!');
+//});
 
 // Save button animation
 const saveButton = document.getElementById('saveButton');
@@ -902,9 +902,9 @@ function initApp() {
   checkAuthStatus();
   
   // Show welcome toast
-  setTimeout(() => {
-    showToast('Welcome to MindScribe Mobile', 'success');
-  }, 1500);
+  //setTimeout(() => {
+  //  showToast('Welcome to MindScribe Mobile', 'success');
+  //}, 1500);
 }
 
 // Start the app
