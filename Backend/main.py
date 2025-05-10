@@ -20,6 +20,11 @@ from email.mime.multipart import MIMEMultipart
 import requests
 from groq import Groq
 
+
+#Not using this for now
+#import whisper
+#import tempfile
+
 load_dotenv()
 timestamp = datetime.now()
 
@@ -254,6 +259,24 @@ async def forgot_password_reset(data: ForgotPasswordReset):
     del forgot_password_otp_store[data.email]
     return {"message": "Password reset successful"}
 
+#@app.post("/whisper-transcribe")
+#async def whisper_audio(audio: UploadFile = File(...)):
+#    try:
+#        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
+#            tmp.write(await audio.read())
+#            tmp_path = tmp.name
+#
+#        model = whisper.load_model("base")
+#        result = model.transcribe(tmp_path)
+#
+#        os.remove(tmp_path)
+#
+#        return JSONResponse(content={"transcript": result["text"]})
+#    except Exception as e:
+#        logging.error(f"Whisper transcription error: {e}")
+#        raise HTTPException(status_code=500, detail="Failed to transcribe audio")
+
+
 @app.options("/transcribe")
 async def options_transcribe(request: Request):
     # Handle CORS preflight
@@ -357,7 +380,54 @@ async def get_history(user_email: str):
     except Exception as e:
         logging.error(f"Error fetching history: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch journal history")
+    
+@app.post("/sentiment")
+async def sentiment(user_email: str = Form(...), analysis_id: str = Form(...)):
+    try:
+        analysis = await analysis_collection.find_one({"_id": analysis_id})
+        if not analysis:
+            raise HTTPException(status_code=400, detail="Analysis not found")
 
+        return JSONResponse(content={"sentiment": analysis["analysis_result"]})
+    except Exception as e:
+        logging.error(f"Error fetching sentiment: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error during sentiment retrieval!")
+    
+@app.post("/delete-entry")
+async def delete_entry(user_email: str = Form(...), analysis_id: str = Form(...)):
+    try:
+        user = await user_collection.find_one({"email": user_email})
+        if not user:
+            raise HTTPException(status_code=400, detail="User not found")
+
+        result = await analysis_collection.delete_one({"_id": analysis_id})
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=400, detail="Entry not found")
+
+        return JSONResponse(content={"message": "Entry deleted successfully"})
+    except Exception as e:
+        logging.error(f"Error deleting entry: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error during entry deletion!")   
+    
+
+@app.get("/mood-breakdown")
+async def mood_breakdown(user_email: str):
+    try:
+        entries = await analysis_collection.find({"user_email": user_email}).sort("timestamp", -1).to_list(length=30)
+        breakdown = [
+            {
+                "date": entry["timestamp"].strftime("%Y-%m-%d"),
+                "score": json.loads(entry["analysis_result"]).get("sentiment_score", 0),
+                "mood": json.loads(entry["analysis_result"]).get("mood", "unknown")
+            }
+            for entry in entries
+        ]
+        return {"mood_data": breakdown}
+    except Exception as e:
+        logging.error(f"Mood breakdown error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate mood data")
+    
+    
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Mindscribe API!","status": "200"}
