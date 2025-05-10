@@ -311,88 +311,133 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Use the logged in user's email
       const userEmail = currentUser.email;
-      
-      // Use the full URL to the API server
+        // Use the full URL to the API server
       const apiUrl = 'http://127.0.0.1:8000/transcribe';
-        const response = await fetch(apiUrl, {
+      
+      // Create FormData object to match backend expectations
+      const formData = new FormData();
+      formData.append('user_email', userEmail);
+      formData.append('transcript', transcript);
+      formData.append('timestamp', new Date().toISOString());
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({          user_email: userEmail,
-          transcript: transcript,
-          timestamp: new Date().toISOString(),
-          skip_user_check: false  // Enforce user validation
-        })
+        // Don't set Content-Type header, browser will set it with boundary for FormData
+        body: formData
       });
 
       if (!response.ok) {
         throw new Error(`Server error: ${response.status}`);
+      }      // Parse the JSON response
+      const responseData = await response.text();
+      
+      // Try to parse the response as JSON
+      let analysisData;
+      try {
+        // The response might be a string that needs parsing
+        analysisData = JSON.parse(responseData);
+        console.log("Analysis data:", analysisData);
+      } catch (e) {
+        console.error("Error parsing JSON response:", e, "Raw response:", responseData);
+        throw new Error("Invalid response from server. Could not parse JSON.");
       }
-
-      const data = await response.json();
-        if (transcriptBox) {
-        // Display the analysis from the server
-        let emotionsHTML = '';
-        if (data.analysis.emotions && data.analysis.emotions.length > 0) {
-          data.analysis.emotions.forEach(emotion => {
-            emotionsHTML += `<span class="emotion-tag">${emotion}</span>`;
+      
+      if (transcriptBox) {
+        // Extract data from the analysis response
+        const summary = analysisData.summary || "No summary available";
+        const mood = analysisData.mood || "Neutral";
+        const sentimentScore = analysisData.sentiment_score || 0;
+        const keyTopics = analysisData.key_topics || [];
+        const insights = analysisData.insights || [];
+        const suggestions = analysisData.suggestions || [];
+        
+        // Format the key topics
+        let topicsHTML = '';
+        if (keyTopics.length > 0) {
+          topicsHTML = '<div class="topics-container">';
+          keyTopics.forEach(topic => {
+            topicsHTML += `<span class="topic-tag">${topic}</span>`;
           });
+          topicsHTML += '</div>';
         } else {
-          emotionsHTML = '<span class="emotion-tag">Neutral</span>';
+          topicsHTML = '<p class="analysis-content">No specific topics detected</p>';
         }
         
-        let intentionsHTML = '';
-        if (data.analysis.intentions && data.analysis.intentions.length > 0) {
-          intentionsHTML = '<ul class="intentions-list">';
-          data.analysis.intentions.forEach(intention => {
-            intentionsHTML += `<li>${intention}</li>`;
+        // Format insights
+        let insightsHTML = '';
+        if (insights.length > 0) {
+          insightsHTML = '<ul class="insights-list">';
+          insights.forEach(insight => {
+            insightsHTML += `<li>${insight}</li>`;
           });
-          intentionsHTML += '</ul>';
+          insightsHTML += '</ul>';
         } else {
-          intentionsHTML = '<p class="analysis-content">No specific goals detected</p>';
+          insightsHTML = '<p class="analysis-content">No insights available</p>';
         }
         
-        // Calculate score for the progress bar
-        const positivityScore = data.analysis.positivity_score || 5;
-        const scorePercentage = (positivityScore / 10) * 100;
+        // Format suggestions
+        let suggestionsHTML = '';
+        if (suggestions.length > 0) {
+          suggestionsHTML = '<ul class="suggestions-list">';
+          suggestions.forEach(suggestion => {
+            suggestionsHTML += `<li>${suggestion}</li>`;
+          });
+          suggestionsHTML += '</ul>';
+        } else {
+          suggestionsHTML = '<p class="analysis-content">No suggestions available</p>';
+        }
         
-        const analysisHTML = `
+        // Calculate sentiment score for the progress bar (normalize from -10/10 to 0/100%)
+        const scorePercentage = ((sentimentScore + 10) / 20) * 100;
+          const analysisHTML = `
           <div class="analysis">
             <h3>AI Analysis</h3>
             
             <div class="analysis-section">
               <div class="analysis-title">Summary</div>
-              <div class="analysis-content">${data.analysis.summary}</div>
+              <div class="analysis-content">${summary}</div>
             </div>
             
             <div class="analysis-section">
-              <div class="analysis-title">Emotions</div>
+              <div class="analysis-title">Mood</div>
               <div class="analysis-content">
-                ${emotionsHTML}
+                <span class="emotion-tag">${mood}</span>
               </div>
             </div>
             
-            ${data.analysis.intentions && data.analysis.intentions.length > 0 ? `
-              <div class="analysis-section">
-                <div class="analysis-title">Intentions/Goals</div>
-                ${intentionsHTML}
-              </div>
-            ` : ''}
-            
             <div class="analysis-section">
-              <div class="analysis-title">Reflection Question</div>
-              <div class="reflection">${data.analysis.reflection_question}</div>
+              <div class="analysis-title">Key Topics</div>
+              <div class="analysis-content">
+                ${topicsHTML}
+              </div>
             </div>
             
             <div class="analysis-section">
-              <div class="analysis-title">Positivity</div>
+              <div class="analysis-title">Insights</div>
+              <div class="analysis-content">
+                ${insightsHTML}
+              </div>
+            </div>
+            
+            <div class="analysis-section">
+              <div class="analysis-title">Suggestions</div>
+              <div class="analysis-content">
+                ${suggestionsHTML}
+              </div>
+            </div>
+            
+            <div class="analysis-section">
+              <div class="analysis-title">Sentiment Score</div>
               <div class="score-container">
-                <div class="score-number">${positivityScore}</div>
+                <div class="score-number">${sentimentScore}</div>
                 <div class="score-bar">
                   <div class="score-fill" style="width: ${scorePercentage}%"></div>
                 </div>
-                <div>10</div>
+                <div class="score-range">
+                  <span>-10</span>
+                  <span>0</span>
+                  <span>+10</span>
+                </div>
               </div>
             </div>
           </div>
@@ -411,12 +456,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (transcriptBox) {
         let errorMessage = error.message;
         let helpText = '';
-        
-        // Provide more helpful messages based on common errors
+          // Provide more helpful messages based on common errors
         if (error.message.includes('405')) {
           helpText = 'Make sure the backend server is running at http://localhost:8000';
         } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-          helpText = 'Cannot connect to the server. Please check if the backend is running.';
+          helpText = 'Cannot connect to the server. Please check if the backend is running at http://127.0.0.1:8000';
+        } else if (error.message.includes('422')) {
+          helpText = 'The server received the request but could not process it. Check data format.';
         }
         
         transcriptBox.innerHTML = `

@@ -52,20 +52,29 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     showForm(signinForm);
   });
-  
-  // Function to show a specific form
+    // Function to show a specific form
   function showForm(form) {
     // Hide all forms first
     signinForm.classList.remove('active');
     signupForm.classList.remove('active');
     otpForm.classList.remove('active');
     forgotPasswordForm.classList.remove('active');
+    document.getElementById('success-form').style.display = 'none';
     
     // Clear all messages
     clearMessages();
     
     // Show the selected form
-    form.classList.add('active');
+    if (form === document.getElementById('success-form')) {
+      form.style.display = 'block';
+    } else {
+      form.classList.add('active');
+      
+      // Update OTP email display when showing OTP form
+      if (form === otpForm && currentEmail) {
+        document.getElementById('otpEmailDisplay').textContent = currentEmail;
+      }
+    }
   }
   
   // Toggle password visibility
@@ -155,8 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setButtonLoading(submitBtn, false);
     }
   });
-  
-  signupForm.addEventListener('submit', async (e) => {
+    signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('signup-name').value;
     const email = document.getElementById('signup-email').value;
@@ -210,32 +218,57 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       
       if (response.ok) {
+        // Add success animation
+        submitBtn.innerHTML = '<i class="fas fa-check"></i> Code Sent!';
+        submitBtn.classList.add('success-btn');
+        
         // Store the email for OTP verification
         currentEmail = email;
-        
-        // Show OTP form
-        showForm(otpForm);
-        showMessage(otpMessage, 'A verification code has been sent to your email', 'success');
-        
-        // Clear OTP inputs
-        otpInputs.forEach(input => {
-          input.value = '';
-        });
-        
-        // Focus the first OTP input
-        otpInputs[0].focus();
+          setTimeout(() => {
+          // Update OTP email display with user's email
+          document.getElementById('otpEmailDisplay').textContent = email;
+          
+          // Show OTP form
+          showForm(otpForm);
+          
+          // Reset button style
+          submitBtn.innerHTML = 'Sign Up';
+          submitBtn.classList.remove('success-btn');
+          
+          // Clear OTP inputs
+          otpInputs.forEach(input => {
+            input.value = '';
+          });
+          
+          // Focus the first OTP input
+          otpInputs[0].focus();
+        }, 1000);
       } else {
-        showMessage(signupMessage, data.detail || 'Registration failed', 'error');
+        // Show error animation
+        submitBtn.innerHTML = '<i class="fas fa-times"></i> Failed';
+        submitBtn.classList.add('error-btn');
+        
+        setTimeout(() => {
+          submitBtn.innerHTML = 'Sign Up';
+          submitBtn.classList.remove('error-btn');
+          showMessage(signupMessage, data.detail || 'Registration failed', 'error');
+        }, 1000);
       }
     } catch (error) {
       console.error('Registration error:', error);
-      showMessage(signupMessage, 'Server error. Please try again later.', 'error');
+      submitBtn.innerHTML = '<i class="fas fa-times"></i> Error';
+      submitBtn.classList.add('error-btn');
+      
+      setTimeout(() => {
+        submitBtn.innerHTML = 'Sign Up';
+        submitBtn.classList.remove('error-btn');
+        showMessage(signupMessage, 'Server error. Please try again later.', 'error');
+      }, 1000);
     } finally {
       setButtonLoading(submitBtn, false);
     }
   });
-  
-  otpForm.addEventListener('submit', async (e) => {
+    otpForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     // Collect OTP
@@ -269,18 +302,48 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       
       if (response.ok) {
-        showMessage(otpMessage, 'Account created successfully! Redirecting...', 'success');
+        // Add success animation
+        submitBtn.innerHTML = '<i class="fas fa-check"></i> Verified!';
+        submitBtn.classList.add('success-btn');
         
-        // Redirect to main app
         setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 1500);
+          // Store user info in localStorage
+          localStorage.setItem('mindscribe_token', data.token || currentEmail);
+          localStorage.setItem('mindscribe_email', currentEmail);
+          
+          // Show success message and hide OTP form
+          showForm(document.getElementById('success-form'));
+          
+          // Reset button style after transition
+          submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify & Create Account';
+          submitBtn.classList.remove('success-btn');
+          
+          // Redirect to main app after 2 seconds
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 2000);
+        }, 1000);
       } else {
-        showMessage(otpMessage, data.detail || 'Invalid OTP', 'error');
+        // Show error animation
+        submitBtn.innerHTML = '<i class="fas fa-times"></i> Failed';
+        submitBtn.classList.add('error-btn');
+        
+        setTimeout(() => {
+          submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify & Create Account';
+          submitBtn.classList.remove('error-btn');
+          showMessage(otpMessage, data.detail || 'Invalid OTP', 'error');
+        }, 1000);
       }
     } catch (error) {
       console.error('OTP verification error:', error);
-      showMessage(otpMessage, 'Server error. Please try again later.', 'error');
+      submitBtn.innerHTML = '<i class="fas fa-times"></i> Error';
+      submitBtn.classList.add('error-btn');
+      
+      setTimeout(() => {
+        submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify & Create Account';
+        submitBtn.classList.remove('error-btn');
+        showMessage(otpMessage, 'Server error. Please try again later.', 'error');
+      }, 1000);
     } finally {
       setButtonLoading(submitBtn, false);
     }
