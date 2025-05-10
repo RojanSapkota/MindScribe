@@ -88,99 +88,130 @@
     </div>
   </div>
     <div class="main-section history-section" id="historySection">
-    <h3 class="section-header">Journal History</h3>
-    
-    <div class="history-container" id="journalHistory">
-      <div class="loading-container" id="historyLoading">
-        <div class="loading-spinner"></div>
-        <p>Loading your journal entries...</p>
-      </div>
-      
-      <div class="empty-state" id="historyEmpty" style="display: none;">
-        <i class="fas fa-book"></i>
-        <p>No journal entries yet</p>
-        <button class="action-button" id="createFirstEntryBtn">
-          <i class="fas fa-microphone"></i> Record your first entry
-        </button>
-      </div>
-      
-      <div class="history-list" id="historyEntries">
-        <!-- Journal entries will be loaded here dynamically -->
+      <h3 class="section-header">Journal History</h3>
+      <div class="history-container" id="journalHistory">
+        <div class="history-header-bar">
+          <button class="action-button ripple" id="refreshHistoryBtn" title="Refresh history">
+            <i class="fas fa-sync-alt"></i>
+          </button>
+          <div class="history-stats" id="historyStats">
+            <!-- Stats will be injected here -->
+          </div>
+          <button class="action-button ripple" id="exportHistoryBtn" title="Export history">
+            <i class="fas fa-download"></i>
+          </button>
+        </div>
+        <div class="history-filters" id="historyFilters">
+          <input type="text" id="historySearch" class="history-search" placeholder="🔍 Search entries..." autocomplete="off">
+          <select id="historyMoodFilter" class="history-mood-filter">
+            <option value="">All Moods</option>
+            <option value="positive">Positive</option>
+            <option value="neutral">Neutral</option>
+            <option value="negative">Negative</option>
+          </select>
+        </div>
+        <div class="history-timeline" id="historyTimeline">
+          <!-- Timeline visualization will be injected here -->
+        </div>
+        <div class="loading-container" id="historyLoading">
+          <div class="loading-spinner"></div>
+          <p>Loading your journal entries...</p>
+        </div>
+        <div class="empty-state" id="historyEmpty" style="display: none;">
+          <i class="fas fa-book"></i>
+          <p>No journal entries yet</p>
+          <button class="action-button" id="createFirstEntryBtn">
+            <i class="fas fa-microphone"></i> Record your first entry
+          </button>
+        </div>
+        <div class="history-list" id="historyEntries">
+          <!-- Journal entries will be loaded here dynamically -->
+        </div>
       </div>
     </div>
-    
-    <div class="history-actions">
-      <button class="action-button ripple" id="refreshHistoryBtn">
-        <i class="fas fa-sync-alt"></i> Refresh
-      </button>
-      <button class="action-button ripple" id="exportHistoryBtn">
-        <i class="fas fa-download"></i> Export
-      </button>
-    </div>
-  </div>
     <div class="main-section settings-section" id="settingsSection">
-    <h3 class="section-header">Settings</h3>
-    
-    <!-- User Profile Section -->
-    <div class="user-profile-card scale-in" id="userProfileCard">
-      <div class="user-avatar">
-        <i class="fas fa-user-circle"></i>
+      <h3 class="section-header">Settings</h3>
+      
+      <!-- User Profile Section -->
+      <div class="settings-group">
+        <div class="settings-group-title">Profile</div>
+        <div class="user-profile-card scale-in" id="userProfileCard">
+          <div class="user-avatar">
+            <i class="fas fa-user-circle"></i>
+          </div>
+          <div class="user-info">
+            <h4 id="userDisplayName">Guest User</h4>
+            <p id="userEmail">Not logged in</p>
+          </div>
+          <button class="action-button small-btn login-btn" id="mobileLoginBtn">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </button>
+          <button class="action-button small-btn logout-btn" id="mobileLogoutBtn" style="display: none;">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
       </div>
-      <div class="user-info">
-        <h4 id="userDisplayName">Guest User</h4>
-        <p id="userEmail">Not logged in</p>
+      
+      <div class="settings-group">
+        <div class="settings-group-title">Appearance</div>
+        <div class="settings-card">
+          <span class="settings-icon"><i class="fas fa-palette"></i></span>
+          <span class="settings-label">Dark Mode</span>
+          <span class="settings-action">
+            <label class="toggle-switch">
+              <input type="checkbox" id="darkModeToggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </span>
+        </div>
       </div>
-      <button class="action-button small-btn login-btn" id="mobileLoginBtn">
-        <i class="fas fa-sign-in-alt"></i> Login
-      </button>
-      <button class="action-button small-btn logout-btn" id="mobileLogoutBtn" style="display: none;">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </button>
-    </div>
-    
-    <!-- App Settings -->
-    <div class="thought-card card-settings delayed-fade">
-      <i class="fas fa-palette"></i>
-      <span>Dark Mode</span>
-      <div style="margin-top: 15px; display: flex; align-items: center; justify-content: center;">
-        <label class="toggle-switch">
-          <input type="checkbox" id="darkModeToggle">
-          <span class="toggle-slider"></span>
-        </label>
+      
+      <div class="settings-group">
+        <div class="settings-group-title">Notifications</div>
+        <div class="settings-card">
+          <span class="settings-icon"><i class="fas fa-bell"></i></span>
+          <span class="settings-label">Daily Reminders</span>
+          <span class="settings-action">
+            <label class="toggle-switch">
+              <input type="checkbox" checked id="notificationToggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </span>
+        </div>
+      </div>
+      
+      <div class="settings-group">
+        <div class="settings-group-title">Privacy</div>
+        <div class="settings-card">
+          <span class="settings-icon"><i class="fas fa-lock"></i></span>
+          <span class="settings-label">Privacy Mode</span>
+          <span class="settings-action">
+            <label class="toggle-switch">
+              <input type="checkbox" id="privacyToggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </span>
+        </div>
+      </div>
+      
+      <div class="settings-group">
+        <div class="settings-group-title">About</div>
+        <div class="settings-card">
+          <span class="settings-icon"><i class="fas fa-info-circle"></i></span>
+          <span class="settings-label">About MindScribe</span>
+          <span class="settings-action">
+            <button class="action-button small-btn" id="privacyPolicyBtn">
+              Privacy Policy
+            </button>
+          </span>
+        </div>
+        <div class="settings-card" style="border-bottom: none;">
+          <span class="settings-label" style="margin-left:36px;">
+            <span class="settings-desc">Version 1.0.0</span>
+          </span>
+        </div>
       </div>
     </div>
-    
-    <div class="thought-card card-settings delayed-fade">
-      <i class="fas fa-bell"></i>
-      <span>Daily Reminders</span>
-      <div style="margin-top: 15px; display: flex; align-items: center; justify-content: center;">
-        <label class="toggle-switch">
-          <input type="checkbox" checked id="notificationToggle">
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-    </div>
-    
-    <div class="thought-card card-settings delayed-fade-long">
-      <i class="fas fa-lock"></i>
-      <span>Privacy Mode</span>
-      <div style="margin-top: 15px; display: flex; align-items: center; justify-content: center;">
-        <label class="toggle-switch">
-          <input type="checkbox" id="privacyToggle">
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-    </div>
-    
-    <div class="thought-card card-settings delayed-fade-long">
-      <i class="fas fa-info-circle"></i>
-      <span>About MindScribe</span>
-      <p class="settings-description">Version 1.0.0</p>
-      <button class="action-button small-btn" id="privacyPolicyBtn">
-        Privacy Policy
-      </button>
-    </div>
-  </div>
   
   <div class="floating-button" id="newEntryBtn">
     <i class="fas fa-microphone"></i>
@@ -217,6 +248,63 @@
     </div>
   </div>
   
+  <!-- Privacy Policy Modal -->
+  <div class="modal" id="privacyPolicyModal">
+    <div class="modal-content" style="max-width:600px;margin:10vh auto;">
+      <div class="modal-header">
+        <h3>🛡️ Privacy Policy</h3>
+        <button class="close-modal" id="closePrivacyPolicyModal">&times;</button>
+      </div>
+      <div class="modal-body" style="max-height:60vh;overflow-y:auto;text-align:left;">
+        <p><strong>Effective Date:</strong> May 11 2025<br>
+        <strong>Last Updated:</strong> May 11 2025</p>
+        <p>At MindScribe, your privacy is our top priority. This policy explains how we collect, use, and protect your data when you use our journaling and mental health support application.</p>
+        <h4>🔍 What We Collect</h4>
+        <ul>
+          <li><strong>Email & Name:</strong> During account registration.</li>
+          <li><strong>Journal Entries:</strong> Text or voice entries submitted by you, which may include emotional reflections.</li>
+          <li><strong>AI Analysis Results:</strong> Sentiment and mood analysis generated by AI models.</li>
+          <li><strong>Technical Data:</strong> IP address, device type, and basic usage logs.</li>
+        </ul>
+        <h4>🎯 How We Use Your Data</h4>
+        <ul>
+          <li>Analyze journal content using AI to provide mood insights and suggestions.</li>
+          <li>Store your emotional history for personal reflection and progress tracking.</li>
+          <li>Improve the app’s features and performance.</li>
+          <li>Provide optional resources or recommendations based on your mood and themes.</li>
+        </ul>
+        <h4>🤖 AI & Third-Party Tools</h4>
+        <p>We use Groq’s LLMs and embedding models to analyze journal entries and retrieve relevant information from mental health guides. We do not share your raw journal data with third parties.</p>
+        <p>All data is processed securely and, where possible, anonymized or encrypted during processing.</p>
+        <h4>🔐 Data Protection</h4>
+        <ul>
+          <li>Your passwords are securely hashed.</li>
+          <li>Journal entries are stored in a secure, access-controlled database.</li>
+          <li>Only you have access to your data unless you explicitly share it.</li>
+        </ul>
+        <h4>❌ What We Don't Do</h4>
+        <ul>
+          <li>We do not sell your data.</li>
+          <li>We do not use your entries for advertising.</li>
+          <li>We do not share your personal information with external partners.</li>
+        </ul>
+        <h4>👤 Your Rights</h4>
+        <ul>
+          <li>You can request deletion of your account and all stored data.</li>
+          <li>You can request a copy of your journal history.</li>
+          <li>You can opt out of non-essential communications.</li>
+        </ul>
+        <p>To make any requests, contact: <em>[insert support email or contact form]</em></p>
+        <h4>📦 Data Retention</h4>
+        <p>We retain your data for as long as your account is active. You can delete your data at any time through the app or by request.</p>
+        <h4>📢 Updates</h4>
+        <p>We may update this policy as needed. We'll notify you through the app or email for significant changes.</p>
+        <h4>📫 Contact</h4>
+        <p>Questions or concerns?<br>Contact US</p>
+      </div>
+    </div>
+  </div>
+  
   <nav class="bottom-nav">
     <div class="nav-item active" id="navHome">
       <i class="fas fa-home"></i>
@@ -235,5 +323,25 @@
     </div>
   </nav>  <script src="../JS/mobile-home.js"></script>
   <script src="../JS/mobile-voice.js"></script>
+  <script>
+    // Privacy Policy modal logic
+    document.addEventListener('DOMContentLoaded', function() {
+      const btn = document.getElementById('privacyPolicyBtn');
+      const modal = document.getElementById('privacyPolicyModal');
+      const closeBtn = document.getElementById('closePrivacyPolicyModal');
+      if (btn && modal && closeBtn) {
+        btn.addEventListener('click', () => {
+          modal.classList.add('active');
+        });
+        closeBtn.addEventListener('click', () => {
+          modal.classList.remove('active');
+        });
+        // Close modal on outside click
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.classList.remove('active');
+        });
+      }
+    });
+  </script>
 </body>
 </html>

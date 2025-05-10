@@ -10,7 +10,7 @@
 - 🧠 **Sentiment & emotion analysis** using NLP classifiers
 - 💬 **GPT-based reflections** tailored to your tone
 - 📊 **Mood trends visualization** over time
-- 🔐 **Secure, private journaling** with optional login
+- 🔐 **Secure, private journaling** 
 
 ---
 

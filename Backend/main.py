@@ -19,6 +19,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import requests
 from groq import Groq
+from bson import ObjectId
+from fastapi.encoders import jsonable_encoder
 
 
 #Not using this for now
@@ -372,11 +374,17 @@ async def analytics(user_email: str = Form(...), analysis_id: str = Form(...)):
         logging.error(f"Error fetching analytics: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error during analytics retrieval!")
 
-@app.get("/history")
+@app.post("/history")
 async def get_history(user_email: str):
     try:
         entries = await analysis_collection.find({"user_email": user_email}).sort("timestamp", -1).to_list(length=50)
-        return {"entries": entries}
+        # Serialize ObjectId and datetime for frontend
+        def serialize_entry(entry):
+            entry["_id"] = str(entry["_id"])
+            if isinstance(entry.get("timestamp"), datetime):
+                entry["timestamp"] = entry["timestamp"].isoformat()
+            return entry
+        return {"entries": [serialize_entry(e) for e in entries]}
     except Exception as e:
         logging.error(f"Error fetching history: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch journal history")
@@ -384,50 +392,57 @@ async def get_history(user_email: str):
 @app.post("/sentiment")
 async def sentiment(user_email: str = Form(...), analysis_id: str = Form(...)):
     try:
-        analysis = await analysis_collection.find_one({"_id": analysis_id})
+        # Use ObjectId for MongoDB lookup
+        try:
+            obj_id = ObjectId(analysis_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid analysis_id format")
+        analysis = await analysis_collection.find_one({"_id": obj_id, "user_email": user_email})
         if not analysis:
             raise HTTPException(status_code=400, detail="Analysis not found")
-
-        return JSONResponse(content={"sentiment": analysis["analysis_result"]})
+        # Parse analysis_result JSON and return only sentiment fields
+        try:
+            result = json.loads(analysis["analysis_result"])
+            sentiment_data = {
+                "sentiment_score": result.get("sentiment_score"),
+                "mood": result.get("mood"),
+                "summary": result.get("summary"),
+            }
+        except Exception:
+            sentiment_data = {"raw": analysis["analysis_result"]}
+        return JSONResponse(content={"sentiment": sentiment_data})
     except Exception as e:
         logging.error(f"Error fetching sentiment: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error during sentiment retrieval!")
-    
-@app.post("/delete-entry")
-async def delete_entry(user_email: str = Form(...), analysis_id: str = Form(...)):
-    try:
-        user = await user_collection.find_one({"email": user_email})
-        if not user:
-            raise HTTPException(status_code=400, detail="User not found")
 
-        result = await analysis_collection.delete_one({"_id": analysis_id})
-        if result.deleted_count == 0:
-            raise HTTPException(status_code=400, detail="Entry not found")
-
-        return JSONResponse(content={"message": "Entry deleted successfully"})
-    except Exception as e:
-        logging.error(f"Error deleting entry: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error during entry deletion!")   
-    
-
-@app.get("/mood-breakdown")
+@app.post("/mood-breakdown")
 async def mood_breakdown(user_email: str):
     try:
         entries = await analysis_collection.find({"user_email": user_email}).sort("timestamp", -1).to_list(length=30)
-        breakdown = [
-            {
-                "date": entry["timestamp"].strftime("%Y-%m-%d"),
-                "score": json.loads(entry["analysis_result"]).get("sentiment_score", 0),
-                "mood": json.loads(entry["analysis_result"]).get("mood", "unknown")
-            }
-            for entry in entries
-        ]
+        breakdown = []
+        for entry in entries:
+            try:
+                result = json.loads(entry["analysis_result"])
+                score = result.get("sentiment_score", 0)
+                mood = result.get("mood", "unknown")
+            except Exception:
+                score = 0
+                mood = "unknown"
+            # Handle timestamp serialization
+            if isinstance(entry.get("timestamp"), datetime):
+                date_str = entry["timestamp"].strftime("%Y-%m-%d")
+            else:
+                date_str = str(entry.get("timestamp", ""))
+            breakdown.append({
+                "date": date_str,
+                "score": score,
+                "mood": mood
+            })
         return {"mood_data": breakdown}
     except Exception as e:
         logging.error(f"Mood breakdown error: {e}")
         raise HTTPException(status_code=500, detail="Failed to generate mood data")
-    
-    
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Mindscribe API!","status": "200"}
@@ -435,3 +450,6 @@ def read_root():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app)
+
+
+    # Uncomment the following line to run the server with hot reload

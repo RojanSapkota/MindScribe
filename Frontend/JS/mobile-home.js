@@ -487,7 +487,7 @@ if (privacyToggle) {
 
 // User authentication and profile management
 function checkAuthStatus() {
-  const userEmail = localStorage.getItem('userEmail');
+  const userEmail = localStorage.getItem('mindscribe_email');
   const userName = localStorage.getItem('userName');
   const userProfileCard = document.getElementById('userProfileCard');
   const mobileLoginBtn = document.getElementById('mobileLoginBtn');
@@ -536,7 +536,7 @@ async function loadUserAnalytics(userEmail) {
 
 // Handle logout
 function logoutUser() {
-  localStorage.removeItem('userEmail');
+  localStorage.removeItem('mindscribe_email');
   localStorage.removeItem('userName');
   
   const mobileLoginBtn = document.getElementById('mobileLoginBtn');
@@ -641,23 +641,29 @@ function showToast(message, type = 'info') {
   }, 3000);
 }
 
-// Journal history functionality
+// Enhanced Journal history functionality
 async function loadJournalHistory() {
-  const userEmail = localStorage.getItem('userEmail');
+  const userEmail = localStorage.getItem('mindscribe_email');
   const historyContainer = document.getElementById('journalHistory');
   const historyLoading = document.getElementById('historyLoading');
   const historyEmpty = document.getElementById('historyEmpty');
   const historyEntries = document.getElementById('historyEntries');
-  
+  const historyStats = document.getElementById('historyStats');
+  const historyTimeline = document.getElementById('historyTimeline');
+  const historySearch = document.getElementById('historySearch');
+  const historyMoodFilter = document.getElementById('historyMoodFilter');
+
   if (!historyContainer || !historyLoading || !historyEmpty || !historyEntries) {
     return;
   }
-  
+
   // Reset state
   historyLoading.style.display = 'flex';
   historyEmpty.style.display = 'none';
   historyEntries.innerHTML = '';
-  
+  if (historyStats) historyStats.innerHTML = '';
+  if (historyTimeline) historyTimeline.innerHTML = '';
+
   // If not logged in, show empty state
   if (!userEmail) {
     historyLoading.style.display = 'none';
@@ -665,59 +671,151 @@ async function loadJournalHistory() {
     historyEmpty.querySelector('p').textContent = 'Please log in to see your journal entries';
     return;
   }
-  
+
   try {
     const response = await fetch(`${API_BASE_URL}/history?user_email=${encodeURIComponent(userEmail)}`);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch journal history');
-    }
-    
+    if (!response.ok) throw new Error('Failed to fetch journal history');
     const data = await response.json();
-    const entries = data.entries || [];
-    
+    let entries = data.entries || [];
+
     // Hide loading
     historyLoading.style.display = 'none';
-    
-    // Check if there are entries
-    if (entries.length === 0) {
-      historyEmpty.style.display = 'flex';
-      return;
+
+    // Show stats
+    if (historyStats) {
+      const total = entries.length;
+      const positive = entries.filter(e => getSentimentType(e) === 'positive').length;
+      const neutral = entries.filter(e => getSentimentType(e) === 'neutral').length;
+      const negative = entries.filter(e => getSentimentType(e) === 'negative').length;
+      historyStats.innerHTML = `
+        <span title="Total entries"><i class="fas fa-book"></i> ${total}</span>
+        <span title="Positive"><i class="fas fa-smile"></i> ${positive}</span>
+        <span title="Neutral"><i class="fas fa-meh"></i> ${neutral}</span>
+        <span title="Negative"><i class="fas fa-frown"></i> ${negative}</span>
+      `;
     }
-    
-    // Populate entries
-    entries.forEach(entry => {
-      try {
-        // Parse the analysis result if it's a string
-        const analysis = typeof entry.analysis_result === 'string' 
-          ? JSON.parse(entry.analysis_result) 
-          : entry.analysis_result;
-            
-        // Format the date
+
+    // Timeline visualization (last 20 entries)
+    if (historyTimeline) {
+      const timelineEntries = entries.slice(0, 20);
+      historyTimeline.innerHTML = timelineEntries.map((entry, idx) => {
+        const sentiment = getSentimentType(entry);
+        const mood = getMood(entry);
         const date = new Date(entry.timestamp);
-        const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        
-        // Create entry element
-        const entryElement = document.createElement('div');
-        entryElement.className = 'history-entry';
-        entryElement.innerHTML = `
-          <div class="entry-date">${formattedDate}</div>
-          <div class="entry-transcript">${entry.transcript}</div>
-          <div class="entry-mood">${analysis.mood || 'Unknown mood'}</div>
-          <button class="entry-expand" data-entry-id="${entry._id}">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-        `;
-        
-        // Add click handler to view full entry
-        entryElement.addEventListener('click', () => viewEntryDetails(entry));
-        
-        historyEntries.appendChild(entryElement);
-      } catch (parseError) {
-        console.error('Error parsing entry:', parseError);
+        const tooltip = `${date.toLocaleDateString()}<br>${mood}`;
+        return `<div class="timeline-bar ${sentiment}" data-idx="${idx}">
+          <div class="timeline-tooltip">${tooltip}</div>
+        </div>`;
+      }).join('');
+      // Click on timeline bar scrolls to entry
+      historyTimeline.querySelectorAll('.timeline-bar').forEach(bar => {
+        bar.addEventListener('click', function() {
+          const idx = parseInt(this.getAttribute('data-idx'));
+          const entryEl = historyEntries.children[idx];
+          if (entryEl) entryEl.scrollIntoView({behavior: 'smooth', block: 'center'});
+          this.classList.add('active');
+          setTimeout(() => this.classList.remove('active'), 800);
+        });
+      });
+    }
+
+    // Filtering logic
+    let filteredEntries = entries;
+    function applyFilters() {
+      let search = historySearch ? historySearch.value.trim().toLowerCase() : '';
+      let moodFilter = historyMoodFilter ? historyMoodFilter.value : '';
+      filteredEntries = entries.filter(entry => {
+        const analysis = typeof entry.analysis_result === 'string'
+          ? JSON.parse(entry.analysis_result)
+          : entry.analysis_result;
+        const transcript = entry.transcript || '';
+        const mood = (analysis.mood || '').toLowerCase();
+        const sentimentType = getSentimentType(entry);
+        let match = true;
+        if (search) {
+          match = transcript.toLowerCase().includes(search) ||
+                  (analysis.summary || '').toLowerCase().includes(search) ||
+                  (analysis.key_topics || []).join(' ').toLowerCase().includes(search);
+        }
+        if (moodFilter) {
+          match = match && sentimentType === moodFilter;
+        }
+        return match;
+      });
+      renderEntries(filteredEntries);
+    }
+
+    if (historySearch) historySearch.oninput = applyFilters;
+    if (historyMoodFilter) historyMoodFilter.onchange = applyFilters;
+
+    // Render entries
+    function renderEntries(list) {
+      historyEntries.innerHTML = '';
+      if (list.length === 0) {
+        historyEmpty.style.display = 'flex';
+        return;
       }
-    });
-    
+      historyEmpty.style.display = 'none';
+      list.forEach((entry, idx) => {
+        try {
+          const analysis = typeof entry.analysis_result === 'string'
+            ? JSON.parse(entry.analysis_result)
+            : entry.analysis_result;
+          const date = new Date(entry.timestamp);
+          const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          const sentimentType = getSentimentType(entry);
+          const mood = analysis.mood || 'Unknown mood';
+          const summary = analysis.summary || '';
+          const topics = (analysis.key_topics || []).map(t => `<span class="topic-badge">${t}</span>`).join('');
+          const moodIcon = sentimentType === 'positive' ? 'fa-smile' : sentimentType === 'negative' ? 'fa-frown' : 'fa-meh';
+          const entryElement = document.createElement('div');
+          entryElement.className = `history-entry history-entry-modern ${sentimentType}`;
+          entryElement.innerHTML = `
+            <div class="entry-header">
+              <span class="entry-date">${formattedDate}</span>
+              <span class="entry-mood"><i class="fas ${moodIcon}"></i> ${mood}</span>
+            </div>
+            <div class="entry-summary">${summary}</div>
+            <div class="entry-transcript">${entry.transcript}</div>
+            <div class="entry-topics">${topics}</div>
+            <button class="entry-expand" data-entry-id="${entry._id}" title="View details">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          `;
+          entryElement.addEventListener('click', () => viewEntryDetails(entry));
+          historyEntries.appendChild(entryElement);
+        } catch (parseError) {
+          console.error('Error parsing entry:', parseError);
+        }
+      });
+    }
+
+    // Helper: get sentiment type
+    function getSentimentType(entry) {
+      try {
+        const analysis = typeof entry.analysis_result === 'string'
+          ? JSON.parse(entry.analysis_result)
+          : entry.analysis_result;
+        const score = analysis.sentiment_score;
+        if (typeof score === 'number') {
+          if (score >= 3) return 'positive';
+          if (score <= -3) return 'negative';
+        }
+        return 'neutral';
+      } catch { return 'neutral'; }
+    }
+    function getMood(entry) {
+      try {
+        const analysis = typeof entry.analysis_result === 'string'
+          ? JSON.parse(entry.analysis_result)
+          : entry.analysis_result;
+        return analysis.mood || '';
+      } catch { return ''; }
+    }
+
+    // Initial render
+    applyFilters();
+
   } catch (error) {
     console.error('Error loading journal history:', error);
     historyLoading.style.display = 'none';
@@ -726,115 +824,7 @@ async function loadJournalHistory() {
   }
 }
 
-// View entry details
-function viewEntryDetails(entry) {
-  try {
-    // Parse the analysis result if it's a string
-    const analysis = typeof entry.analysis_result === 'string' 
-      ? JSON.parse(entry.analysis_result) 
-      : entry.analysis_result;
-      
-    // Show the analysis modal
-    showAnalysisModal(entry.transcript, analysis);
-  } catch (error) {
-    console.error('Error viewing entry details:', error);
-    alert('Could not load entry details');
-  }
-}
-
-// Show analysis modal
-function showAnalysisModal(transcript, analysis) {
-  // Create the modal HTML
-  const modalHtml = `
-    <div class="modal" id="historyEntryModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>Journal Entry</h3>
-          <button class="close-modal" id="closeHistoryModal">&times;</button>
-        </div>
-        <div class="modal-body">
-          <div class="analysis-item">
-            <h4>Your Journal</h4>
-            <p class="entry-full-transcript">${transcript}</p>
-          </div>
-          <div class="analysis-item">
-            <h4>Summary</h4>
-            <p>${analysis.summary}</p>
-          </div>
-          <div class="analysis-item">
-            <h4>Detected Mood</h4>
-            <p class="mood-badge">${analysis.mood}</p>
-            <div class="sentiment-meter">
-              <div class="sentiment-scale">
-                <span>Negative</span>
-                <span>Neutral</span>
-                <span>Positive</span>
-              </div>
-              <div class="sentiment-indicator" style="left: ${((analysis.sentiment_score + 10) / 20) * 100}%;"></div>
-            </div>
-          </div>
-          <div class="analysis-item">
-            <h4>Key Topics</h4>
-            <div class="topics-container">
-              ${analysis.key_topics.map(topic => `<span class="topic-badge">${topic}</span>`).join('')}
-            </div>
-          </div>
-          <div class="analysis-item">
-            <h4>Insights</h4>
-            <ul>
-              ${analysis.insights.map(insight => `<li>${insight}</li>`).join('')}
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-  
-  // Add the modal to the document
-  document.body.insertAdjacentHTML('beforeend', modalHtml);
-  
-  // Add styles for the full transcript
-  const style = document.createElement('style');
-  style.textContent = `
-    .entry-full-transcript {
-      max-height: 150px;
-      overflow-y: auto;
-      padding: 10px;
-      background: rgba(0,0,0,0.03);
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-    
-    body.dark-mode .entry-full-transcript {
-      background: rgba(255,255,255,0.05);
-    }
-    
-    #historyEntryModal .modal-content {
-      max-width: 500px;
-      margin: 10vh auto;
-      border-radius: 15px;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-  `;
-  document.head.appendChild(style);
-  
-  // Show the modal
-  setTimeout(() => {
-    const modal = document.getElementById('historyEntryModal');
-    modal.classList.add('active');
-    
-    // Add close handler
-    document.getElementById('closeHistoryModal').addEventListener('click', () => {
-      modal.classList.remove('active');
-      setTimeout(() => {
-        modal.remove();
-      }, 300);
-    });
-  }, 100);
-}
-
-// Event listeners for history section
+// Journal history functionality
 document.getElementById('navHistory')?.addEventListener('click', () => {
   loadJournalHistory();
 });
@@ -853,7 +843,7 @@ document.getElementById('createFirstEntryBtn')?.addEventListener('click', () => 
 });
 
 document.getElementById('exportHistoryBtn')?.addEventListener('click', () => {
-  const userEmail = localStorage.getItem('userEmail');
+  const userEmail = localStorage.getItem('mindscribe_email');
   if (!userEmail) {
     showToast('Please log in to export your journal history', 'error');
     return;
