@@ -116,9 +116,25 @@
             <i class="fas fa-envelope"></i>
             <input type="email" id="forgot-email" placeholder="Email" required>
           </div>
+          <div id="forgot-otp-section" style="display:none; margin-top: 1em;">
+            <div class="input-field">
+              <i class="fas fa-key"></i>
+              <input type="text" id="forgot-otp" placeholder="Enter OTP" maxlength="6" required>
+            </div>
+            <div class="input-field">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="forgot-new-password" placeholder="New Password" required>
+            </div>
+            <div class="input-field">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="forgot-confirm-password" placeholder="Confirm New Password" required>
+            </div>
+            <button type="button" class="btn" id="forgot-otp-submit">Reset Password</button>
+          </div>
           <button type="submit" class="btn">Send Reset Link</button>
           <p class="back-to-login"><a href="#" id="back-to-login">Back to login</a></p>
-          <div class="form-message" id="forgot-message"></div>        </form>
+          <div class="form-message" id="forgot-message"></div>
+        </form>
 
         <!-- Success Message -->
         <div class="success-form" id="success-form">

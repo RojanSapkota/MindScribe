@@ -61,10 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // Update UI to show logged in state
       updateUIForLoggedInUser();
     } else {
-      // User is not logged in
       currentUser = null;
       
-      // Update UI to show logged out state
       updateUIForLoggedOutUser();
     }
   }
@@ -519,8 +517,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
-
-// Helper Functions
 // Show a toast notification
 function showToast(message, type = 'success') {
   // Create toast container if it doesn't exist
