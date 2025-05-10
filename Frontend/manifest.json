@@ -1,0 +1,21 @@
+{
+  "name": "MindScribe",
+  "short_name": "MindScribe",
+  "description": "AI-powered voice journaling app",
+  "start_url": "/Frontend/HTML/index.html",
+  "display": "standalone",
+  "background_color": "#5D5FEF",
+  "theme_color": "#5D5FEF",
+  "icons": [
+    {
+      "src": "../Assets/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "../Assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
