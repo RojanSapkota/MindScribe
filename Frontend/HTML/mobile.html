@@ -132,15 +132,23 @@
     <div class="main-section settings-section" id="settingsSection">
       <h3 class="section-header">Settings</h3>
       
+      <div class="settings-glass-card glass-card">
+        <div class="settings-quote">
+          <i class="fas fa-sun fa-spin"></i>
+          <span id="settingsMotivation">“Small steps every day lead to big changes.”</span>
+        </div>
+      </div>
+      
       <!-- User Profile Section -->
       <div class="settings-group">
         <div class="settings-group-title">Profile</div>
         <div class="user-profile-card scale-in" id="userProfileCard">
-          <div class="user-avatar">
+          <div class="user-avatar editable-avatar" title="Edit profile picture">
             <i class="fas fa-user-circle"></i>
+            <button class="edit-avatar-btn" title="Edit Avatar"><i class="fas fa-pen"></i></button>
           </div>
           <div class="user-info">
-            <h4 id="userDisplayName">Guest User</h4>
+            <h4 id="userDisplayName">Guest User <button class="edit-profile-btn" title="Edit Name"><i class="fas fa-pen"></i></button></h4>
             <p id="userEmail">Not logged in</p>
           </div>
           <button class="action-button small-btn login-btn" id="mobileLoginBtn">
@@ -149,6 +157,23 @@
           <button class="action-button small-btn logout-btn" id="mobileLogoutBtn" style="display: none;">
             <i class="fas fa-sign-out-alt"></i> Logout
           </button>
+        </div>
+      </div>
+      
+      <!-- Theme Selector -->
+      <div class="settings-group">
+        <div class="settings-group-title">Theme</div>
+        <div class="settings-card">
+          <span class="settings-icon"><i class="fas fa-adjust"></i></span>
+          <span class="settings-label">Choose Theme</span>
+          <span class="settings-action">
+            <div class="theme-options">
+              <div class="theme-option theme-light" title="Light" data-theme="light"></div>
+              <div class="theme-option theme-dark" title="Dark" data-theme="dark"></div>
+              <div class="theme-option theme-purple" title="Purple" data-theme="purple"></div>
+              <div class="theme-option theme-blue" title="Blue" data-theme="blue"></div>
+            </div>
+          </span>
         </div>
       </div>
       
@@ -345,3 +370,4 @@
   </script>
 </body>
 </html>
+``` 

@@ -190,6 +190,100 @@ body {
   font-size: 0.92rem;
 }
 
+/* Glassmorphism card for settings quote */
+.settings-glass-card {
+  background: rgba(255,255,255,0.25);
+  border-radius: 22px;
+  box-shadow: 0 8px 32px rgba(93,95,239,0.10);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 22px 18px 18px 18px;
+  margin: 0 auto 24px auto;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  border: 1.5px solid rgba(93,95,239,0.08);
+  animation: fadeIn 1s;
+}
+.settings-quote {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.08rem;
+  color: #6366F1;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+.settings-quote i {
+  font-size: 1.5rem;
+  color: #F59E0B;
+  animation: spin 2s linear infinite;
+}
+
+/* Editable avatar */
+.editable-avatar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.edit-avatar-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(93,95,239,0.13);
+  color: #6366F1;
+  font-size: 0.9rem;
+  padding: 4px 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.edit-avatar-btn:hover {
+  background: #e0e7ff;
+}
+.edit-profile-btn {
+  background: none;
+  border: none;
+  color: #6366F1;
+  font-size: 0.9rem;
+  margin-left: 6px;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: color 0.2s;
+}
+.edit-profile-btn:hover {
+  color: #5D5FEF;
+}
+
+/* Theme selector bubbles */
+.theme-options {
+  display: flex;
+  gap: 10px;
+  margin-left: 10px;
+}
+.theme-option {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s, border 0.2s;
+}
+.theme-option.active {
+  transform: scale(1.18);
+  border: 2px solid #6366F1;
+}
+.theme-light { background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%); }
+.theme-dark { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+.theme-purple { background: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 100%); }
+.theme-blue { background: linear-gradient(135deg, #bfdbfe 0%, #60a5fa 100%); }
+
 @media (max-width: 480px) {
   .settings-group {
     max-width: 98vw;

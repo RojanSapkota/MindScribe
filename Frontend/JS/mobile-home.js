@@ -883,6 +883,41 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
+// Settings section enhancements
+// Theme selector logic
+const themeOptions = document.querySelectorAll('.theme-option');
+themeOptions.forEach(option => {
+  option.addEventListener('click', function() {
+    themeOptions.forEach(o => o.classList.remove('active'));
+    this.classList.add('active');
+    const theme = this.getAttribute('data-theme');
+    document.body.classList.remove('theme-light', 'theme-dark', 'theme-purple', 'theme-blue');
+    document.body.classList.add('theme-' + theme);
+    localStorage.setItem('mindscribe-theme', theme);
+  });
+});
+// Load theme on page load
+const savedTheme = localStorage.getItem('mindscribe-theme');
+if (savedTheme) {
+  document.body.classList.add('theme-' + savedTheme);
+  const active = document.querySelector('.theme-option[data-theme="' + savedTheme + '"]');
+  if (active) active.classList.add('active');
+}
+// Editable profile name/avatar (demo only)
+document.querySelectorAll('.edit-profile-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const nameEl = document.getElementById('userDisplayName');
+    const current = nameEl.childNodes[0].nodeValue.trim();
+    const newName = prompt('Edit your display name:', current);
+    if (newName) nameEl.childNodes[0].nodeValue = newName + ' ';
+  });
+});
+document.querySelectorAll('.edit-avatar-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    alert('Profile picture editing coming soon!');
+  });
+});
+
 // Initialize the app
 function initApp() {
   // Show the home section first
