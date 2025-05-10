@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindScribe - Login & Signup</title>
+  <meta name="description" content="Log in or sign up for MindScribe, your AI-powered voice journaling app">
+  <meta name="theme-color" content="#5D5FEF">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../../Assets/icon.png" type="image/png">
+  <link rel="apple-touch-icon" href="../../Assets/icon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../CSS/login-style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="forms-container">
+      <div class="logo-container">
+        <div class="app-logo">
+          <i class="fas fa-microphone-alt"></i>
+          <h1>MindScribe</h1>
+        </div>
+        <p class="tagline">Your AI-powered voice journal companion</p>
+      </div>
+      
+      <div class="form-wrapper">
+        <!-- Sign In Form -->
+        <form class="signin-form active" id="signin-form">
+          <h2>Sign in to your account</h2>
+          <div class="input-field">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="signin-email" placeholder="Email" required>
+          </div>
+          <div class="input-field">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="signin-password" placeholder="Password" required>
+            <i class="far fa-eye-slash toggle-password"></i>
+          </div>
+          <div class="remember-forgot">
+            <div class="remember-me">
+              <input type="checkbox" id="remember" class="remember-checkbox">
+              <label for="remember">Remember me</label>
+            </div>
+            <a href="#" class="forgot-password" id="forgot-password-link">Forgot Password?</a>
+          </div>
+          <button type="submit" class="btn">Sign In</button>
+          <div class="social-login">
+            <p>Or sign in with</p>
+            <div class="social-icons">
+              <a href="#" class="social-icon"><i class="fab fa-google"></i></a>
+              <a href="#" class="social-icon"><i class="fab fa-apple"></i></a>
+            </div>
+          </div>
+          <p class="signup-link">Don't have an account? <a href="#" id="signup-link">Sign up</a></p>
+          <div class="form-message" id="signin-message"></div>
+        </form>
+
+        <!-- Sign Up Form -->
+        <form class="signup-form" id="signup-form">
+          <h2>Create your account</h2>
+          <div class="input-field">
+            <i class="fas fa-user"></i>
+            <input type="text" id="signup-name" placeholder="Full Name" required>
+          </div>
+          <div class="input-field">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="signup-email" placeholder="Email" required>
+          </div>
+          <div class="input-field">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="signup-password" placeholder="Password" required>
+            <i class="far fa-eye-slash toggle-password"></i>
+          </div>
+          <div class="input-field">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required>
+          </div>
+          <div class="terms-container">
+            <input type="checkbox" id="terms" class="terms-checkbox" required>
+            <label for="terms">I agree to the <a href="#">Terms & Conditions</a></label>
+          </div>
+          <button type="submit" class="btn">Sign Up</button>
+          <p class="signin-link">Already have an account? <a href="#" id="signin-link">Sign in</a></p>
+          <div class="form-message" id="signup-message"></div>
+        </form>
+
+        <!-- OTP Verification Form -->
+        <form class="otp-form" id="otp-form">
+          <h2>Verify your email</h2>
+          <p class="otp-info">We've sent a verification code to your email. Please enter it below to verify your account.</p>
+          <div class="otp-container">
+            <input type="text" maxlength="1" class="otp-input" required>
+            <input type="text" maxlength="1" class="otp-input" required>
+            <input type="text" maxlength="1" class="otp-input" required>
+            <input type="text" maxlength="1" class="otp-input" required>
+            <input type="text" maxlength="1" class="otp-input" required>
+            <input type="text" maxlength="1" class="otp-input" required>
+          </div>
+          <p class="resend-otp">Didn't receive the code? <a href="#" id="resend-otp">Resend OTP</a></p>
+          <button type="submit" class="btn">Verify</button>
+          <div class="form-message" id="otp-message"></div>
+        </form>
+
+        <!-- Forgot Password Form -->
+        <form class="forgot-password-form" id="forgot-password-form">
+          <h2>Reset your password</h2>
+          <p class="forgot-password-info">Enter your email address below and we'll send you instructions to reset your password.</p>
+          <div class="input-field">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="forgot-email" placeholder="Email" required>
+          </div>
+          <button type="submit" class="btn">Send Reset Link</button>
+          <p class="back-to-login"><a href="#" id="back-to-login">Back to login</a></p>
+          <div class="form-message" id="forgot-message"></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="panels-container">
+      <div class="panel left-panel">
+        <div class="panel-content">
+          <h3>Start your journaling journey</h3>
+          <p>Record your thoughts, get AI insights, and track your emotional well-being with MindScribe.</p>
+          <img src="../../Assets/journaling.svg" class="panel-image" alt="Journaling Illustration">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../JS/login.js"></script>
+</body>
+</html>
