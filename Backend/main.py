@@ -347,6 +347,15 @@ async def analytics(user_email: str = Form(...), analysis_id: str = Form(...)):
         logging.error(f"Error fetching analytics: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error during analytics retrieval!")
 
+@app.get("/history")
+async def get_history(user_email: str):
+    try:
+        entries = await analysis_collection.find({"user_email": user_email}).sort("timestamp", -1).to_list(length=50)
+        return {"entries": entries}
+    except Exception as e:
+        logging.error(f"Error fetching history: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch journal history")
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Mindscribe API!","status": "200"}

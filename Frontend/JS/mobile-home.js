@@ -166,7 +166,7 @@ function showSection(section) {
 const navMap = {
   navHome: 'thoughtsSection',
   navExplore: 'exploreSection',
-  navPersonalization: 'personalizeSection',
+  navHistory: 'historySection',
   navSettings: 'settingsSection'
 };
 
@@ -212,8 +212,7 @@ document.addEventListener('touchend', e => {
 
 function handleSwipe() {
   const threshold = 100; // Minimum swipe distance
-  const sections = ['thoughtsSection', 'exploreSection', 'personalizeSection', 'settingsSection'];
-  
+  const sections = ['thoughtsSection', 'exploreSection', 'historySection', 'settingsSection'];
   // Find current active section
   let currentIndex = 0;
   sections.forEach((id, index) => {
@@ -483,5 +482,430 @@ if (privacyToggle) {
   });
 }
 
-// Initialize the app with the first section
-showSection('thoughtsSection');
+// User authentication and profile management
+function checkAuthStatus() {
+  const userEmail = localStorage.getItem('userEmail');
+  const userName = localStorage.getItem('userName');
+  const userProfileCard = document.getElementById('userProfileCard');
+  const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+  const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+  const userDisplayName = document.getElementById('userDisplayName');
+  const userEmailElement = document.getElementById('userEmail');
+  
+  if (userEmail && userProfileCard) {
+    if (mobileLoginBtn) mobileLoginBtn.style.display = 'none';
+    if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
+    if (userDisplayName) userDisplayName.textContent = userName || 'MindScribe User';
+    if (userEmailElement) userEmailElement.textContent = userEmail;
+    
+    // Load user analytics if available
+    loadUserAnalytics(userEmail);
+  }
+}
+
+// Load user analytics from backend
+async function loadUserAnalytics(userEmail) {
+  const moodChart = document.getElementById('moodChart');
+  const recentInsights = document.getElementById('recentInsights');
+  
+  if (!moodChart || !recentInsights) return;
+  
+  try {
+    // Here we would fetch analytics from the backend
+    // For now, just display a placeholder
+    moodChart.innerHTML = `
+      <div class="chart-placeholder">
+        <i class="fas fa-chart-line"></i>
+        <p>Connected as ${userEmail}</p>
+      </div>
+    `;
+    
+    recentInsights.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-lightbulb"></i>
+        <p>Record journal entries to get AI insights</p>
+      </div>
+    `;
+  } catch (error) {
+    console.error('Error loading analytics:', error);
+  }
+}
+
+// Handle logout
+function logoutUser() {
+  localStorage.removeItem('userEmail');
+  localStorage.removeItem('userName');
+  
+  const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+  const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+  const userDisplayName = document.getElementById('userDisplayName');
+  const userEmailElement = document.getElementById('userEmail');
+  
+  if (mobileLoginBtn) mobileLoginBtn.style.display = 'block';
+  if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
+  if (userDisplayName) userDisplayName.textContent = 'Guest User';
+  if (userEmailElement) userEmailElement.textContent = 'Not logged in';
+  
+  showToast('Logged out successfully');
+}
+
+// Handle tab switching in Explore section
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    const tabName = this.getAttribute('data-tab');
+    
+    // Update active tab
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    
+    // Update tab content visibility
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.style.display = 'none';
+    });
+    
+    const activeContent = document.getElementById(tabName + 'Content');
+    activeContent.style.display = 'block';
+    
+    // Add animation
+    setTimeout(() => {
+      activeContent.classList.add('visible');
+    }, 50);
+  });
+});
+
+// Dark mode toggle
+const darkModeToggle = document.getElementById('darkModeToggle');
+if (darkModeToggle) {
+  // Check if dark mode is saved in preferences
+  const isDarkMode = localStorage.getItem('darkMode') === 'true';
+  
+  // Apply dark mode if enabled
+  if (isDarkMode) {
+    document.body.classList.add('dark-mode');
+    darkModeToggle.checked = true;
+  }
+  
+  darkModeToggle.addEventListener('change', function() {
+    if (this.checked) {
+      document.body.classList.add('dark-mode');
+      localStorage.setItem('darkMode', 'true');
+    } else {
+      document.body.classList.remove('dark-mode');
+      localStorage.setItem('darkMode', 'false');
+    }
+  });
+}
+
+// Connect login/logout buttons
+const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+
+if (mobileLoginBtn) {
+  mobileLoginBtn.addEventListener('click', () => {
+    window.location.href = 'login.html';
+  });
+}
+
+if (mobileLogoutBtn) {
+  mobileLogoutBtn.addEventListener('click', logoutUser);
+}
+
+// Show custom toast message
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast-notification ${type}-toast`;
+  
+  let icon = 'info-circle';
+  if (type === 'success') icon = 'check-circle';
+  if (type === 'error') icon = 'exclamation-circle';
+  
+  toast.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+  }, 10);
+  
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(-20px)';
+    setTimeout(() => {
+      if (document.body.contains(toast)) {
+        document.body.removeChild(toast);
+      }
+    }, 300);
+  }, 3000);
+}
+
+// Journal history functionality
+async function loadJournalHistory() {
+  const userEmail = localStorage.getItem('userEmail');
+  const historyContainer = document.getElementById('journalHistory');
+  const historyLoading = document.getElementById('historyLoading');
+  const historyEmpty = document.getElementById('historyEmpty');
+  const historyEntries = document.getElementById('historyEntries');
+  
+  if (!historyContainer || !historyLoading || !historyEmpty || !historyEntries) {
+    return;
+  }
+  
+  // Reset state
+  historyLoading.style.display = 'flex';
+  historyEmpty.style.display = 'none';
+  historyEntries.innerHTML = '';
+  
+  // If not logged in, show empty state
+  if (!userEmail) {
+    historyLoading.style.display = 'none';
+    historyEmpty.style.display = 'flex';
+    historyEmpty.querySelector('p').textContent = 'Please log in to see your journal entries';
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/history?user_email=${encodeURIComponent(userEmail)}`);
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch journal history');
+    }
+    
+    const data = await response.json();
+    const entries = data.entries || [];
+    
+    // Hide loading
+    historyLoading.style.display = 'none';
+    
+    // Check if there are entries
+    if (entries.length === 0) {
+      historyEmpty.style.display = 'flex';
+      return;
+    }
+    
+    // Populate entries
+    entries.forEach(entry => {
+      try {
+        // Parse the analysis result if it's a string
+        const analysis = typeof entry.analysis_result === 'string' 
+          ? JSON.parse(entry.analysis_result) 
+          : entry.analysis_result;
+            
+        // Format the date
+        const date = new Date(entry.timestamp);
+        const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        // Create entry element
+        const entryElement = document.createElement('div');
+        entryElement.className = 'history-entry';
+        entryElement.innerHTML = `
+          <div class="entry-date">${formattedDate}</div>
+          <div class="entry-transcript">${entry.transcript}</div>
+          <div class="entry-mood">${analysis.mood || 'Unknown mood'}</div>
+          <button class="entry-expand" data-entry-id="${entry._id}">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        `;
+        
+        // Add click handler to view full entry
+        entryElement.addEventListener('click', () => viewEntryDetails(entry));
+        
+        historyEntries.appendChild(entryElement);
+      } catch (parseError) {
+        console.error('Error parsing entry:', parseError);
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error loading journal history:', error);
+    historyLoading.style.display = 'none';
+    historyEmpty.style.display = 'flex';
+    historyEmpty.querySelector('p').textContent = 'Error loading entries. Please try again.';
+  }
+}
+
+// View entry details
+function viewEntryDetails(entry) {
+  try {
+    // Parse the analysis result if it's a string
+    const analysis = typeof entry.analysis_result === 'string' 
+      ? JSON.parse(entry.analysis_result) 
+      : entry.analysis_result;
+      
+    // Show the analysis modal
+    showAnalysisModal(entry.transcript, analysis);
+  } catch (error) {
+    console.error('Error viewing entry details:', error);
+    alert('Could not load entry details');
+  }
+}
+
+// Show analysis modal
+function showAnalysisModal(transcript, analysis) {
+  // Create the modal HTML
+  const modalHtml = `
+    <div class="modal" id="historyEntryModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Journal Entry</h3>
+          <button class="close-modal" id="closeHistoryModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="analysis-item">
+            <h4>Your Journal</h4>
+            <p class="entry-full-transcript">${transcript}</p>
+          </div>
+          <div class="analysis-item">
+            <h4>Summary</h4>
+            <p>${analysis.summary}</p>
+          </div>
+          <div class="analysis-item">
+            <h4>Detected Mood</h4>
+            <p class="mood-badge">${analysis.mood}</p>
+            <div class="sentiment-meter">
+              <div class="sentiment-scale">
+                <span>Negative</span>
+                <span>Neutral</span>
+                <span>Positive</span>
+              </div>
+              <div class="sentiment-indicator" style="left: ${((analysis.sentiment_score + 10) / 20) * 100}%;"></div>
+            </div>
+          </div>
+          <div class="analysis-item">
+            <h4>Key Topics</h4>
+            <div class="topics-container">
+              ${analysis.key_topics.map(topic => `<span class="topic-badge">${topic}</span>`).join('')}
+            </div>
+          </div>
+          <div class="analysis-item">
+            <h4>Insights</h4>
+            <ul>
+              ${analysis.insights.map(insight => `<li>${insight}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Add the modal to the document
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  
+  // Add styles for the full transcript
+  const style = document.createElement('style');
+  style.textContent = `
+    .entry-full-transcript {
+      max-height: 150px;
+      overflow-y: auto;
+      padding: 10px;
+      background: rgba(0,0,0,0.03);
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    
+    body.dark-mode .entry-full-transcript {
+      background: rgba(255,255,255,0.05);
+    }
+    
+    #historyEntryModal .modal-content {
+      max-width: 500px;
+      margin: 10vh auto;
+      border-radius: 15px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+  `;
+  document.head.appendChild(style);
+  
+  // Show the modal
+  setTimeout(() => {
+    const modal = document.getElementById('historyEntryModal');
+    modal.classList.add('active');
+    
+    // Add close handler
+    document.getElementById('closeHistoryModal').addEventListener('click', () => {
+      modal.classList.remove('active');
+      setTimeout(() => {
+        modal.remove();
+      }, 300);
+    });
+  }, 100);
+}
+
+// Set up API base URL
+const API_BASE_URL = 'http://127.0.0.1:8000';
+
+// Event listeners for history section
+document.getElementById('navHistory')?.addEventListener('click', () => {
+  loadJournalHistory();
+});
+
+document.getElementById('refreshHistoryBtn')?.addEventListener('click', () => {
+  loadJournalHistory();
+});
+
+document.getElementById('createFirstEntryBtn')?.addEventListener('click', () => {
+  // Open the recording modal if available, otherwise switch to home
+  if (window.voiceRecording && typeof window.voiceRecording.openRecordingModal === 'function') {
+    window.voiceRecording.openRecordingModal();
+  } else {
+    document.getElementById('navHome')?.click();
+  }
+});
+
+document.getElementById('exportHistoryBtn')?.addEventListener('click', () => {
+  const userEmail = localStorage.getItem('userEmail');
+  if (!userEmail) {
+    showToast('Please log in to export your journal history', 'error');
+    return;
+  }
+  
+  showToast('Exporting journal entries...', 'info');
+  // In a real implementation, this would download a file with the journal entries
+  setTimeout(() => {
+    showToast('Export feature coming soon!', 'info');
+  }, 1500);
+});
+
+// Event listener for loading history when switching sections
+const navItems = document.querySelectorAll('.nav-item');
+navItems.forEach(item => {
+  item.addEventListener('click', () => {
+    if (item.id === 'navHistory') {
+      setTimeout(() => loadJournalHistory(), 100);
+    }
+  });
+});
+
+// Load history when section becomes visible due to swipe
+function afterSectionChange(sectionId) {
+  if (sectionId === 'historySection') {
+    loadJournalHistory();
+  }
+}
+
+// Listen for document visibility changes to refresh history when app regains focus
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    const activeSection = document.querySelector('.main-section.active');
+    if (activeSection && activeSection.id === 'historySection') {
+      loadJournalHistory();
+    }
+  }
+});
+
+// Initialize the app
+function initApp() {
+  // Show the home section first
+  showSection('thoughtsSection');
+  
+  // Check authentication status
+  checkAuthStatus();
+  
+  // Show welcome toast
+  setTimeout(() => {
+    showToast('Welcome to MindScribe Mobile', 'success');
+  }, 1500);
+}
+
+// Start the app
+initApp();

@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <i class="fas fa-sign-out-alt"></i> Logout
         </button>
       `;
-      
+
       // Re-attach event listener to the new button
       document.getElementById('logoutBtn').addEventListener('click', logoutUser);
     }

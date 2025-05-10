@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MindScribe Mobile - Home</title>
+  <meta name="theme-color" content="#5D5FEF">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../CSS/mobile-home.css">
+  <link rel="stylesheet" href="../CSS/animations.css">
+</head>
+<body>
+  <div class="loader-container" id="loaderContainer">
+    <div class="loader-brain">
+      <i class="fas fa-brain loader-brain-icon"></i>
+      <div class="loader-text">Loading your thoughts...</div>
+    </div>
+  </div>
+  
+  <div class="mobile-header">
+    <i class="fas fa-microphone-alt"></i> MindScribe
+  </div>
+  
+  <div class="main-section thoughts-section active" id="thoughtsSection">
+    <h3 class="section-header">Daily Inspiration</h3>
+    <button class="refresh-btn ripple" id="refreshBtn" title="Show another thought"><i class="fas fa-sync-alt"></i></button>    <div class="thought-card sheen" id="thoughtCard">
+      <i class="fas fa-quote-left"></i>
+      <span id="thoughtText">"You are stronger than you think. Every day is a new beginning."</span>
+      <i class="fas fa-quote-right"></i>
+    </div>
+    <div class="swipe-hint">
+      <i class="fas fa-hand-point-right"></i> Swipe for more inspiration
+    </div>    <button class="action-button delayed-fade ripple" id="saveButton">
+      <i class="fas fa-save"></i> Save to Journal
+    </button>
+  </div>
+    <div class="main-section explore-section" id="exploreSection">
+    <h3 class="section-header">Explore</h3>
+    
+    <!-- Journal Analytics Tab Bar -->
+    <div class="tab-container">
+      <div class="tab active" data-tab="prompts">Prompts</div>
+      <div class="tab" data-tab="analytics">My Analytics</div>
+    </div>
+    
+    <!-- Prompts Tab Content -->
+    <div class="tab-content" id="promptsContent">
+      <div class="thought-card card-explore scale-in sheen staggered-item">
+        <i class="fas fa-compass"></i>
+        <span>Explore inspiring journal prompts and trending topics!</span>
+      </div>
+      <div class="thought-card card-explore delayed-fade sheen staggered-item">
+        <i class="fas fa-fire"></i>
+        <span>Trending: "What made you smile today?"</span>
+      </div>
+      <div class="thought-card card-explore delayed-fade-long sheen staggered-item">
+        <i class="fas fa-star"></i>
+        <span>Featured: "Three things you're grateful for right now"</span>
+      </div>
+      <button class="action-button">
+        <i class="fas fa-plus"></i> Create New Prompt
+      </button>
+    </div>
+    
+    <!-- Analytics Tab Content -->
+    <div class="tab-content" id="analyticsContent" style="display: none;">
+      <div class="analytics-container">
+        <div class="analytics-card">
+          <h4>Mood Tracker</h4>
+          <div class="mood-chart" id="moodChart">
+            <div class="chart-placeholder">
+              <i class="fas fa-chart-line"></i>
+              <p>Connect to see your mood trends</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="analytics-card">
+          <h4>Recent Insights</h4>
+          <div id="recentInsights" class="insights-list">
+            <div class="empty-state">
+              <i class="fas fa-lightbulb"></i>
+              <p>Record journal entries to get AI insights</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    <div class="main-section history-section" id="historySection">
+    <h3 class="section-header">Journal History</h3>
+    
+    <div class="history-container" id="journalHistory">
+      <div class="loading-container" id="historyLoading">
+        <div class="loading-spinner"></div>
+        <p>Loading your journal entries...</p>
+      </div>
+      
+      <div class="empty-state" id="historyEmpty" style="display: none;">
+        <i class="fas fa-book"></i>
+        <p>No journal entries yet</p>
+        <button class="action-button" id="createFirstEntryBtn">
+          <i class="fas fa-microphone"></i> Record your first entry
+        </button>
+      </div>
+      
+      <div class="history-list" id="historyEntries">
+        <!-- Journal entries will be loaded here dynamically -->
+      </div>
+    </div>
+    
+    <div class="history-actions">
+      <button class="action-button ripple" id="refreshHistoryBtn">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+      <button class="action-button ripple" id="exportHistoryBtn">
+        <i class="fas fa-download"></i> Export
+      </button>
+    </div>
+  </div>
+    <div class="main-section settings-section" id="settingsSection">
+    <h3 class="section-header">Settings</h3>
+    
+    <!-- User Profile Section -->
+    <div class="user-profile-card scale-in" id="userProfileCard">
+      <div class="user-avatar">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <div class="user-info">
+        <h4 id="userDisplayName">Guest User</h4>
+        <p id="userEmail">Not logged in</p>
+      </div>
+      <button class="action-button small-btn login-btn" id="mobileLoginBtn">
+        <i class="fas fa-sign-in-alt"></i> Login
+      </button>
+      <button class="action-button small-btn logout-btn" id="mobileLogoutBtn" style="display: none;">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+    
+    <!-- App Settings -->
+    <div class="thought-card card-settings delayed-fade">
+      <i class="fas fa-palette"></i>
+      <span>Dark Mode</span>
+      <div style="margin-top: 15px; display: flex; align-items: center; justify-content: center;">
+        <label class="toggle-switch">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    
+    <div class="thought-card card-settings delayed-fade">
+      <i class="fas fa-bell"></i>
+      <span>Daily Reminders</span>
+      <div style="margin-top: 15px; display: flex; align-items: center; justify-content: center;">
+        <label class="toggle-switch">
+          <input type="checkbox" checked id="notificationToggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    
+    <div class="thought-card card-settings delayed-fade-long">
+      <i class="fas fa-lock"></i>
+      <span>Privacy Mode</span>
+      <div style="margin-top: 15px; display: flex; align-items: center; justify-content: center;">
+        <label class="toggle-switch">
+          <input type="checkbox" id="privacyToggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    
+    <div class="thought-card card-settings delayed-fade-long">
+      <i class="fas fa-info-circle"></i>
+      <span>About MindScribe</span>
+      <p class="settings-description">Version 1.0.0</p>
+      <button class="action-button small-btn" id="privacyPolicyBtn">
+        Privacy Policy
+      </button>
+    </div>
+  </div>
+  
+  <div class="floating-button" id="newEntryBtn">
+    <i class="fas fa-microphone"></i>
+  </div>
+  
+  <!-- Voice Recording Modal -->
+  <div class="modal" id="recordingModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Record Your Thoughts</h3>
+        <button class="close-modal" id="closeRecordModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="recording-animation" id="recordingAnimation">
+          <div class="recording-waves"></div>
+          <i class="fas fa-microphone recording-icon"></i>
+        </div>
+        <div class="transcript-container">
+          <p id="interimTranscript" class="interim"></p>
+          <p id="finalTranscript" class="final"></p>
+        </div>
+        <div class="recording-controls">
+          <button id="startRecordBtn" class="record-btn ripple">
+            <i class="fas fa-microphone"></i> Start Recording
+          </button>
+          <button id="stopRecordBtn" class="record-btn stop-btn ripple" disabled>
+            <i class="fas fa-stop"></i> Stop Recording
+          </button>
+          <button id="saveTranscriptBtn" class="record-btn save-btn ripple" disabled>
+            <i class="fas fa-save"></i> Save Entry
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <nav class="bottom-nav">
+    <div class="nav-item active" id="navHome">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" id="navExplore">
+      <i class="fas fa-compass"></i>
+      <span>Explore</span>
+    </div>    <div class="nav-item" id="navHistory">
+      <i class="fas fa-history"></i>
+      <span>History</span>
+    </div>
+    <div class="nav-item" id="navSettings">
+      <i class="fas fa-cog"></i>
+      <span>Settings</span>
+    </div>
+  </nav>  <script src="../JS/mobile-home.js"></script>
+  <script src="../JS/mobile-voice.js"></script>
+</body>
+</html>
