@@ -1,6 +1,3 @@
-// MindScribe Mobile Voice Recording Integration
-// This file handles voice recording, transcription, and analysis for the mobile UI
-
 // Global variables
 let recognition = null;
 let isRecording = false;

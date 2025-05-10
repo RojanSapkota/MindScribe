@@ -76,6 +76,8 @@ class ForgotPasswordReset(BaseModel):
     otp: str
     new_password: str
 
+#I know it's not secure but for temporary purposes
+# and to avoid complexity, I'm using in-memory storage for OTPs
 otp_store = {}
 forgot_password_otp_store = {}
 

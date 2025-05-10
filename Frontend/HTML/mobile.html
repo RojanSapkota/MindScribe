@@ -34,60 +34,122 @@
       <i class="fas fa-save"></i> Save to Journal
     </button>
   </div>
-  
-  <div class="main-section explore-section" id="exploreSection">
+    <div class="main-section explore-section" id="exploreSection">
     <h3 class="section-header">Explore</h3>
-  <div class="thought-card card-explore scale-in sheen staggered-item">
-      <i class="fas fa-compass"></i>
-      <span>Explore inspiring journal prompts and trending topics!</span>
-    </div>
-    <div class="thought-card card-explore delayed-fade sheen staggered-item">
-      <i class="fas fa-fire"></i>
-      <span>Trending: "What made you smile today?"</span>
-    </div>
-    <div class="thought-card card-explore delayed-fade-long sheen staggered-item">
-      <i class="fas fa-star"></i>
-      <span>Featured: "Three things you're grateful for right now"</span>
-    </div>
-    <button class="action-button">
-      <i class="fas fa-plus"></i> Create New Prompt
-    </button>
-  </div>
-  
-  <div class="main-section personalize-section" id="personalizeSection">
-    <h3 class="section-header">Personalize</h3>
-    <div class="thought-card card-personalize scale-in">
-      <i class="fas fa-user-circle"></i>
-      <span>Personalize your experience: set your mood, pick a theme, or add your favorite affirmations!</span>
+    
+    <!-- Journal Analytics Tab Bar -->
+    <div class="tab-container">
+      <div class="tab active" data-tab="prompts">Prompts</div>
+      <div class="tab" data-tab="analytics">My Analytics</div>
     </div>
     
-    <div class="glass-card delayed-fade">
-      <h4 style="margin-top: 0;">Choose Theme</h4>
-      <div class="theme-options">
-        <div class="theme-option theme-light active" id="themeLight" title="Light Theme"></div>
-        <div class="theme-option theme-dark" id="themeDark" title="Dark Theme"></div>
-        <div class="theme-option theme-purple" id="themePurple" title="Purple Theme"></div>
-        <div class="theme-option theme-blue" id="themeBlue" title="Blue Theme"></div>
+    <!-- Prompts Tab Content -->
+    <div class="tab-content" id="promptsContent">
+      <div class="thought-card card-explore scale-in sheen staggered-item">
+        <i class="fas fa-compass"></i>
+        <span>Explore inspiring journal prompts and trending topics!</span>
+      </div>
+      <div class="thought-card card-explore delayed-fade sheen staggered-item">
+        <i class="fas fa-fire"></i>
+        <span>Trending: "What made you smile today?"</span>
+      </div>
+      <div class="thought-card card-explore delayed-fade-long sheen staggered-item">
+        <i class="fas fa-star"></i>
+        <span>Featured: "Three things you're grateful for right now"</span>
+      </div>
+      <button class="action-button">
+        <i class="fas fa-plus"></i> Create New Prompt
+      </button>
+    </div>
+    
+    <!-- Analytics Tab Content -->
+    <div class="tab-content" id="analyticsContent" style="display: none;">
+      <div class="analytics-container">
+        <div class="analytics-card">
+          <h4>Mood Tracker</h4>
+          <div class="mood-chart" id="moodChart">
+            <div class="chart-placeholder">
+              <i class="fas fa-chart-line"></i>
+              <p>Connect to see your mood trends</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="analytics-card">
+          <h4>Recent Insights</h4>
+          <div id="recentInsights" class="insights-list">
+            <div class="empty-state">
+              <i class="fas fa-lightbulb"></i>
+              <p>Record journal entries to get AI insights</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
+    <div class="main-section history-section" id="historySection">
+    <h3 class="section-header">Journal History</h3>
     
-    <div class="thought-card card-personalize delayed-fade-long">
-      <i class="fas fa-heart"></i>
-      <span>Current Mood: <strong>Positive</strong></span>
-      <div style="margin-top: 15px;">
-        <button class="action-button" style="margin: 0 auto;">
-          <i class="fas fa-edit"></i> Update Mood
+    <div class="history-container" id="journalHistory">
+      <div class="loading-container" id="historyLoading">
+        <div class="loading-spinner"></div>
+        <p>Loading your journal entries...</p>
+      </div>
+      
+      <div class="empty-state" id="historyEmpty" style="display: none;">
+        <i class="fas fa-book"></i>
+        <p>No journal entries yet</p>
+        <button class="action-button" id="createFirstEntryBtn">
+          <i class="fas fa-microphone"></i> Record your first entry
         </button>
       </div>
+      
+      <div class="history-list" id="historyEntries">
+        <!-- Journal entries will be loaded here dynamically -->
+      </div>
+    </div>
+    
+    <div class="history-actions">
+      <button class="action-button ripple" id="refreshHistoryBtn">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+      <button class="action-button ripple" id="exportHistoryBtn">
+        <i class="fas fa-download"></i> Export
+      </button>
     </div>
   </div>
-  
-  <div class="main-section settings-section" id="settingsSection">
+    <div class="main-section settings-section" id="settingsSection">
     <h3 class="section-header">Settings</h3>
-    <div class="thought-card card-settings scale-in">
-      <i class="fas fa-cog"></i>
-      <span>Settings: Manage notifications, privacy, and account info here.</span>
+    
+    <!-- User Profile Section -->
+    <div class="user-profile-card scale-in" id="userProfileCard">
+      <div class="user-avatar">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <div class="user-info">
+        <h4 id="userDisplayName">Guest User</h4>
+        <p id="userEmail">Not logged in</p>
+      </div>
+      <button class="action-button small-btn login-btn" id="mobileLoginBtn">
+        <i class="fas fa-sign-in-alt"></i> Login
+      </button>
+      <button class="action-button small-btn logout-btn" id="mobileLogoutBtn" style="display: none;">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
     </div>
+    
+    <!-- App Settings -->
+    <div class="thought-card card-settings delayed-fade">
+      <i class="fas fa-palette"></i>
+      <span>Dark Mode</span>
+      <div style="margin-top: 15px; display: flex; align-items: center; justify-content: center;">
+        <label class="toggle-switch">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    
     <div class="thought-card card-settings delayed-fade">
       <i class="fas fa-bell"></i>
       <span>Daily Reminders</span>
@@ -98,6 +160,7 @@
         </label>
       </div>
     </div>
+    
     <div class="thought-card card-settings delayed-fade-long">
       <i class="fas fa-lock"></i>
       <span>Privacy Mode</span>
@@ -108,11 +171,52 @@
         </label>
       </div>
     </div>
+    
+    <div class="thought-card card-settings delayed-fade-long">
+      <i class="fas fa-info-circle"></i>
+      <span>About MindScribe</span>
+      <p class="settings-description">Version 1.0.0</p>
+      <button class="action-button small-btn" id="privacyPolicyBtn">
+        Privacy Policy
+      </button>
+    </div>
   </div>
   
   <div class="floating-button" id="newEntryBtn">
-    <i class="fas fa-plus"></i>
+    <i class="fas fa-microphone"></i>
   </div>
+  
+  <!-- Voice Recording Modal -->
+  <div class="modal" id="recordingModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Record Your Thoughts</h3>
+        <button class="close-modal" id="closeRecordModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="recording-animation" id="recordingAnimation">
+          <div class="recording-waves"></div>
+          <i class="fas fa-microphone recording-icon"></i>
+        </div>
+        <div class="transcript-container">
+          <p id="interimTranscript" class="interim"></p>
+          <p id="finalTranscript" class="final"></p>
+        </div>
+        <div class="recording-controls">
+          <button id="startRecordBtn" class="record-btn ripple">
+            <i class="fas fa-microphone"></i> Start Recording
+          </button>
+          <button id="stopRecordBtn" class="record-btn stop-btn ripple" disabled>
+            <i class="fas fa-stop"></i> Stop Recording
+          </button>
+          <button id="saveTranscriptBtn" class="record-btn save-btn ripple" disabled>
+            <i class="fas fa-save"></i> Save Entry
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
   <nav class="bottom-nav">
     <div class="nav-item active" id="navHome">
       <i class="fas fa-home"></i>
@@ -121,16 +225,15 @@
     <div class="nav-item" id="navExplore">
       <i class="fas fa-compass"></i>
       <span>Explore</span>
-    </div>
-    <div class="nav-item" id="navPersonalization">
-      <i class="fas fa-user-circle"></i>
-      <span>Personalize</span>
+    </div>    <div class="nav-item" id="navHistory">
+      <i class="fas fa-history"></i>
+      <span>History</span>
     </div>
     <div class="nav-item" id="navSettings">
       <i class="fas fa-cog"></i>
       <span>Settings</span>
     </div>
-  </nav>
-  <script src="../JS/mobile-home.js"></script>
+  </nav>  <script src="../JS/mobile-home.js"></script>
+  <script src="../JS/mobile-voice.js"></script>
 </body>
 </html>
