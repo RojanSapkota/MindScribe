@@ -1,7 +1,8 @@
 # MindScribe 🧠✨  
 *Your voice. Your thoughts. Your growth.*
 
-**MindScribe** is an AI-powered voice journaling and emotional insight app designed for teens to express how they feel, track their emotional journey, and gain supportive, AI-generated reflections — all from a simple spoken entry.
+**MindScribe** is an AI-powered voice journaling app that helps teens reflect on their emotions, track mental and physical wellness over time, and receive supportive, personalised feedback.
+Users can speak their thoughts, which are transcribed, analysed for emotional tone, and enhanced with insights using NLP and GPT. In addition to mood tracking, the app now also supports logging physical health patterns, promoting holistic self-care through expressive, voice-driven interaction.
 
 ---
 
