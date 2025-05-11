@@ -840,3 +840,177 @@ body.dark-theme .speech-status {
   background-color: rgba(93, 95, 239, 0.2);
   color: var(--primary-light);
 }
+
+/* --- Modern Voice Journal Redesign --- */
+.voice-journal-card {
+  background: linear-gradient(135deg, #5D5FEF 0%, #34D399 100%);
+  border-radius: 24px;
+  box-shadow: 0 6px 32px 0 rgba(93,95,239,0.10), 0 1.5px 6px 0 rgba(52,211,153,0.10);
+  padding: 32px 18px 24px 18px;
+  margin: 24px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeInUp 0.7s cubic-bezier(.23,1.01,.32,1) 0.1s both;
+}
+.voice-gradient-bg {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.voice-mic-outer {
+  background: rgba(255,255,255,0.18);
+  border-radius: 50%;
+  padding: 18px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 12px 0 rgba(93,95,239,0.10);
+  position: relative;
+}
+.voice-mic-progress {
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(135deg, #fff 60%, #34D399 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  color: #5D5FEF;
+  box-shadow: 0 2px 12px 0 rgba(93,95,239,0.10);
+  animation: micPulse 1.5s infinite;
+}
+@keyframes micPulse {
+  0% { box-shadow: 0 0 0 0 rgba(93,95,239,0.18); }
+  70% { box-shadow: 0 0 0 16px rgba(93,95,239,0.01); }
+  100% { box-shadow: 0 0 0 0 rgba(93,95,239,0.18); }
+}
+.voice-journal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+  letter-spacing: 0.5px;
+}
+.voice-journal-desc {
+  color: #e0f7fa;
+  font-size: 1rem;
+  margin-bottom: 0;
+  text-align: center;
+}
+.voice-journal-controls {
+  display: flex;
+  gap: 18px;
+  margin: 18px 0 0 0;
+  justify-content: center;
+}
+.voice-mic-btn {
+  background: linear-gradient(135deg, #5D5FEF 60%, #34D399 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 28px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  box-shadow: 0 2px 12px 0 rgba(93,95,239,0.10);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  outline: none;
+  animation: fadeIn 0.7s cubic-bezier(.23,1.01,.32,1) 0.2s both;
+}
+.voice-mic-btn.stop {
+  background: linear-gradient(135deg, #EF4444 60%, #F59E42 100%);
+}
+.voice-mic-btn:active {
+  transform: scale(0.97);
+}
+.voice-journal-status {
+  margin: 18px 0 0 0;
+  color: #fff;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeIn 0.7s cubic-bezier(.23,1.01,.32,1) 0.3s both;
+}
+.voice-journal-transcript {
+  margin: 18px 0 0 0;
+  background: rgba(255,255,255,0.18);
+  border-radius: 14px;
+  padding: 16px 14px;
+  color: #fff;
+  font-size: 1.08rem;
+  min-height: 40px;
+  width: 100%;
+  animation: fadeIn 0.7s cubic-bezier(.23,1.01,.32,1) 0.4s both;
+}
+.voice-journal-mood {
+  margin: 18px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.7s cubic-bezier(.23,1.01,.32,1) 0.5s both;
+}
+.voice-journal-mood label {
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+.mood-options {
+  display: flex;
+  gap: 12px;
+}
+.mood-option {
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: transform 0.15s, filter 0.15s;
+  filter: grayscale(0.5) brightness(0.9);
+}
+.mood-option.selected, .mood-option:hover {
+  transform: scale(1.18);
+  filter: none;
+}
+.voice-journal-actions {
+  display: flex;
+  gap: 16px;
+  margin: 24px 0 0 0;
+  justify-content: center;
+  animation: fadeIn 0.7s cubic-bezier(.23,1.01,.32,1) 0.6s both;
+}
+.voice-action-btn {
+  background: linear-gradient(135deg, #34D399 60%, #5D5FEF 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 28px;
+  font-size: 1.08rem;
+  font-weight: 600;
+  box-shadow: 0 2px 12px 0 rgba(93,95,239,0.10);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  outline: none;
+}
+.voice-action-btn.save {
+  background: linear-gradient(135deg, #34D399 60%, #5D5FEF 100%);
+}
+.voice-action-btn.discard {
+  background: linear-gradient(135deg, #EF4444 60%, #F59E42 100%);
+}
+.voice-action-btn:active {
+  transform: scale(0.97);
+}
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
