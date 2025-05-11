@@ -2190,3 +2190,67 @@ if (viewFoodHistoryBtn) {
     document.querySelector('[data-view="communityView"]').click();
   });
 }
+
+// --- AI Chat Section Logic ---
+const aiChatForm = document.getElementById('aiChatForm');
+const aiChatInput = document.getElementById('aiChatInput');
+const aiChatMessages = document.getElementById('aiChatMessages');
+let aiChatHistory = [];
+api_server = 'http://127.0.0.1:8000';
+
+function renderAIChatMessages() {
+  aiChatMessages.innerHTML = '';
+  aiChatHistory.forEach(msg => {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'ai-chat-msg ' + (msg.role === 'user' ? 'ai-chat-user' : 'ai-chat-ai');
+    msgDiv.innerHTML = `
+      <div class="ai-chat-bubble" style="background:${msg.role==='user' ? 'rgba(52,211,153,0.13)' : 'rgba(93,95,239,0.13)'};color:#fff;align-self:${msg.role==='user' ? 'flex-end' : 'flex-start'};">
+        ${msg.content}
+      </div>
+    `;
+    aiChatMessages.appendChild(msgDiv);
+  });
+  // Scroll to bottom
+  aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+}
+
+async function sendAIMessage(question) {
+  // Add user message
+  aiChatHistory.push({ role: 'user', content: question });
+  renderAIChatMessages();
+  // Add loading state for AI
+  aiChatHistory.push({ role: 'ai', content: '<span class="ai-chat-loading">...</span>' });
+  renderAIChatMessages();
+  try {
+    const response = await fetch(`${api_server}/ask`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question })
+    });
+    if (!response.ok) throw new Error('AI failed to respond.');
+    const data = await response.json();
+    // Replace loading with real response
+    aiChatHistory.pop();
+    aiChatHistory.push({ role: 'ai', content: data.response ? data.response : 'Sorry, I could not answer that.' });
+    renderAIChatMessages();
+  } catch (err) {
+    aiChatHistory.pop();
+    aiChatHistory.push({ role: 'ai', content: '<span style="color:#F56565">Error: ' + err.message + '</span>' });
+    renderAIChatMessages();
+  }
+}
+
+if (aiChatForm && aiChatInput && aiChatMessages) {
+  aiChatForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const question = aiChatInput.value.trim();
+    if (!question) return;
+    aiChatInput.value = '';
+    sendAIMessage(question);
+  });
+}
+
+// Optional: clear chat when switching away from AI view (if desired)
+// window.switchTab = ... (already defined above)
+// You can add: if (viewId !== 'aiView') aiChatInput.blur();
+// --- End AI Chat Section Logic ---

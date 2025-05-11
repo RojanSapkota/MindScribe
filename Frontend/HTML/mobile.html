@@ -82,6 +82,12 @@
         </div>
         
         <div class="action-buttons">
+          <button class="action-btn" onclick="switchTab('aiView')">
+            <i class="fas fa-robot"></i>
+            <span>Ask AI</span>
+          </button>
+        </div>
+        <div class="action-buttons">
           <button class="action-btn" onclick="switchTab('scanView')">
             <i class="fas fa-camera"></i>
             <span>Scan Food</span>
@@ -114,8 +120,69 @@
       </div>
       <div class="mobile-content">
         <div class="section-container">
-          <!-- Exercise Finder Section -->
+          <!-- Scan Food Section (moved from Scan/Record tab) -->
           <div class="activity-section">
+            <div class="section-title">
+              <h3>Scan Food</h3>
+            </div>
+            <div class="action-buttons scan-buttons">
+              <button id="startCameraButton" class="btn btn-primary fade-in">
+                <i class="fas fa-camera"></i> Take a Photo
+              </button>
+              <button id="logFoodButton" class="btn btn-secondary fade-in">
+                <i class="fas fa-keyboard"></i> Log Food Manually
+              </button>
+              <div class="upload-container fade-in delay-1">
+                <input type="file" id="fileUpload" accept="image/*">
+                <label for="fileUpload" class="upload-label">
+                  <i class="fas fa-cloud-upload-alt"></i> 
+                  <span>Upload a Photo</span>
+                </label>
+              </div>
+              <button id="viewFoodHistoryBtn" class="btn btn-outline fade-in" style="margin-top: 10px;" onclick="switchTab('communityView')">
+                <i class="fas fa-history"></i> View Food History
+              </button>
+            </div>
+            <div id="logFoodContainer" class="log-food-container fade-in" style="display:none;">
+              <div class="log-food-header">
+                <h3>Log Food Manually</h3>
+                <p>Describe the food you've eaten (e.g., "200g oatmeal with 2 spoons of peanut butter and a 100ml glass of milk")</p>
+              </div>
+              <div class="food-description-wrapper">
+                <textarea id="foodDescription" class="food-description" placeholder="Describe your meal here..."></textarea>
+                <button id="speechToTextBtn" class="speech-to-text-btn">
+                  <i class="fas fa-microphone"></i>
+                </button>
+              </div>
+              <div class="speech-status" id="speechStatus" style="display: none;">
+                <i class="fas fa-microphone-alt pulse"></i>
+                <span>Listening...</span>
+              </div>
+              <div class="log-food-actions">
+                <button id="submitFoodLog" class="btn btn-primary">
+                  <i class="fas fa-check"></i> Analyze Food
+                </button>
+                <button id="cancelFoodLog" class="btn btn-secondary">
+                  <i class="fas fa-times"></i> Cancel
+                </button>
+              </div>
+            </div>
+            <div class="preview-container fade-in delay-2" id="previewContainer">
+              <button class="btn-icon" id="closePreviewButton">
+                <i class="fas fa-times"></i>
+              </button>
+              <video id="video" autoplay playsinline muted></video>
+              <img id="photo" style="display:none;">
+              <canvas id="canvas" style="display:none;"></canvas>
+              <div class="preview-controls">
+                <button id="captureButton" class="btn btn-secondary capture-btn" style="display:none;">
+                  <i class="fas fa-camera"></i> Capture
+                </button>
+              </div>
+            </div>
+            <div class="results-container fade-in delay-3" id="results" style="display:none;"></div>
+          </div>
+  <div class="activity-section">
             <div class="section-title">
               <h3>Find Exercises</h3>
             </div>
@@ -285,70 +352,6 @@
               <p>Finding exercises...</p>
             </div>
           </div>
-          
-          <!-- Scan Food Section (moved from Scan/Record tab) -->
-          <div class="activity-section">
-            <div class="section-title">
-              <h3>Scan Food</h3>
-            </div>
-            <div class="action-buttons scan-buttons">
-              <button id="startCameraButton" class="btn btn-primary fade-in">
-                <i class="fas fa-camera"></i> Take a Photo
-              </button>
-              <button id="logFoodButton" class="btn btn-secondary fade-in">
-                <i class="fas fa-keyboard"></i> Log Food Manually
-              </button>
-              <div class="upload-container fade-in delay-1">
-                <input type="file" id="fileUpload" accept="image/*">
-                <label for="fileUpload" class="upload-label">
-                  <i class="fas fa-cloud-upload-alt"></i> 
-                  <span>Upload a Photo</span>
-                </label>
-              </div>
-              <button id="viewFoodHistoryBtn" class="btn btn-outline fade-in" style="margin-top: 10px;" onclick="switchTab('communityView')">
-                <i class="fas fa-history"></i> View Food History
-              </button>
-            </div>
-            <div id="logFoodContainer" class="log-food-container fade-in" style="display:none;">
-              <div class="log-food-header">
-                <h3>Log Food Manually</h3>
-                <p>Describe the food you've eaten (e.g., "200g oatmeal with 2 spoons of peanut butter and a 100ml glass of milk")</p>
-              </div>
-              <div class="food-description-wrapper">
-                <textarea id="foodDescription" class="food-description" placeholder="Describe your meal here..."></textarea>
-                <button id="speechToTextBtn" class="speech-to-text-btn">
-                  <i class="fas fa-microphone"></i>
-                </button>
-              </div>
-              <div class="speech-status" id="speechStatus" style="display: none;">
-                <i class="fas fa-microphone-alt pulse"></i>
-                <span>Listening...</span>
-              </div>
-              <div class="log-food-actions">
-                <button id="submitFoodLog" class="btn btn-primary">
-                  <i class="fas fa-check"></i> Analyze Food
-                </button>
-                <button id="cancelFoodLog" class="btn btn-secondary">
-                  <i class="fas fa-times"></i> Cancel
-                </button>
-              </div>
-            </div>
-            <div class="preview-container fade-in delay-2" id="previewContainer">
-              <button class="btn-icon" id="closePreviewButton">
-                <i class="fas fa-times"></i>
-              </button>
-              <video id="video" autoplay playsinline muted></video>
-              <img id="photo" style="display:none;">
-              <canvas id="canvas" style="display:none;"></canvas>
-              <div class="preview-controls">
-                <button id="captureButton" class="btn btn-secondary capture-btn" style="display:none;">
-                  <i class="fas fa-camera"></i> Capture
-                </button>
-              </div>
-            </div>
-            <div class="results-container fade-in delay-3" id="results" style="display:none;"></div>
-          </div>
-
           <!-- Coming Soon Section for Additional Features -->
           <div class="activity-section">
             <div class="section-title">
@@ -430,7 +433,7 @@
                 <option value="health-asc">Health (Low-High)</option>
               </select>
             </div>
-            
+
             <div class="dropdown">
               <select id="filterHealthScore">
                 <option value="all">All Health Scores</option>
@@ -444,6 +447,7 @@
         
         <div id="historyContainer">
           <!-- History items will be inserted here by JavaScript -->
+           
         </div>
         
         <div class="empty-history" id="emptyHistory" style="display: none;">
@@ -744,6 +748,38 @@
       </div>
     </div>
     
+    <!-- AI Chat Section -->
+    <div class="mobile-view hidden" id="aiView">
+      <div class="mobile-header ai-chat-header" style="background:linear-gradient(90deg,#232347 70%,#34D399 100%);color:#fff;height:52px;padding:0 12px 0 8px;border-radius:0 0 16px 16px;box-shadow:0 2px 8px 0 rgba(93,95,239,0.08);display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-robot" style="font-size:1.3em;"></i>
+          <span style="font-size:1.05em;font-weight:600;letter-spacing:0.5px;">Ask AI</span>
+        </div>
+        <button id="closeAIChatBtn" class="close-header-btn" onclick="switchTab('homeView')" style="background:none;border:none;color:#fff;font-size:1.1em;padding:4px 8px;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="mobile-content" style="background:linear-gradient(180deg,#232347 80%,#232347 100%);padding:0;display:flex;flex-direction:column;height:calc(100dvh - 52px);">
+        <div class="welcome-card" style="margin:18px 12px 10px 12px;background:rgba(52,211,153,0.08);color:#fff;">
+          <div class="welcome-avatar" style="background:rgba(93,95,239,0.13);color:#34D399;">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h2 style="font-size:1.1em;">AI Chat</h2>
+          <p style="font-size:0.98em;color:#b3b3cc;">Ask anything about nutrition, mental health, or wellness!</p>
+        </div>
+        <div class="ai-chat-messages" id="aiChatMessages" style="flex:1 1 0;overflow-y:auto;padding:0 12px 0 12px;display:flex;flex-direction:column;gap:10px;min-height:0;">
+          <!-- Messages will be rendered here -->
+        </div>
+        <form id="aiChatForm" class="ai-chat-form" style="display:flex;gap:8px;padding:0 8px 8px 8px;position:fixed;left:0;right:0;bottom:0;width:100vw;max-width:480px;margin:auto;background:linear-gradient(180deg,#232347 90%,#232347 100%);z-index:100;">
+          <input type="text" id="aiChatInput" class="ai-chat-input" placeholder="Type your question..." autocomplete="off" style="flex:1;padding:13px 14px;border-radius:18px;border:1.5px solid #34D399;font-size:1em;outline:none;background:#232347;color:#fff;box-shadow:0 1px 4px 0 rgba(93,95,239,0.04);margin-bottom:0;">
+          <button type="submit" class="btn btn-primary" style="padding:0 16px;border-radius:50%;background:linear-gradient(90deg,#5D5FEF 70%,#34D399 100%);border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px 0 rgba(93,95,239,0.10);min-width:40px;min-height:40px;">
+            <i class="fas fa-paper-plane" style="color:#fff;font-size:1.1em;"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+    <!-- End AI Chat Section -->
+     
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
       <button class="nav-item active" data-view="homeView">
