@@ -1,0 +1,329 @@
+/* Terms and Privacy Page Specific Styles */
+
+.terms-container {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.terms-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    background: linear-gradient(120deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white;
+    padding: 20px;
+    z-index: 100;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-link {
+    position: absolute;
+    left: 20px;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.back-link:hover {
+    opacity: 0.85;
+}
+
+.terms-body {
+    padding: 90px 15px 50px; /* Added top padding to account for fixed header */
+}
+
+.content-section {
+    background-color: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: var(--shadow);
+    margin-top: 20px;
+}
+
+.content-section h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: var(--dark);
+}
+
+.last-updated {
+    font-size: 14px;
+    color: var(--gray);
+    margin-bottom: 25px;
+    display: inline-block;
+    padding: 3px 8px;
+    background-color: var(--light);
+    border-radius: 4px;
+}
+
+.terms-section {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.terms-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.terms-section h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+}
+
+.terms-section p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--gray-dark);
+}
+
+/* Tab styles similar to login page */
+.tabs {
+    display: flex;
+    margin-bottom: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: var(--light);
+    border: none;
+    color: var(--gray);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.tab-btn.active {
+    background-color: var(--primary);
+    color: white;
+}
+
+.tab-btn:hover:not(.active) {
+    background-color: var(--light-gray);
+}
+
+.tab-content {
+    animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dark theme adjustments */
+body.dark-theme .content-section {
+    background-color: #2d3748;
+}
+
+body.dark-theme .content-section h2,
+body.dark-theme .terms-section h3 {
+    color: var(--light);
+}
+
+body.dark-theme .terms-section p {
+    color: #e2e8f0;
+}
+
+body.dark-theme .tab-btn {
+    background-color: #4a5568;
+    color: #a0aec0;
+}
+
+body.dark-theme .tab-btn:hover:not(.active) {
+    background-color: #2d3748;
+}
+
+body.dark-theme .terms-section {
+    border-bottom-color: #4a5568;
+}
+
+body.dark-theme .last-updated {
+    background-color: #4a5568;
+    color: #e2e8f0;
+}
+
+/* Enhancements for larger screens (PC View) */
+@media (min-width: 1024px) {
+    .terms-container {
+        padding-top: 20px;
+    }
+    
+    .content-section {
+        padding: 30px;
+    }
+    
+    .terms-section h3 {
+        font-size: 20px;
+    }
+    
+    .terms-section p {
+        font-size: 16px;
+    }
+    
+    /* Improved tab appearance on desktop */
+    .tabs {
+        margin-top: 20px;
+    }
+    
+    .tab-btn {
+        padding: 18px;
+        font-size: 18px;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Enhanced scrolling for long content */
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+/* Media queries for better responsiveness */
+@media (max-width: 768px) {
+    .terms-header {
+        padding-left: 60px;
+    }
+    
+    .content-section {
+        padding: 20px;
+    }
+    
+    .content-section h2 {
+        font-size: 22px;
+    }
+    
+    .terms-section h3 {
+        font-size: 16px;
+    }
+    
+    .terms-section p {
+        font-size: 14px;
+    }
+    
+    /* Add a subtle indicator for sections */
+    .terms-section h3::before {
+        content: "•";
+        margin-right: 8px;
+        color: var(--primary);
+    }
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 480px) {
+    .terms-header {
+        padding: 15px;
+    }
+    
+    .terms-header h1 {
+        font-size: 20px;
+    }
+    
+    .tabs {
+        flex-direction: row; /* Keep horizontal on mobile for better UX */
+    }
+    
+    .tab-btn {
+        padding: 12px 10px;
+        font-size: 14px;
+    }
+    
+    .content-section {
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 12px;
+    }
+    
+    .content-section h2 {
+        font-size: 18px;
+    }
+    
+    .last-updated {
+        font-size: 12px;
+    }
+    
+    .terms-section {
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+    }
+    
+    .terms-section h3 {
+        font-size: 15px;
+    }
+    
+    .terms-section p {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+    
+    /* Make back button easier to tap on mobile */
+    .back-link {
+        padding: 10px;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0; /* Hide text on smallest screens */
+    }
+    
+    .back-link i {
+        font-size: 16px; /* Keep icon visible */
+    }
+}
+
+/* For extra small mobile devices */
+@media (max-width: 360px) {
+    .tabs {
+        flex-direction: column;
+    }
+    
+    .tab-btn {
+        border-radius: 0;
+    }
+    
+    .tab-btn:first-child {
+        border-radius: 12px 12px 0 0;
+    }
+    
+    .tab-btn:last-child {
+        border-radius: 0 0 12px 12px;
+    }
+}
+
+/* Fix for iOS status bar (mobile view) */
+@supports (-webkit-touch-callout: none) {
+    .terms-header {
+        padding-top: calc(env(safe-area-inset-top) + 15px);
+        height: calc(var(--mobile-header-height, 60px) + env(safe-area-inset-top));
+    }
+    
+    .terms-body {
+        padding-top: calc(var(--mobile-header-height, 60px) + env(safe-area-inset-top) + 20px);
+    }
+}
