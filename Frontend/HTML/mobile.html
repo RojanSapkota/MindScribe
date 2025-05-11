@@ -113,13 +113,6 @@
         <h1>Activity</h1>
       </div>
       <div class="mobile-content">
-        <div class="welcome-card">
-          <div class="welcome-avatar">
-            <i class="fas fa-dumbbell"></i>
-          </div>
-          <h2>Exercise Finder</h2>
-          <p>Find exercises to complement your nutrition</p>
-        </div>
         <div class="section-container">
           <!-- Exercise Finder Section -->
           <div class="activity-section">
@@ -130,9 +123,9 @@
             <div class="exercise-wizard">
               <!-- Step 1: Initial Search Box -->
               <div class="wizard-step active" id="step-1">
-                <div class="exercise-search-box">
-                  <input type="text" id="exerciseSearchInput" placeholder="What exercise are you looking for?">
-                  <button id="startSearchBtn">
+                <div class="exercise-search-box modern-exercise-search-box">
+                  <input type="text" id="exerciseSearchInput" placeholder="What exercise are you looking for?" class="modern-exercise-input">
+                  <button id="startSearchBtn" class="modern-exercise-search-btn">
                     <i class="fas fa-search"></i>
                   </button>
                 </div>
@@ -378,30 +371,32 @@
         <h1>Record</h1>
       </div>
       <div class="mobile-content">
-        <div class="voice-transcription-section">
-          <div class="voice-header">
-            <i class="fas fa-microphone-alt fa-3x"></i>
-            <h2>Voice Journal</h2>
-            <p>Tap the button and start speaking to record your thoughts or mood.</p>
+        <div class="voice-transcription-section modern-voice-journal">
+          <div class="voice-header modern-voice-header">
+            <div class="voice-mic-bg">
+              <i class="fas fa-microphone-alt fa-3x"></i>
+            </div>
+            <h2 class="voice-title">Voice Journal</h2>
+            <p class="voice-desc">Tap the button and start speaking to record your thoughts or mood.</p>
           </div>
-          <div class="voice-controls">
-            <button id="startTranscriptionBtn" class="btn btn-primary">
+          <div class="voice-controls modern-voice-controls">
+            <button id="startTranscriptionBtn" class="btn btn-primary modern-voice-btn">
               <i class="fas fa-microphone"></i> Start Recording
             </button>
-            <button id="stopTranscriptionBtn" class="btn btn-secondary" style="display:none;">
+            <button id="stopTranscriptionBtn" class="btn btn-secondary modern-voice-btn" style="display:none;">
               <i class="fas fa-stop"></i> Stop
             </button>
           </div>
-          <div class="transcription-status" id="transcriptionStatus" style="display:none;">
-            <i class="fas fa-microphone-alt pulse"></i>
+          <div class="transcription-status modern-transcription-status" id="transcriptionStatus" style="display:none;">
+            <span class="mic-pulse-bg"><i class="fas fa-microphone-alt pulse"></i></span>
             <span>Listening...</span>
           </div>
-          <div class="transcription-result" id="transcriptionResult" style="display:none;"></div>
-          <div class="transcription-actions" id="transcriptionActions" style="display:none;">
-            <button id="saveTranscriptionBtn" class="btn btn-primary">
+          <div class="transcription-result modern-transcription-result" id="transcriptionResult" style="display:none;"></div>
+          <div class="transcription-actions modern-transcription-actions" id="transcriptionActions" style="display:none;">
+            <button id="saveTranscriptionBtn" class="btn btn-primary modern-voice-btn">
               <i class="fas fa-save"></i> Save Entry
             </button>
-            <button id="discardTranscriptionBtn" class="btn btn-secondary">
+            <button id="discardTranscriptionBtn" class="btn btn-secondary modern-voice-btn">
               <i class="fas fa-times"></i> Discard
             </button>
           </div>
