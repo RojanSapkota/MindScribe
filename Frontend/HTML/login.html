@@ -2,165 +2,233 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MindScribe - Login & Signup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Login or Sign Up | MindScribe</title>
   <meta name="description" content="Log in or sign up for MindScribe, your AI-powered voice journaling app">
-  <meta name="theme-color" content="#5D5FEF">
-  <link rel="manifest" href="../manifest.json">
-  <link rel="icon" href="../../Assets/icon.png" type="image/png">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://github.com/RojanSapkota/MindScribe/">
+  <meta property="og:title" content="Login or Sign Up | MindScribe">
+  <meta property="og:description" content="Log in or sign up for MindScribe, your AI-powered voice journaling app">
+  <meta property="og:image" content="../../Assets/icon.png">
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://github.com/RojanSapkota/MindScribe/">
+  <meta name="twitter:title" content="Login or Sign Up | MindScribe">
+  <meta name="twitter:description" content="Log in or sign up for MindScribe, your AI-powered voice journaling app">
+  <meta name="twitter:image" content="../../Assets/icon.png">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../../Assets/icon.png">
   <link rel="apple-touch-icon" href="../../Assets/icon.png">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../CSS/login-style.css">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://github.com/RojanSapkota/MindScribe/">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../CSS/styles.css">
+  <link rel="stylesheet" href="../CSS/login-styles.css">
+
+  <script>
+    // Check if user is on a mobile device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    // If not on mobile, redirect to desktop info page
+    if (!isMobile) {
+      window.location.href = 'desktop.html';
+    }
+    
+    // Check if user is already logged in
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      window.location.href = 'mobile.html'; // Redirect to mobile.html instead of index.html
+    }
+  </script>
 </head>
 <body>
-  <div class="container">
-    <div class="forms-container">
-      <div class="logo-container">
-        <div class="app-logo">
-          <i class="fas fa-microphone-alt"></i>
-          <h1>MindScribe</h1>
-        </div>
-        <p class="tagline">Your AI-powered voice journal companion</p>
+  <div class="app-container login-container">
+    <div class="app-header">
+      <h1>MindScribe</h1>
+      <p>AI-powered voice journaling app</p>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="progressBar"></div>
       </div>
-      
-      <div class="form-wrapper">
-        <!-- Sign In Form -->
-        <form class="signin-form active" id="signin-form">
-          <h2>Sign in to your account</h2>
-          <div class="input-field">
-            <i class="fas fa-envelope"></i>
-            <input type="email" id="signin-email" placeholder="Email" required>
-          </div>
-          <div class="input-field">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="signin-password" placeholder="Password" required>
-            <i class="far fa-eye-slash toggle-password"></i>
-          </div>
-          <div class="remember-forgot">
-            <div class="remember-me">
-              <input type="checkbox" id="remember" class="remember-checkbox">
-              <label for="remember">Remember me</label>
-            </div>
-            <a href="#" class="forgot-password" id="forgot-password-link">Forgot Password?</a>
-          </div>
-          <button type="submit" class="btn">Sign In</button>
-          <div class="social-login">
-            <p>Or sign in with</p>
-            <div class="social-icons">
-              <a href="#" class="social-icon"><i class="fab fa-google"></i></a>
-              <a href="#" class="social-icon"><i class="fab fa-apple"></i></a>
-            </div>
-          </div>
-          <p class="signup-link">Don't have an account? <a href="#" id="signup-link">Sign up</a></p>
-          <div class="form-message" id="signin-message"></div>
-        </form>
-
-        <!-- Sign Up Form -->
-        <form class="signup-form" id="signup-form">
-          <h2>Create your account</h2>
-          <div class="input-field">
-            <i class="fas fa-user"></i>
-            <input type="text" id="signup-name" placeholder="Full Name" required>
-          </div>
-          <div class="input-field">
-            <i class="fas fa-envelope"></i>
-            <input type="email" id="signup-email" placeholder="Email" required>
-          </div>
-          <div class="input-field">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="signup-password" placeholder="Password" required>
-            <i class="far fa-eye-slash toggle-password"></i>
-          </div>
-          <div class="input-field">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required>
-          </div>
-          <div class="terms-container">
-            <input type="checkbox" id="terms" class="terms-checkbox" required>
-            <label for="terms">I agree to the <a href="#">Terms & Conditions</a></label>
-          </div>
-          <button type="submit" class="btn">Sign Up</button>
-          <p class="signin-link">Already have an account? <a href="#" id="signin-link">Sign in</a></p>
-          <div class="form-message" id="signup-message"></div>
-        </form>        <!-- OTP Verification Form -->
-        <form class="otp-form" id="otp-form">
-          <div class="otp-header">
-            <i class="fas fa-envelope-circle-check otp-icon"></i>
-            <h2>Verify your email</h2>
-            <p class="otp-info">We've sent a verification code to</p>
-            <p class="otp-email" id="otpEmailDisplay">example@email.com</p>
-          </div>
-          <div class="otp-container">
-            <input type="text" maxlength="1" class="otp-input" required>
-            <input type="text" maxlength="1" class="otp-input" required>
-            <input type="text" maxlength="1" class="otp-input" required>
-            <input type="text" maxlength="1" class="otp-input" required>
-            <input type="text" maxlength="1" class="otp-input" required>
-            <input type="text" maxlength="1" class="otp-input" required>
-          </div>
-          <p class="resend-otp">Didn't receive the code? <a href="#" id="resend-otp">Resend OTP</a></p>
-          <button type="submit" class="btn">
-            <i class="fas fa-check-circle"></i> Verify & Create Account
-          </button>
-          <div class="form-message" id="otp-message"></div>
-        </form>
-
-        <!-- Forgot Password Form -->
-        <form class="forgot-password-form" id="forgot-password-form">
-          <h2>Reset your password</h2>
-          <p class="forgot-password-info">Enter your email address below and we'll send you instructions to reset your password.</p>
-          <div class="input-field">
-            <i class="fas fa-envelope"></i>
-            <input type="email" id="forgot-email" placeholder="Email" required>
-          </div>
-          <div id="forgot-otp-section" style="display:none; margin-top: 1em;">
-            <div class="input-field">
-              <i class="fas fa-key"></i>
-              <input type="text" id="forgot-otp" placeholder="Enter OTP" maxlength="6" required>
-            </div>
-            <div class="input-field">
-              <i class="fas fa-lock"></i>
-              <input type="password" id="forgot-new-password" placeholder="New Password" required>
-            </div>
-            <div class="input-field">
-              <i class="fas fa-lock"></i>
-              <input type="password" id="forgot-confirm-password" placeholder="Confirm New Password" required>
-            </div>
-            <button type="button" class="btn" id="forgot-otp-submit">Reset Password</button>
-          </div>
-          <button type="submit" class="btn">Send Reset Link</button>
-          <p class="back-to-login"><a href="#" id="back-to-login">Back to login</a></p>
-          <div class="form-message" id="forgot-message"></div>
-        </form>
-
-        <!-- Success Message -->
-        <div class="success-form" id="success-form">
-          <div class="success-container">
-            <div class="success-icon">
-              <i class="fas fa-check-circle"></i>
-            </div>
-            <h2>Registration Successful!</h2>
-            <p>Your account has been created successfully.</p>
-            <p>Redirecting to app...</p>
-          </div>
-        </div>
+      <div class="theme-switch" id="themeSwitch">
+        <i class="fas fa-moon"></i>
       </div>
     </div>
-
-    <div class="panels-container">
-      <div class="panel left-panel">
-        <div class="panel-content">
-          <h3>Start your journaling journey</h3>
-          <p>Record your thoughts, get AI insights, and track your emotional well-being with MindScribe.</p>
-          <img src="../../Assets/journaling.svg" class="panel-image" alt="Journaling Illustration">
+    
+    <div class="app-body login-body">
+      <div class="tabs fade-in">
+        <button class="tab-btn active" data-tab="login">Login</button>
+        <button class="tab-btn" data-tab="signup">Sign Up</button>
+      </div>
+      
+      <!-- Login tab content -->
+      <div class="tab-content" id="login-tab">
+        <form id="loginForm" class="login-form fade-in delay-1">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <div class="input-with-icon">
+              <i class="fas fa-envelope"></i>
+              <input type="email" id="loginEmail" placeholder="Enter your email" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <div class="input-with-icon">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="loginPassword" placeholder="Enter your password" required>
+              <button type="button" class="toggle-password">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="form-options">
+            <label class="checkbox-container">
+              Remember me
+              <input type="checkbox" id="rememberMe">
+              <span class="checkmark"></span>
+            </label>
+            <a href="#" class="forgot-password">Forgot password?</a>
+          </div>
+          
+          <button type="submit" class="btn btn-primary login-btn">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </button>
+        </form>
+        
+        <div class="social-login fade-in delay-2">
+          <p>Or continue with</p>
+          <div class="social-buttons">
+            <button class="social-btn google" onclick="alert('Google login is not available.')">
+              <i class="fab fa-google"></i>
+            </button>
+            <button class="social-btn facebook" onclick="alert('Facebook login is not available.')">
+              <i class="fab fa-facebook-f"></i>
+            </button>
+            <button class="social-btn apple" onclick="alert('Apple login is not available.')">
+              <i class="fab fa-apple"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sign up tab content -->
+      <div class="tab-content" id="signup-tab" style="display: none;">
+        <form id="signupForm" class="login-form">
+          <div class="form-group">
+            <label for="signupName">Full Name</label>
+            <div class="input-with-icon">
+              <i class="fas fa-user"></i>
+              <input type="text" id="signupName" placeholder="Enter your full name" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="signupEmail">Email</label>
+            <div class="input-with-icon">
+              <i class="fas fa-envelope"></i>
+              <input type="email" id="signupEmail" placeholder="Enter your email" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <div class="input-with-icon">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="signupPassword" placeholder="Create a password" required>
+              <button type="button" class="toggle-password">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <div class="password-strength">
+              <div class="strength-bar">
+                <div class="strength-progress" id="strengthProgress"></div>
+              </div>
+              <span class="strength-text" id="strengthText">Password strength</span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="checkbox-container terms-checkbox">
+              I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+              <input type="checkbox" id="agreeTerms" required>
+              <span class="checkmark"></span>
+            </label>
+          </div>
+          
+          <!-- Remove v2 reCAPTCHA widget -->
+          
+          <button type="submit" class="btn btn-primary login-btn">
+            <i class="fas fa-user-plus"></i> Create Account
+          </button>
+        </form>
+      </div>
+      
+      <!-- OTP Verification tab (new) -->
+      <div class="tab-content" id="otp-tab" style="display: none;">
+        <div class="otp-container fade-in">
+          <div class="otp-header">
+            <i class="fas fa-envelope-circle-check otp-icon"></i>
+            <h2>Verify Your Email</h2>
+            <p>We've sent a verification code to</p>
+            <p class="otp-email" id="otpEmailDisplay">example@email.com</p>
+          </div>
+          
+          <form id="otpVerificationForm" class="otp-form">
+            <input type="hidden" id="otpEmail">
+            
+            <div class="form-group">
+              <label for="otpInput">Enter 6-digit Code</label>
+              <div class="otp-input-container">
+                <input type="text" id="otpInput" class="otp-input" maxlength="6" placeholder="000000" required>
+              </div>
+              <small id="testOtp" class="test-otp-display" style="display: none;"></small>
+            </div>
+            
+            <button type="submit" class="btn btn-primary login-btn">
+              <i class="fas fa-check-circle"></i> Verify & Create Account
+            </button>
+            
+            <div class="otp-footer">
+              <p>Didn't receive the code?</p>
+              <button type="button" id="resendOtp" class="btn-link">Resend OTP</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Success Message (new) -->
+      <div class="tab-content" id="success-tab" style="display: none;">
+        <div class="success-container fade-in" id="successMessage">
+          <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h2>Registration Successful!</h2>
+          <p>Your account has been created successfully.</p>
+          <p>Redirecting to app...</p>
+        </div>
+      </div>
+      
+      <!-- Error Message for reCAPTCHA -->
+      <div class="tab-content" id="error-tab" style="display: none;">
+        <div class="error-container fade-in" id="errorMessage">
+          <div class="error-icon">
+            <i class="fas fa-exclamation-circle"></i>
+          </div>
+          <h2>Authentication Error</h2>
+          <p id="errorDetails">There was a problem with the authentication process.</p>
+          <button class="btn btn-primary" onclick="window.location.reload()">Try Again</button>
         </div>
       </div>
     </div>
   </div>
-
+  
+  <div class="tooltip" id="tooltip"></div>
   <script src="../JS/login.js"></script>
 </body>
 </html>

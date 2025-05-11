@@ -69,6 +69,8 @@ function initializeSpeechRecognition() {
 
     if (interim) interimTranscriptElement.textContent = interim;
     if (final) finalTranscriptElement.textContent = finalTranscript;
+    // Enable save button if there is any transcript
+    saveTranscriptBtn.disabled = finalTranscript.trim() === '';
   };
 
   recognition.onerror = (event) => {
@@ -134,7 +136,7 @@ async function saveTranscript() {
     formData.append('transcript', finalTranscript.trim());
     formData.append('timestamp', new Date().toISOString());
 
-    const response = await fetch(`${API_BASE_URL}/transcribe`, {
+    const response = await fetch('http://127.0.0.1:8000/transcribe', {
       method: 'POST',
       body: formData
     });
@@ -146,11 +148,9 @@ async function saveTranscript() {
 
     const data = await response.json();
     hideLoader();
-    
     // Show success and analysis
     showAnalysisResults(data);
     closeRecordingModal();
-    
   } catch (error) {
     hideLoader();
     console.error('Error saving transcript:', error);

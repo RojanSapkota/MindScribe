@@ -3,372 +3,849 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MindScribe Mobile - Home</title>
+   <title>MindScribe | Mobile</title>
+  <meta name="description" content="AI-powered voice journaling app">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../../Assets/icon.png">
+  <link rel="apple-touch-icon" href="../../Assets/icon.png">
+  
+  <!-- PWA Meta Tags -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#5D5FEF">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../CSS/mobile-home.css">
-  <link rel="stylesheet" href="../CSS/animations.css">
+  
+  <!-- Enhanced fullscreen support for iOS -->
+  <meta name="apple-mobile-web-app-title" content="MindScribe">
+  <meta name="application-name" content="MindScribe">
+  
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../CSS/styles.css">
+  <!-- Split mobile styles into two files for better organization -->
+  <link rel="stylesheet" href="../CSS/mobile-styles.css">
+  <link rel="stylesheet" href="../CSS/mobile-components.css">
 </head>
 <body>
-  <div class="loader-container" id="loaderContainer">
-    <div class="loader-brain">
-      <i class="fas fa-brain loader-brain-icon"></i>
-      <div class="loader-text">Loading your thoughts...</div>
-    </div>
-  </div>
-
-
-  <div class="mobile-header">
-    <i class="fas fa-microphone-alt"></i> MindScribe
-  </div>
-  
-  <div class="main-section thoughts-section active" id="thoughtsSection">
-    <h3 class="section-header">Daily Inspiration</h3>
-    <button class="refresh-btn ripple" id="refreshBtn" title="Show another thought"><i class="fas fa-sync-alt"></i></button>    <div class="thought-card sheen" id="thoughtCard">
-      <i class="fas fa-quote-left"></i>
-      <span id="thoughtText">"You are stronger than you think. Every day is a new beginning."</span>
-      <i class="fas fa-quote-right"></i>
-    </div>
-    <div class="swipe-hint">
-      <i class="fas fa-hand-point-right"></i> Swipe for more inspiration
-    </div>    <button class="action-button delayed-fade ripple" id="saveButton">
-      <i class="fas fa-save"></i> Save to Journal
-    </button>
-  </div>
-    <div class="main-section explore-section" id="exploreSection">
-    <h3 class="section-header">Explore</h3>
-    
-    <!-- Journal Analytics Tab Bar -->
-    <div class="tab-container">
-      <div class="tab active" data-tab="prompts">Prompts</div>
-      <div class="tab" data-tab="analytics">My Analytics</div>
-    </div>
-    
-    <!-- Prompts Tab Content -->
-    <div class="tab-content" id="promptsContent">
-      <div class="thought-card card-explore scale-in sheen staggered-item">
-        <i class="fas fa-compass"></i>
-        <span>Explore inspiring journal prompts and trending topics!</span>
+  <div class="mobile-container">
+    <div class="mobile-view" id="homeView">
+      <div class="mobile-header">
+        <h1>MindScribe</h1>
       </div>
-      <div class="thought-card card-explore delayed-fade sheen staggered-item">
-        <i class="fas fa-fire"></i>
-        <span>Trending: "What made you smile today?"</span>
-      </div>
-      <div class="thought-card card-explore delayed-fade-long sheen staggered-item">
-        <i class="fas fa-star"></i>
-        <span>Featured: "Three things you're grateful for right now"</span>
-      </div>
-      <button class="action-button">
-        <i class="fas fa-plus"></i> Create New Prompt
-      </button>
-    </div>
-    
-    <!-- Analytics Tab Content -->
-    <div class="tab-content" id="analyticsContent" style="display: none;">
-      <div class="analytics-container">
-        <div class="analytics-card">
-          <h4>Mood Tracker</h4>
-          <div class="mood-chart" id="moodChart">
-            <div class="chart-placeholder">
-              <i class="fas fa-chart-line"></i>
-              <p>Connect to see your mood trends</p>
+      
+      <div class="mobile-content">
+        <div class="welcome-card">
+          <div class="welcome-avatar">
+            <i class="fas fa-user-circle"></i>
+          </div>
+          <h2>Welcome back</h2>
+          <p id="welcomeUserEmail">track your nutrition</p>
+        </div>
+        
+        <div class="stats-cards">
+          <div class="stat-card">
+            <div class="stat-icon" style="background-color: rgba(93, 95, 239, 0.1); color: var(--primary);">
+              <i class="fas fa-utensils"></i>
+            </div>
+            <div class="stat-content">
+              <h3>Recent Meals</h3>
+              <p><span id="mealCount">0</span> analyzed</p>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon" style="background-color: rgba(52, 211, 153, 0.1); color: var(--accent);">
+              <i class="fas fa-smile"></i>
+            </div>
+            <div class="stat-content">
+               <h3>Avg. Health Score</h3>
+              <p><span id="avgHealthScore">--</span></p>
             </div>
           </div>
         </div>
         
-        <div class="analytics-card">
-          <h4>Recent Insights</h4>
-          <div id="recentInsights" class="insights-list">
-            <div class="empty-state">
-              <i class="fas fa-lightbulb"></i>
-              <p>Record journal entries to get AI insights</p>
+        <div class="nutrition-style-card">
+          <h3>Your Nutrition Style <button id="refreshNutritionStyle" class="refresh-btn"><i class="fas fa-sync-alt"></i></button></h3>
+          <div class="nutrition-meter">
+            <div class="meter-bar">
+              <div class="meter-fill" id="nutritionStyleMeter"></div>
+            </div>
+            <div class="meter-label" id="nutritionStyleLabel">Click to analyze your style</div>
+          </div>
+        </div>
+        
+        <div class="section-title">
+          <h3>Quick Actions</h3>
+        </div>
+        
+        <div class="action-buttons">
+          <button class="action-btn" onclick="switchTab('scanView')">
+            <i class="fas fa-camera"></i>
+            <span>Scan Food</span>
+          </button>
+        </div>
+        
+        <div class="section-title">
+          <h3>Nutritional Tips</h3>
+        </div>
+        
+        <div class="tips-carousel">
+          <div class="tip-card">
+            <div class="tip-icon"><i class="fas fa-leaf"></i></div>
+            <h4>Balanced Diet</h4>
+            <p>Include a variety of fruits, vegetables, lean proteins, and whole grains in your meals.</p>
+          </div>
+          
+          <div class="tip-indicator">
+            <span class="active"></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mobile-view hidden" id="activityView">
+      <div class="mobile-header">
+        <h1>Activity</h1>
+      </div>
+      <div class="mobile-content">
+        <div class="welcome-card">
+          <div class="welcome-avatar">
+            <i class="fas fa-dumbbell"></i>
+          </div>
+          <h2>Exercise Finder</h2>
+          <p>Find exercises to complement your nutrition</p>
+        </div>
+        <div class="section-container">
+          <!-- Exercise Finder Section -->
+          <div class="activity-section">
+            <div class="section-title">
+              <h3>Find Exercises</h3>
+            </div>
+            
+            <div class="exercise-wizard">
+              <!-- Step 1: Initial Search Box -->
+              <div class="wizard-step active" id="step-1">
+                <div class="exercise-search-box">
+                  <input type="text" id="exerciseSearchInput" placeholder="What exercise are you looking for?">
+                  <button id="startSearchBtn">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Step 2: Filter Options -->
+              <div class="wizard-step" id="step-2">
+                <div class="option-card">
+                  <h4>Exercise Type</h4>
+                  <div class="option-grid" id="typeOptions">
+                    <div class="option-item" data-value="cardio">
+                      <i class="fas fa-running"></i>
+                      <span>Cardio</span>
+                    </div>
+                    <div class="option-item" data-value="strength">
+                      <i class="fas fa-dumbbell"></i>
+                      <span>Strength</span>
+                    </div>
+                    <div class="option-item" data-value="stretching">
+                      <i class="fas fa-child"></i>
+                      <span>Stretching</span>
+                    </div>
+                    <div class="option-item" data-value="powerlifting">
+                      <i class="fas fa-weight-hanging"></i>
+                      <span>Powerlifting</span>
+                    </div>
+                    <div class="option-item" data-value="olympic_weightlifting">
+                      <i class="fas fa-award"></i>
+                      <span>Olympic</span>
+                    </div>
+                    <div class="option-item" data-value="plyometrics">
+                      <i class="fas fa-bolt"></i>
+                      <span>Plyometrics</span>
+                    </div>
+                    <div class="option-item" data-value="strongman">
+                      <i class="fas fa-fist-raised"></i>
+                      <span>Strongman</span>
+                    </div>
+                    <div class="option-item" data-value="" selected>
+                      <i class="fas fa-globe"></i>
+                      <span>All Types</span>
+                    </div>
+                  </div>
+                  <div class="wizard-nav">
+                    <button class="wizard-btn back" data-step="1">
+                      <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button class="wizard-btn next" data-step="3">
+                      Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Step 3: Muscle Group Selection -->
+              <div class="wizard-step" id="step-3">
+                <div class="option-card">
+                  <h4>Target Muscle</h4>
+                  <div class="muscle-selector">
+                    <div class="body-map">
+                      <img src="/Assets/body-map.png" alt="Body Map" id="bodyMapImg">
+                      <div class="muscle-tooltip" id="muscleTooltip"></div>
+                    </div>
+                    <div class="muscle-list">
+                      <div class="option-item muscle-option" data-value="abdominals">Abdominals</div>
+                      <div class="option-item muscle-option" data-value="abductors">Abductors</div>
+                      <div class="option-item muscle-option" data-value="adductors">Adductors</div>
+                      <div class="option-item muscle-option" data-value="biceps">Biceps</div>
+                      <div class="option-item muscle-option" data-value="calves">Calves</div>
+                      <div class="option-item muscle-option" data-value="chest">Chest</div>
+                      <div class="option-item muscle-option" data-value="forearms">Forearms</div>
+                      <div class="option-item muscle-option" data-value="glutes">Glutes</div>
+                      <div class="option-item muscle-option" data-value="hamstrings">Hamstrings</div>
+                      <div class="option-item muscle-option" data-value="lats">Lats</div>
+                      <div class="option-item muscle-option" data-value="lower_back">Lower Back</div>
+                      <div class="option-item muscle-option" data-value="middle_back">Middle Back</div>
+                      <div class="option-item muscle-option" data-value="neck">Neck</div>
+                      <div class="option-item muscle-option" data-value="quadriceps">Quadriceps</div>
+                      <div class="option-item muscle-option" data-value="traps">Traps</div>
+                      <div class="option-item muscle-option" data-value="triceps">Triceps</div>
+                    </div>
+                  </div>
+                  <div class="wizard-nav">
+                    <button class="wizard-btn back" data-step="2">
+                      <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button class="wizard-btn next" data-step="4">
+                      Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Step 4: Difficulty Selection -->
+              <div class="wizard-step" id="step-4">
+                <div class="option-card">
+                  <h4>Difficulty Level</h4>
+                  <div class="difficulty-slider">
+                    <div class="difficulty-options">
+                      <div class="difficulty-option" data-value="beginner">
+                        <div class="difficulty-icon">
+                          <i class="fas fa-seedling"></i>
+                        </div>
+                        <span>Beginner</span>
+                      </div>
+                      <div class="difficulty-option" data-value="intermediate">
+                        <div class="difficulty-icon">
+                          <i class="fas fa-fire"></i>
+                        </div>
+                        <span>Intermediate</span>
+                      </div>
+                      <div class="difficulty-option" data-value="expert">
+                        <div class="difficulty-icon">
+                          <i class="fas fa-fire-alt"></i>
+                        </div>
+                        <span>Expert</span>
+                      </div>
+                      <div class="difficulty-option selected" data-value="">
+                        <div class="difficulty-icon">
+                          <i class="fas fa-layer-group"></i>
+                        </div>
+                        <span>All Levels</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="wizard-nav">
+                    <button class="wizard-btn back" data-step="3">
+                      <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button class="wizard-btn find" id="findExercisesBtn">
+                      <i class="fas fa-dumbbell"></i> Find Exercises
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Hidden input fields to store selections -->
+              <input type="hidden" id="exerciseType" value="">
+              <input type="hidden" id="exerciseMuscle" value="">
+              <input type="hidden" id="exerciseDifficulty" value="">
+            </div>
+            
+            <div id="exerciseResults" class="exercise-results">
+              <!-- Exercise results will be inserted here by JavaScript -->
+            </div>
+            
+            <div class="empty-results" id="emptyExercises" style="display: none;">
+              <div class="empty-history-content">
+                <i class="fas fa-dumbbell"></i>
+                <h3>No exercises found</h3>
+                <p>Try adjusting your filters or search term</p>
+              </div>
+            </div>
+            
+            <div class="loading-indicator" id="exerciseLoading" style="display: none;">
+              <div class="spinner"></div>
+              <p>Finding exercises...</p>
+            </div>
+          </div>
+          
+          <!-- Scan Food Section (moved from Scan/Record tab) -->
+          <div class="activity-section">
+            <div class="section-title">
+              <h3>Scan Food</h3>
+            </div>
+            <div class="action-buttons scan-buttons">
+              <button id="startCameraButton" class="btn btn-primary fade-in">
+                <i class="fas fa-camera"></i> Take a Photo
+              </button>
+              <button id="logFoodButton" class="btn btn-secondary fade-in">
+                <i class="fas fa-keyboard"></i> Log Food Manually
+              </button>
+              <div class="upload-container fade-in delay-1">
+                <input type="file" id="fileUpload" accept="image/*">
+                <label for="fileUpload" class="upload-label">
+                  <i class="fas fa-cloud-upload-alt"></i> 
+                  <span>Upload a Photo</span>
+                </label>
+              </div>
+              <button id="viewFoodHistoryBtn" class="btn btn-outline fade-in" style="margin-top: 10px;" onclick="switchTab('communityView')">
+                <i class="fas fa-history"></i> View Food History
+              </button>
+            </div>
+            <div id="logFoodContainer" class="log-food-container fade-in" style="display:none;">
+              <div class="log-food-header">
+                <h3>Log Food Manually</h3>
+                <p>Describe the food you've eaten (e.g., "200g oatmeal with 2 spoons of peanut butter and a 100ml glass of milk")</p>
+              </div>
+              <div class="food-description-wrapper">
+                <textarea id="foodDescription" class="food-description" placeholder="Describe your meal here..."></textarea>
+                <button id="speechToTextBtn" class="speech-to-text-btn">
+                  <i class="fas fa-microphone"></i>
+                </button>
+              </div>
+              <div class="speech-status" id="speechStatus" style="display: none;">
+                <i class="fas fa-microphone-alt pulse"></i>
+                <span>Listening...</span>
+              </div>
+              <div class="log-food-actions">
+                <button id="submitFoodLog" class="btn btn-primary">
+                  <i class="fas fa-check"></i> Analyze Food
+                </button>
+                <button id="cancelFoodLog" class="btn btn-secondary">
+                  <i class="fas fa-times"></i> Cancel
+                </button>
+              </div>
+            </div>
+            <div class="preview-container fade-in delay-2" id="previewContainer">
+              <button class="btn-icon" id="closePreviewButton">
+                <i class="fas fa-times"></i>
+              </button>
+              <video id="video" autoplay playsinline muted></video>
+              <img id="photo" style="display:none;">
+              <canvas id="canvas" style="display:none;"></canvas>
+              <div class="preview-controls">
+                <button id="captureButton" class="btn btn-secondary capture-btn" style="display:none;">
+                  <i class="fas fa-camera"></i> Capture
+                </button>
+              </div>
+            </div>
+            <div class="results-container fade-in delay-3" id="results" style="display:none;"></div>
+          </div>
+
+          <!-- Coming Soon Section for Additional Features -->
+          <div class="activity-section">
+            <div class="section-title">
+              <h3>Activity Tracking</h3>
+            </div>
+            <div class="coming-soon-container">
+              <div class="coming-soon-icon">
+                <i class="fas fa-running"></i>
+              </div>
+              <h2>Coming Soon</h2>
+              <p>Track your daily activities and workouts to complement your nutrition</p>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-    <div class="main-section history-section" id="historySection">
-      <h3 class="section-header">Journal History</h3>
-      <div class="history-container" id="journalHistory">
-        <div class="history-header-bar">
-          <button class="action-button ripple" id="refreshHistoryBtn" title="Refresh history">
-            <i class="fas fa-sync-alt"></i>
-          </button>
-          <div class="history-stats" id="historyStats">
-            <!-- Stats will be injected here -->
+    
+    <div class="mobile-view hidden" id="recordView">
+      <div class="mobile-header">
+        <h1>Record</h1>
+      </div>
+      <div class="mobile-content">
+        <div class="voice-transcription-section">
+          <div class="voice-header">
+            <i class="fas fa-microphone-alt fa-3x"></i>
+            <h2>Voice Journal</h2>
+            <p>Tap the button and start speaking to record your thoughts or mood.</p>
           </div>
-          <button class="action-button ripple" id="exportHistoryBtn" title="Export history">
-            <i class="fas fa-download"></i>
-          </button>
-        </div>
-        <div class="history-filters" id="historyFilters">
-          <input type="text" id="historySearch" class="history-search" placeholder="🔍 Search entries..." autocomplete="off">
-          <select id="historyMoodFilter" class="history-mood-filter">
-            <option value="">All Moods</option>
-            <option value="positive">Positive</option>
-            <option value="neutral">Neutral</option>
-            <option value="negative">Negative</option>
-          </select>
-        </div>
-        <div class="history-timeline" id="historyTimeline">
-          <!-- Timeline visualization will be injected here -->
-        </div>
-        <div class="loading-container" id="historyLoading">
-          <div class="loading-spinner"></div>
-          <p>Loading your journal entries...</p>
-        </div>
-        <div class="empty-state" id="historyEmpty" style="display: none;">
-          <i class="fas fa-book"></i>
-          <p>No journal entries yet</p>
-          <button class="action-button" id="createFirstEntryBtn">
-            <i class="fas fa-microphone"></i> Record your first entry
-          </button>
-        </div>
-        <div class="history-list" id="historyEntries">
-          <!-- Journal entries will be loaded here dynamically -->
+          <div class="voice-controls">
+            <button id="startTranscriptionBtn" class="btn btn-primary">
+              <i class="fas fa-microphone"></i> Start Recording
+            </button>
+            <button id="stopTranscriptionBtn" class="btn btn-secondary" style="display:none;">
+              <i class="fas fa-stop"></i> Stop
+            </button>
+          </div>
+          <div class="transcription-status" id="transcriptionStatus" style="display:none;">
+            <i class="fas fa-microphone-alt pulse"></i>
+            <span>Listening...</span>
+          </div>
+          <div class="transcription-result" id="transcriptionResult" style="display:none;"></div>
+          <div class="transcription-actions" id="transcriptionActions" style="display:none;">
+            <button id="saveTranscriptionBtn" class="btn btn-primary">
+              <i class="fas fa-save"></i> Save Entry
+            </button>
+            <button id="discardTranscriptionBtn" class="btn btn-secondary">
+              <i class="fas fa-times"></i> Discard
+            </button>
+          </div>
         </div>
       </div>
     </div>
-    <div class="main-section settings-section" id="settingsSection">
-      <h3 class="section-header">Settings</h3>
-      
-      <div class="settings-glass-card glass-card">
-        <div class="settings-quote">
-          <i class="fas fa-sun fa-spin"></i>
-          <span id="settingsMotivation">“Small steps every day lead to big changes.”</span>
-        </div>
+    
+    <div class="mobile-view hidden" id="communityView">
+      <div class="mobile-header">
+        <h1>Food History</h1>
+        <button id="refreshHistoryBtn" class="refresh-header-btn">
+          <i class="fas fa-sync-alt"></i>
+        </button>
       </div>
       
-      <!-- User Profile Section -->
-      <div class="settings-group">
-        <div class="settings-group-title">Profile</div>
-        <div class="user-profile-card scale-in" id="userProfileCard">
-          <div class="user-avatar editable-avatar" title="Edit profile picture">
+      <div class="mobile-content history-container">
+        <div class="filter-container">
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search food items...">
+          </div>
+          
+          <div class="filter-row">
+            <div class="dropdown">
+              <select id="sortBy">
+                <option value="date-desc">Newest First</option>
+                <option value="date-asc">Oldest First</option>
+                <option value="calories-desc">Calories (High-Low)</option>
+                <option value="calories-asc">Calories (Low-High)</option>
+                <option value="health-desc">Health (High-Low)</option>
+                <option value="health-asc">Health (Low-High)</option>
+              </select>
+            </div>
+            
+            <div class="dropdown">
+              <select id="filterHealthScore">
+                <option value="all">All Health Scores</option>
+                <option value="8">Very Healthy</option>
+                <option value="5">Moderately Healthy</option>
+                <option value="1">Less Healthy</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div id="historyContainer">
+          <!-- History items will be inserted here by JavaScript -->
+        </div>
+        
+        <div class="empty-history" id="emptyHistory" style="display: none;">
+          <div class="empty-history-content">
+            <i class="fas fa-utensils"></i>
+            <h3>No food history yet</h3>
+            <p>Take a picture of your meal to start tracking your nutrition!</p>
+          </div>
+        </div>
+        
+        <div class="pagination" id="pagination">
+          <!-- Pagination will be inserted here by JavaScript -->
+        </div>
+      </div>
+    </div>
+    
+    <div class="mobile-view hidden" id="profileView">
+      <div class="mobile-header">
+        <h1>Profile</h1>
+      </div>
+      
+      <div class="mobile-content">
+        <div class="profile-card">
+          <div class="profile-avatar">
             <i class="fas fa-user-circle"></i>
-            <button class="edit-avatar-btn" title="Edit Avatar"><i class="fas fa-pen"></i></button>
           </div>
-          <div class="user-info">
-            <h4 id="userDisplayName">Guest User <button class="edit-profile-btn" title="Edit Name"><i class="fas fa-pen"></i></button></h4>
-            <p id="userEmail">Not logged in</p>
-          </div>
-          <button class="action-button small-btn login-btn" id="mobileLoginBtn">
-            <i class="fas fa-sign-in-alt"></i> Login
-          </button>
-          <button class="action-button small-btn logout-btn" id="mobileLogoutBtn" style="display: none;">
-            <i class="fas fa-sign-out-alt"></i> Logout
-          </button>
+          <h2 id="profileUserEmail">user@example.com</h2>
+          <p>Member since <span id="memberSince">2023</span></p>
         </div>
+        
+        <div class="profile-menu">
+          <a href="#" class="profile-menu-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Goals</span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
+          <div class="profile-menu-item" id="viewSettings">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+            <i class="fas fa-chevron-right"></i>
+          </div>
+          <a href="#" class="profile-menu-item">
+            <i class="fas fa-question-circle"></i>
+            <span>Help & Support</span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
+          <div class="profile-menu-item" id="viewTermsAndPrivacy">
+            <i class="fas fa-file-alt"></i>
+            <span>Terms & Privacy</span>
+            <i class="fas fa-chevron-right"></i>
+          </div>
+        </div>
+        
+        <button id="logoutBtn" class="logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="mobile-view hidden" id="settingsView">
+      <div class="mobile-header">
+        <h1>Settings</h1>
       </div>
       
-      <!-- Theme Selector -->
-      <div class="settings-group">
-        <div class="settings-group-title">Theme</div>
-        <div class="settings-card">
-          <span class="settings-icon"><i class="fas fa-adjust"></i></span>
-          <span class="settings-label">Choose Theme</span>
-          <span class="settings-action">
-            <div class="theme-options">
-              <div class="theme-option theme-light" title="Light" data-theme="light"></div>
-              <div class="theme-option theme-dark" title="Dark" data-theme="dark"></div>
-              <div class="theme-option theme-purple" title="Purple" data-theme="purple"></div>
-              <div class="theme-option theme-blue" title="Blue" data-theme="blue"></div>
+      <div class="mobile-content">
+        <div class="settings-section">
+          <h2>App Settings</h2>
+          
+          <div class="settings-item">
+            <div class="settings-item-info">
+              <i class="fas fa-moon settings-icon"></i>
+              <div>
+                <h3>Dark Mode</h3>
+                <p>Toggle dark theme for the app</p>
+              </div>
             </div>
-          </span>
-        </div>
-      </div>
-      
-      <div class="settings-group">
-        <div class="settings-group-title">Appearance</div>
-        <div class="settings-card">
-          <span class="settings-icon"><i class="fas fa-palette"></i></span>
-          <span class="settings-label">Dark Mode</span>
-          <span class="settings-action">
             <label class="toggle-switch">
               <input type="checkbox" id="darkModeToggle">
               <span class="toggle-slider"></span>
             </label>
-          </span>
-        </div>
-      </div>
-      
-      <div class="settings-group">
-        <div class="settings-group-title">Notifications</div>
-        <div class="settings-card">
-          <span class="settings-icon"><i class="fas fa-bell"></i></span>
-          <span class="settings-label">Daily Reminders</span>
-          <span class="settings-action">
+          </div>
+          
+          <div class="settings-item">
+            <div class="settings-item-info">
+              <i class="fas fa-expand settings-icon"></i>
+              <div>
+                <h3>Fullscreen Mode</h3>
+                <p>Make app use entire screen</p>
+              </div>
+            </div>
             <label class="toggle-switch">
-              <input type="checkbox" checked id="notificationToggle">
+              <input type="checkbox" id="fullscreenToggle">
               <span class="toggle-slider"></span>
             </label>
-          </span>
-        </div>
-      </div>
-      
-      <div class="settings-group">
-        <div class="settings-group-title">Privacy</div>
-        <div class="settings-card">
-          <span class="settings-icon"><i class="fas fa-lock"></i></span>
-          <span class="settings-label">Privacy Mode</span>
-          <span class="settings-action">
+          </div>
+          
+          <div class="settings-item">
+            <div class="settings-item-info">
+              <i class="fas fa-bell settings-icon"></i>
+              <div>
+                <h3>Notifications</h3>
+                <p>Enable push notifications</p>
+              </div>
+            </div>
             <label class="toggle-switch">
-              <input type="checkbox" id="privacyToggle">
+              <input type="checkbox" checked>
               <span class="toggle-slider"></span>
             </label>
-          </span>
+          </div>
         </div>
+    
+        <div class="settings-section">
+          <h2>Account</h2>
+          
+          <div class="settings-item" id="editProfileSetting">
+            <div class="settings-item-info">
+              <i class="fas fa-user settings-icon"></i>
+              <div>
+                <h3>Edit Profile</h3>
+                <p>Update your personal information</p>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right settings-arrow"></i>
+          </div>
+          
+          <div class="settings-item" id="changePasswordSetting">
+            <div class="settings-item-info">
+              <i class="fas fa-lock settings-icon"></i>
+              <div>
+                <h3>Change Password</h3>
+                <p>Update your security settings</p>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right settings-arrow"></i>
+          </div>
+        </div>
+          
+        <div class="settings-section">
+          <h2>About</h2>
+          
+          <div class="settings-item" id="viewTermsAndPrivacySettings">
+            <div class="settings-item-info">
+              <i class="fas fa-file-alt settings-icon"></i>
+              <div>
+                <h3>Terms & Privacy</h3>
+                <p>View our terms and privacy policy</p>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right settings-arrow"></i>
+          </div>
+          
+          <div class="settings-item" id="addToHomeScreen">
+            <div class="settings-item-info">
+              <i class="fas fa-download settings-icon"></i>
+              <div>
+                <h3>Add to Home Screen</h3>
+                <p>Get app-like experience</p>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right settings-arrow"></i>
+          </div>
+          
+          <div class="settings-item">
+            <div class="settings-item-info">
+              <i class="fas fa-info-circle settings-icon"></i>
+              <div>
+                <h3>App Version</h3>
+                <p>1.0.0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <button class="back-button" id="backToProfileBtn">
+          <i class="fas fa-arrow-left"></i> Back to Profile
+        </button>
       </div>
-      
-      <div class="settings-group">
-        <div class="settings-group-title">About</div>
-        <div class="settings-card">
-          <span class="settings-icon"><i class="fas fa-info-circle"></i></span>
-          <span class="settings-label">About MindScribe</span>
-          <span class="settings-action">
-            <button class="action-button small-btn" id="privacyPolicyBtn">
-              Privacy Policy
-            </button>
-          </span>
+    </div>
+    
+    <div class="mobile-view hidden" id="termsView">
+      <div class="mobile-header">
+        <h1>Terms & Privacy</h1>
+      </div>
+      <div class="mobile-content">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="terms" id="termsTab">Terms of Service</button>
+            <button class="tab-btn" data-tab="privacy" id="privacyTab">Privacy Policy</button>
         </div>
-        <div class="settings-card" style="border-bottom: none;">
-          <span class="settings-label" style="margin-left:36px;">
-            <span class="settings-desc">Version 1.0.0</span>
-          </span>
+
+        <div class="tab-content" id="terms-tab" style="display: block;">
+            <div class="content-section">
+                <h2>Terms of Service</h2>
+                <p class="last-updated">Last Updated: May 11, 2025</p>
+
+                <div class="terms-section">
+                  <h3>1. Acceptance of Terms</h3>
+                  <p>By accessing or using the Calorie Tracking App, you agree to be bound by these Terms of Service. If you disagree with any part of these terms, you may not access the service.</p>
+              </div>
+              
+              <div class="terms-section">
+                  <h3>2. Description of Service</h3>
+                  <p>The Calorie Tracking App provides users with tools to track their food intake, analyze nutritional content, and maintain dietary records. We reserve the right to modify or discontinue the service at any time without notice.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>3. User Accounts</h3>
+                  <p>To use certain features of the app, you must register for an account. You are responsible for maintaining the confidentiality of your account information and for all activities that occur under your account.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>4. User Content</h3>
+                  <p>You retain ownership of any content you submit to the service, but grant us a worldwide, non-exclusive license to use, reproduce, and display such content in connection with the service.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>5. Prohibited Conduct</h3>
+                  <p>You agree not to use the service for any unlawful purpose or in any way that could damage or impair the service. This includes but is not limited to uploading malicious code, attempting to gain unauthorized access, or harassing other users.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>6. Limitations of Liability</h3>
+                  <p>The Calorie Tracking App and its owners shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use or inability to use the service.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>7. Changes to Terms</h3>
+                  <p>We reserve the right to update these terms at any time. We will notify users of any significant changes via email or through the app.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>8. Termination</h3>
+                  <p>We may terminate or suspend your account and access to the service immediately, without prior notice, for conduct that we believe violates these Terms or is harmful to other users, us, or third parties.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>9. Governing Law</h3>
+                  <p>These terms shall be governed by and construed in accordance with the laws of the jurisdiction in which the app operates, without regard to its conflict of law provisions.</p>
+              </div>
+            </div>
+        </div>
+        <div class="tab-content" id="privacy-tab" style="display: none;">
+            <div class="content-section">
+                <h2>Privacy Policy</h2>
+                <p class="last-updated">Last Updated: May 11, 2025</p>
+
+                <div class="terms-section">
+                  <h3>1. Information We Collect</h3>
+                  <p>We collect information you provide directly, such as your name, email address, and food data. We also collect usage data, such as your interactions with the app and device information.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>2. Use of Information</h3>
+                  <p>We use the information we collect to provide, maintain, and improve our services, communicate with you, and personalize your experience. Your food images may be used to train our AI models to improve accuracy.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>3. Data Storage</h3>
+                  <p>Your data is stored on secure servers. Food images and analysis data are retained in your account history until you choose to delete them.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>4. Sharing of Information</h3>
+                  <p>We do not sell or rent your personal information to third parties. We may share data with service providers who help us operate our business, but only as necessary to provide our services.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>5. Data Security</h3>
+                  <p>We implement appropriate security measures to protect against unauthorized access, alteration, or destruction of your data. However, no method of transmission over the Internet is 100% secure.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>6. Your Rights</h3>
+                  <p>You have the right to access, correct, or delete your personal information. You can do this through your account settings or by contacting us.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>7. Cookies and Similar Technologies</h3>
+                  <p>Our app may use cookies or local storage to enhance your experience and collect information about how you use the app.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>8. Children's Privacy</h3>
+                  <p>Our service is not directed to children under the age of 13, and we do not knowingly collect personal information from children under 13.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>9. Changes to Privacy Policy</h3>
+                  <p>We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last Updated" date.</p>
+              </div>
+
+              <div class="terms-section">
+                  <h3>10. Contact Us</h3>
+                  <p>If you have any questions about this privacy policy, please contact us at caloriegeek@rojansapkota.com.np.</p>
+              </div>
+            </div>
         </div>
       </div>
     </div>
-  
-  <div class="floating-button" id="newEntryBtn">
-    <i class="fas fa-microphone"></i>
+    
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-view="homeView">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </button>
+      <button class="nav-item" data-view="activityView">
+        <i class="fas fa-bolt"></i>
+        <span>Activity</span>
+      </button>
+      <button class="nav-item nav-item-record" data-view="recordView">
+        <div class="scan-button-wrapper">
+          <div class="scan-button-inner">
+            <i class="fas fa-microphone"></i>
+          </div>
+        </div>
+        <span>Record</span>
+      </button>
+      <button class="nav-item" data-view="communityView">
+        <i class="fas fa-history"></i>
+        <span>History</span>
+      </button>
+      <button class="nav-item" data-view="profileView">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+      </button>
+    </nav>
   </div>
   
-  <!-- Voice Recording Modal -->
-  <div class="modal" id="recordingModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Record Your Thoughts</h3>
-        <button class="close-modal" id="closeRecordModal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="recording-animation" id="recordingAnimation">
-          <div class="recording-waves"></div>
-          <i class="fas fa-microphone recording-icon"></i>
-        </div>
-        <div class="transcript-container">
-          <p id="interimTranscript" class="interim"></p>
-          <p id="finalTranscript" class="final"></p>
-        </div>
-        <div class="recording-controls">
-          <button id="startRecordBtn" class="record-btn ripple">
-            <i class="fas fa-microphone"></i> Start Recording
-          </button>
-          <button id="stopRecordBtn" class="record-btn stop-btn ripple" disabled>
-            <i class="fas fa-stop"></i> Stop Recording
-          </button>
-          <button id="saveTranscriptBtn" class="record-btn save-btn ripple" disabled>
-            <i class="fas fa-save"></i> Save Entry
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Privacy Policy Modal -->
-  <div class="modal" id="privacyPolicyModal">
-    <div class="modal-content" style="max-width:600px;margin:10vh auto;">
-      <div class="modal-header">
-        <h3>🛡️ Privacy Policy</h3>
-        <button class="close-modal" id="closePrivacyPolicyModal">&times;</button>
-      </div>
-      <div class="modal-body" style="max-height:60vh;overflow-y:auto;text-align:left;">
-        <p><strong>Effective Date:</strong> May 11 2025<br>
-        <strong>Last Updated:</strong> May 11 2025</p>
-        <p>At MindScribe, your privacy is our top priority. This policy explains how we collect, use, and protect your data when you use our journaling and mental health support application.</p>
-        <h4>🔍 What We Collect</h4>
-        <ul>
-          <li><strong>Email & Name:</strong> During account registration.</li>
-          <li><strong>Journal Entries:</strong> Text or voice entries submitted by you, which may include emotional reflections.</li>
-          <li><strong>AI Analysis Results:</strong> Sentiment and mood analysis generated by AI models.</li>
-          <li><strong>Technical Data:</strong> IP address, device type, and basic usage logs.</li>
-        </ul>
-        <h4>🎯 How We Use Your Data</h4>
-        <ul>
-          <li>Analyze journal content using AI to provide mood insights and suggestions.</li>
-          <li>Store your emotional history for personal reflection and progress tracking.</li>
-          <li>Improve the app’s features and performance.</li>
-          <li>Provide optional resources or recommendations based on your mood and themes.</li>
-        </ul>
-        <h4>🤖 AI & Third-Party Tools</h4>
-        <p>We use Groq’s LLMs and embedding models to analyze journal entries and retrieve relevant information from mental health guides. We do not share your raw journal data with third parties.</p>
-        <p>All data is processed securely and, where possible, anonymized or encrypted during processing.</p>
-        <h4>🔐 Data Protection</h4>
-        <ul>
-          <li>Your passwords are securely hashed.</li>
-          <li>Journal entries are stored in a secure, access-controlled database.</li>
-          <li>Only you have access to your data unless you explicitly share it.</li>
-        </ul>
-        <h4>❌ What We Don't Do</h4>
-        <ul>
-          <li>We do not sell your data.</li>
-          <li>We do not use your entries for advertising.</li>
-          <li>We do not share your personal information with external partners.</li>
-        </ul>
-        <h4>👤 Your Rights</h4>
-        <ul>
-          <li>You can request deletion of your account and all stored data.</li>
-          <li>You can request a copy of your journal history.</li>
-          <li>You can opt out of non-essential communications.</li>
-        </ul>
-        <p>To make any requests, contact: <em>[insert support email or contact form]</em></p>
-        <h4>📦 Data Retention</h4>
-        <p>We retain your data for as long as your account is active. You can delete your data at any time through the app or by request.</p>
-        <h4>📢 Updates</h4>
-        <p>We may update this policy as needed. We'll notify you through the app or email for significant changes.</p>
-        <h4>📫 Contact</h4>
-        <p>Questions or concerns?<br>Contact US</p>
-      </div>
-    </div>
-  </div>
-  
-  <nav class="bottom-nav">
-    <div class="nav-item active" id="navHome">
-      <i class="fas fa-home"></i>
-      <span>Home</span>
-    </div>
-    <div class="nav-item" id="navExplore">
-      <i class="fas fa-compass"></i>
-      <span>Explore</span>
-    </div>    <div class="nav-item" id="navHistory">
-      <i class="fas fa-history"></i>
-      <span>History</span>
-    </div>
-    <div class="nav-item" id="navSettings">
-      <i class="fas fa-cog"></i>
-      <span>Settings</span>
-    </div>
-  </nav>  <script src="../JS/mobile-home.js"></script>
-  <script src="../JS/mobile-voice.js"></script>
+  <div class="tooltip" id="tooltip"></div>
+  <script src="../JS/mobile.js"></script>
   <script>
-    // Privacy Policy modal logic
-    document.addEventListener('DOMContentLoaded', function() {
-      const btn = document.getElementById('privacyPolicyBtn');
-      const modal = document.getElementById('privacyPolicyModal');
-      const closeBtn = document.getElementById('closePrivacyPolicyModal');
-      if (btn && modal && closeBtn) {
-        btn.addEventListener('click', () => {
-          modal.classList.add('active');
-        });
-        closeBtn.addEventListener('click', () => {
-          modal.classList.remove('active');
-        });
-        // Close modal on outside click
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) modal.classList.remove('active');
-        });
+    document.addEventListener('DOMContentLoaded', () => {
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (!isMobile) {
+        window.location.href = 'desktop.html';
       }
+      
+      // Check fullscreen preference (default is false)
+      let fullscreenEnabled = localStorage.getItem('fullscreenEnabled') === 'true';
+      
+      // Handle fullscreen mode
+      function enterFullscreen() {
+        const docEl = document.documentElement;
+        
+        if (docEl.requestFullscreen) {
+          docEl.requestFullscreen();
+        } else if (docEl.webkitRequestFullscreen) { /* Safari */
+          docEl.webkitRequestFullscreen();
+        } else if (docEl.msRequestFullscreen) { /* IE11 */
+          docEl.msRequestFullscreen();
+        }
+      }
+      
+      function exitFullscreen() {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { /* Safari */
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE */
+          document.msExitFullscreen();
+        }
+      }
+      
+      // Check if it's a standalone PWA
+      const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || 
+                                (window.navigator.standalone) || 
+                                document.referrer.includes('android-app://');
+      
+      // Toggle fullscreen based on user preference and if not already in standalone mode
+      if (fullscreenEnabled && !isInStandaloneMode) {
+        // Attempt fullscreen on first user interaction for better UX
+        document.addEventListener('click', function firstInteraction() {
+          enterFullscreen();
+          document.removeEventListener('click', firstInteraction);
+        }, { once: true });
+      }
+      
+      // Initialize the fullscreen toggle once the DOM is fully loaded
+      window.addEventListener('load', () => {
+        const fullscreenToggle = document.getElementById('fullscreenToggle');
+        if (fullscreenToggle) {
+          fullscreenToggle.checked = fullscreenEnabled;
+          
+          fullscreenToggle.addEventListener('change', function() {
+            fullscreenEnabled = this.checked;
+            localStorage.setItem('fullscreenEnabled', fullscreenEnabled);
+            
+            if (fullscreenEnabled && !isInStandaloneMode) {
+              enterFullscreen();
+            } else if (!fullscreenEnabled) {
+              exitFullscreen();
+            }
+          });
+        }
+      });
     });
   </script>
 </body>
 </html>
-``` 
