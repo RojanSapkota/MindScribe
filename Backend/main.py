@@ -4,24 +4,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Optional
 from motor.motor_asyncio import AsyncIOMotorClient
-import logging
-import json
+import logging, json , io, os ,bcrypt, random, string , smtplib, requests
 from PIL import Image
-import io
-import os
-import bcrypt
 from dotenv import load_dotenv
 from datetime import datetime
-import random
-import string
-import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import requests
 from groq import Groq
 from bson import ObjectId
 from fastapi.encoders import jsonable_encoder
-
+import google.generativeai as genai
 
 #Not using this for now
 #import whisper
@@ -33,6 +25,10 @@ timestamp = datetime.now()
 API_KEY = os.getenv("LLM_API_KEY")
 if not API_KEY:
     raise ValueError("LLM Environment variable is not set.")
+
+FOOD_API_KEY = os.getenv("FOOD_API_KEY")
+if not API_KEY:
+    raise ValueError("FOOD_API_KEY environment variable is not set.")
 
 app = FastAPI()
 
@@ -51,6 +47,7 @@ if not MONGO_URL:
     raise ValueError("MONGO_URL environment variable is not set.")
 client = AsyncIOMotorClient(MONGO_URL)
 db = client['mindscribe']
+food_collection = db['food_analysis']
 user_collection = db['users']
 analysis_collection = db['analysis']
 sentiment_collection = db['sentiment']
@@ -82,6 +79,24 @@ class ForgotPasswordReset(BaseModel):
     email: str
     otp: str
     new_password: str
+
+
+class FoodItem(BaseModel):
+    name: str
+    ingredients: List[str]
+    estimated_calories: str
+    protein: str
+    carbs: str
+    fats: str
+    health_score: int
+
+class FoodAnalysisResponse(BaseModel):
+    foods: List[FoodItem]
+    overall_calories: int
+    overall_health_score: int
+
+class MoodBreakdownRequest(BaseModel):
+    user_email: str
 
 #I know it's not secure but for temporary purposes
 # and to avoid complexity, I'm using in-memory storage for OTPs
@@ -224,8 +239,6 @@ async def login(user: UserLogin):
             
         if not verify_password(user.password, existing_user['password']):
             raise HTTPException(status_code=400, detail="Invalid email or password")
-
-        # Return a token (for now, just the email)
     
         return JSONResponse(content={"message": "Login successful", "token": user.email})
     except Exception as e:
@@ -278,11 +291,8 @@ async def forgot_password_reset(data: ForgotPasswordReset):
 #        logging.error(f"Whisper transcription error: {e}")
 #        raise HTTPException(status_code=500, detail="Failed to transcribe audio")
 
-
 @app.options("/transcribe")
 async def options_transcribe(request: Request):
-    # Handle CORS preflight
-
     return JSONResponse(status_code=200, content={})
 
 @app.post("/transcribe")
@@ -378,7 +388,6 @@ async def analytics(user_email: str = Form(...), analysis_id: str = Form(...)):
 async def get_history(user_email: str):
     try:
         entries = await analysis_collection.find({"user_email": user_email}).sort("timestamp", -1).to_list(length=50)
-        # Serialize ObjectId and datetime for frontend
         def serialize_entry(entry):
             entry["_id"] = str(entry["_id"])
             if isinstance(entry.get("timestamp"), datetime):
@@ -416,7 +425,8 @@ async def sentiment(user_email: str = Form(...), analysis_id: str = Form(...)):
         raise HTTPException(status_code=500, detail="Internal server error during sentiment retrieval!")
 
 @app.post("/mood-breakdown")
-async def mood_breakdown(user_email: str):
+async def mood_breakdown(data: MoodBreakdownRequest):
+    user_email = data.user_email
     try:
         entries = await analysis_collection.find({"user_email": user_email}).sort("timestamp", -1).to_list(length=30)
         breakdown = []
@@ -438,18 +448,289 @@ async def mood_breakdown(user_email: str):
                 "score": score,
                 "mood": mood
             })
-        return {"mood_data": breakdown}
+        return JSONResponse(content={"mood_data": breakdown})
     except Exception as e:
         logging.error(f"Mood breakdown error: {e}")
         raise HTTPException(status_code=500, detail="Failed to generate mood data")
+    
+@app.post("/analyze-food", response_model=FoodAnalysisResponse)
+async def analyze_food(user_email: str = Form(...), file: UploadFile = File(...), timestamp: str = Form(...)):
+    try:
+        # Check if user exists
+        existing_user = await user_collection.find_one({"email": user_email})
+        if not existing_user:
+            raise HTTPException(status_code=400, detail="User not found")
+
+        # Read uploaded file
+        image_bytes = await file.read()
+        image = Image.open(io.BytesIO(image_bytes))
+
+        # Construct the prompt for Gemini
+        prompt = (
+     "You are a professional food nutritionist AI. "
+     "Analyze this image and identify all visible foods. "
+     "For each food item, provide a detailed breakdown in strict JSON format including: "
+     "1. 'name' of the food item, "
+     "2. list of 'ingredients' used (be specific and include all major ingredients), "
+     "3. 'estimated_calories' (in kcal, provide a realistic estimate based on portion size), "
+     "4. 'protein' (in grams, provide a realistic estimate), "
+     "5. 'carbs' (in grams, provide a realistic estimate), "
+     "6. 'fats' (in grams, provide a realistic estimate), "
+     "7. 'health_score' from 1 to 10, where 1 is very unhealthy and 10 is very healthy (base this on the ingredients and nutritional content). "
+     "Finally, calculate an 'overall_health_score' for the entire meal on a scale of 1 to 10, "
+     "based on the balance of all items combined, portion sizes, and overall nutrient content. "
+     "Output strictly as valid JSON. "
+     "Example output: "
+     "{'foods': ["
+     "{'name': 'Grilled Chicken Breast', 'ingredients': ['Chicken', 'Olive Oil', 'Spices'], "
+     "'estimated_calories': '165 kcal', 'protein': '31g', 'carbs': '0g', 'fats': '3.6g', 'health_score': 9}, "
+     "{'name': 'French Fries', 'ingredients': ['Potatoes', 'Vegetable Oil', 'Salt'], "
+     "'estimated_calories': '312 kcal', 'protein': '3.4g', 'carbs': '41g', 'fats': '15g', 'health_score': 3}"
+     "], 'overall_health_score': 6, 'overall_calories': '200 kcal'}"
+ )
+
+        genai.configure(api_key=FOOD_API_KEY)
+        model = genai.GenerativeModel('gemini-2.0-flash')
+        # Call Gemini API
+        response = model.generate_content(
+            [prompt, image],
+            generation_config={"temperature": 0.3}
+        )
+
+        result_text = response.text.strip()
+
+        if result_text.startswith("```json"):
+            result_text = result_text[7:-3].strip()
+
+        try:
+            json_compatible_response = json.loads(result_text.replace("'", '"'))
+        except json.JSONDecodeError as e:
+            logging.error(f"Failed to parse Gemini response: {e}")
+            return JSONResponse(status_code=500, content={"error": "Failed to parse response."})
+
+        analysis_data = {
+            "email": user_email,
+            "foods": json_compatible_response.get("foods", []),
+            "overall_calories": json_compatible_response.get("overall_calories",0),
+            "overall_health_score": json_compatible_response.get("overall_health_score", 0),
+            "timestamp": timestamp
+        }
+
+        # Insert analysis data into MongoDB collection
+        await food_collection.insert_one(analysis_data)
+
+        # Return the response as JSON
+        return JSONResponse(content=json_compatible_response)
+
+    except Exception as e:
+        logging.error(f"Error in analyzing food: {e}")
+        return JSONResponse(status_code=500, content={"error": "Internal server error."})
+
+# Food history route - fetch past analysis
+@app.post("/food-history")
+async def get_food_history(user_email: str = Form(...)):
+    try:
+        # Verify if user exists
+        existing_user = await user_collection.find_one({"email": user_email})
+        if not existing_user:
+            raise HTTPException(status_code=404, detail="User not found.")
+
+        # Fetch user's food analysis history (latest 100 entries)
+        history = await food_collection.find({"email": user_email}).sort("timestamp", -1).to_list(length=100)
+
+        # If no history found
+        if not history:
+            return JSONResponse(content={"message": "No food history found.", "food_history": []})
+
+        # Prepare the response data
+        formatted_history = []
+        for record in history:
+            formatted_history.append({
+                "foods": record.get("foods", []),
+                "overall_calories": record.get("overall_calories", 0),
+                "overall_health_score": record.get("overall_health_score", 0),
+                "timestamp": record.get("timestamp", "")
+            })
+
+        return JSONResponse(content={
+            "message": "Food history retrieved successfully." if formatted_history else "No food history found.",
+            "food_history": formatted_history
+        })
+
+    except Exception as e:
+        logging.error(f"Error fetching food history: {e}")
+        return JSONResponse(status_code=500, content={"error": "Internal server error while fetching food history."})
+
+
+@app.post("/delete-food-history")
+async def delete_food_history(user_email: str = Form(...), timestamp: str = Form(...)):
+    try:
+        # Verify if user exists
+        existing_user = await user_collection.find_one({"email": user_email})
+        if not existing_user:
+            raise HTTPException(status_code=404, detail="User not found.")
+
+        # Find the food entry by user email and timestamp
+        result = await food_collection.delete_one({
+            "email": user_email,
+            "timestamp": timestamp
+        })
+
+        if result.deleted_count == 0:
+            return JSONResponse(
+                status_code=404, 
+                content={"message": "Entry not found or already deleted."}
+            )
+
+        return JSONResponse(content={
+            "message": "Food entry deleted successfully.",
+            "deleted": True
+        })
+
+    except Exception as e:
+        logging.error(f"Error deleting food history: {e}")
+        return JSONResponse(
+            status_code=500, 
+            content={"error": "Internal server error while deleting food history."}
+        )
+    
+@app.post("/exercises")
+async def get_exercises(
+    name: Optional[str] = Form(None),
+    type: Optional[str] = Form(None),
+    muscle: Optional[str] = Form(None),
+    difficulty: Optional[str] = Form(None),
+    offset: Optional[int] = Form(0)
+):
+    try:
+        ninja_api_key = os.getenv("NINJA_API_KEY")
+        
+        # Prepare query parameters
+        params = {}
+        if name:
+            params['name'] = name
+        if type:
+            params['type'] = type
+        if muscle:
+            params['muscle'] = muscle
+        if difficulty:
+            params['difficulty'] = difficulty
+        if offset:
+            params['offset'] = offset
+            
+        # API URL
+        api_url = 'https://api.api-ninjas.com/v1/exercises'
+        
+        # Make the API request
+        response = requests.get(
+            api_url, 
+            params=params,
+            headers={'X-Api-Key': ninja_api_key}
+        )
+        
+        # Check if the request was successful
+        if response.status_code == 200:
+            exercises = response.json()
+            return JSONResponse(content={
+                "message": "Exercises retrieved successfully.",
+                "count": len(exercises),
+                "exercises": exercises
+            })
+        else:
+            logging.error(f"API Ninjas error: {response.status_code} - {response.text}")
+            return JSONResponse(
+                status_code=response.status_code,
+                content={"error": f"Failed to retrieve exercises: {response.text}"}
+            )
+            
+    except Exception as e:
+        logging.error(f"Error fetching exercises: {e}")
+        return JSONResponse(
+            status_code=500, 
+            content={"error": "Internal server error while fetching exercises."}
+        )
+    
+@app.post("/log-food", response_model=FoodAnalysisResponse)
+async def analyze_food(user_email: str = Form(...), food_text: str = Form(...), timestamp: str = Form(...)):
+    try:
+        # Check if user exists
+        existing_user = await user_collection.find_one({"email": user_email})
+        if not existing_user:
+            raise HTTPException(status_code=400, detail="User not found")
+        
+        prompt = (
+            f"You are a professional food nutritionist AI. "
+            f"Analyze this food description and identify all foods: '{food_text}'. "
+            f"For each food item, provide a detailed breakdown in strict JSON format including: "
+            f"1. 'name' of the food item, "
+            f"2. list of 'ingredients' used (be specific and include all major ingredients), "
+            f"3. 'estimated_calories' (in kcal, provide a realistic estimate based on portion size), "
+            f"4. 'protein' (in grams, provide a realistic estimate), "
+            f"5. 'carbs' (in grams, provide a realistic estimate), "
+            f"6. 'fats' (in grams, provide a realistic estimate), "
+            f"7. 'health_score' from 1 to 10, where 1 is very unhealthy and 10 is very healthy (base this on the ingredients and nutritional content). "
+            f"Finally, calculate an 'overall_health_score' for the entire meal on a scale of 1 to 10, "
+            f"based on the balance of all items combined, portion sizes, and overall nutrient content. "
+            f"Output strictly as valid JSON. "
+            f"Example output: "
+            f"{{'foods': ["
+            f"{{'name': 'Grilled Chicken Breast', 'ingredients': ['Chicken', 'Olive Oil', 'Spices'], "
+            f"'estimated_calories': '165 kcal', 'protein': '31g', 'carbs': '0g', 'fats': '3.6g', 'health_score': 9}}, "
+            f"{{'name': 'French Fries', 'ingredients': ['Potatoes', 'Vegetable Oil', 'Salt'], "
+            f"'estimated_calories': '312 kcal', 'protein': '3.4g', 'carbs': '41g', 'fats': '15g', 'health_score': 3}}"
+            f"], 'overall_health_score': 6, 'overall_calories': 477}}"
+        )
+
+        # Initialize Groq client
+        client = Groq(api_key=os.environ.get("LLM_API_KEY"))
+        
+        # Call Groq API
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": "You are a nutritional analysis AI that responds only with valid JSON."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.3,
+            max_tokens=1024
+        )
+
+        result_text = response.choices[0].message.content.strip()
+        
+        if "```" in result_text:
+            result_text = result_text.split("```")[1].strip()
+        # Parse response
+        try:
+            json_compatible_response = json.loads(result_text)
+            #logging.info(f"Response from Groq processed successfully")
+        except json.JSONDecodeError as e:
+            logging.error(f"Failed to parse Groq response: {e}")
+            return JSONResponse(status_code=500, content={"error": f"Failed to parse response: {str(e)}"})
+
+        # Save the result to MongoDB with the user's email
+        analysis_data = {
+            "email": user_email,
+            "foods": json_compatible_response.get("foods", []),
+            "overall_calories": json_compatible_response.get("overall_calories", 0),
+            "overall_health_score": json_compatible_response.get("overall_health_score", 0),
+            "timestamp": timestamp
+        }
+
+        # Insert analysis data into MongoDB collection
+        await food_collection.insert_one(analysis_data)
+
+        # Return the response as JSON
+        return JSONResponse(content=json_compatible_response)
+
+    except Exception as e:
+        logging.error(f"Error in analyzing food: {e}")
+        return JSONResponse(status_code=500, content={"error": f"Internal server error: {str(e)}"})
+
 
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Mindscribe API!","status": "200"}
 
-
-#Run 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app)
-    #uvicorn.run(app, host="0.0.0.0", port=8000)
