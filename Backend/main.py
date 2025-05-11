@@ -374,7 +374,7 @@ async def analytics(user_email: str = Form(...), analysis_id: str = Form(...)):
         logging.error(f"Error fetching analytics: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error during analytics retrieval!")
 
-@app.post("/history")
+@app.get("/history")
 async def get_history(user_email: str):
     try:
         entries = await analysis_collection.find({"user_email": user_email}).sort("timestamp", -1).to_list(length=50)
@@ -447,9 +447,9 @@ async def mood_breakdown(user_email: str):
 def read_root():
     return {"message": "Welcome to Mindscribe API!","status": "200"}
 
+
+#Run 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app)
-
-
-    # Uncomment the following line to run the server with hot reload
+    #uvicorn.run(app, host="0.0.0.0", port=8000)
