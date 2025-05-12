@@ -955,7 +955,7 @@ async def analyze_food(user_email: str = Form(...), food_text: str = Form(...), 
 @app.post("/diet-plan")
 async def generate_diet_plan(user_email: str = Form(...),age: str = Form(...), weight: str = Form(...),
                               height: str = Form(...), gender : str = Form(...),activity_level: str = Form(...),
-                              goal: str = Form(...), allergies: str = Form(...), dislikes: str = Form(...),email_deliver: str = Form(...)):
+                              goal: str = Form(...), allergies: str = Form(...), dislikes: str = Form(...),email_deliver: str = Form(True)):
 
     try:
         existing_user = await user_collection.find_one({"email": user_email})
