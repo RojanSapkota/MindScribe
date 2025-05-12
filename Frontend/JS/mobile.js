@@ -2162,15 +2162,22 @@ if (saveTranscriptionBtn) {
       if (!response.ok) {
         throw new Error('Failed to save transcript');
       }
-      const data = await response.json();
-      transcriptionResult.innerHTML = `<div class='journal-entry'><h3>Your Journal Entry</h3><p>${finalTranscript}</p></div><div class='analysis'><h4>AI Analysis</h4><pre>${JSON.stringify(data, null, 2)}</pre></div>`;
-      transcriptionActions.style.display = 'none';
-      saveTranscriptionBtn.disabled = false;
-      saveTranscriptionBtn.innerHTML = '<i class="fas fa-save"></i> Save Entry';
+      // Success UI: show green button and hide form, like manual log
+      saveTranscriptionBtn.style.backgroundColor = 'green';
+      saveTranscriptionBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+      setTimeout(() => {
+        saveTranscriptionBtn.style.backgroundColor = '';
+        saveTranscriptionBtn.innerHTML = '<i class="fas fa-save"></i> Save Entry';
+        transcriptionResult.innerHTML = '';
+        transcriptionActions.style.display = 'none';
+        finalTranscript = '';
+      }, 1800);
     } catch (error) {
       alert('Error saving transcript: ' + error.message);
       saveTranscriptionBtn.disabled = false;
       saveTranscriptionBtn.innerHTML = '<i class="fas fa-save"></i> Save Entry';
+    } finally {
+      saveTranscriptionBtn.disabled = false;
     }
   });
 }
@@ -2423,11 +2430,16 @@ if (submitJournalLog) {
       });
       if (!response.ok) throw new Error('Failed to save journal entry');
       const data = await response.json();
-      alert('Journal entry saved!');
-      logJournalContainer.style.display = 'none';
-      journalDescription.value = '';
-      // Optionally show analysis result
-      // You can display data in a modal or below the form
+      //change button color to green 
+      submitJournalLog.style.backgroundColor = 'green';
+      submitJournalLog.innerHTML = '<i class="fas fa-check"></i> Saved!';
+      // Show success for 1.8s, then reset and hide form
+      setTimeout(() => {
+        submitJournalLog.style.backgroundColor = '';
+        submitJournalLog.innerHTML = '<i class="fas fa-check"></i> Save Journal';
+        logJournalContainer.style.display = 'none';
+        journalDescription.value = '';
+      }, 1800);
     } catch (err) {
       alert('Error saving journal entry: ' + err.message);
     } finally {
@@ -2536,6 +2548,22 @@ async function loadJournalHistory(showAll = false) {
         }
       });
     });
+    // Add Delete option to dropdown
+    journalHistoryContainer.querySelectorAll('.journal-entry-dropdown').forEach((dropdown, idx) => {
+      // Only add if not already present
+      if (!dropdown.querySelector('.journal-dropdown-item.delete')) {
+        const entryId = visibleEntries[idx]._id;
+        const deleteDiv = document.createElement('div');
+        deleteDiv.className = 'journal-dropdown-item delete';
+        deleteDiv.setAttribute('data-id', entryId);
+        deleteDiv.innerHTML = '<i class="fas fa-trash"></i> Delete';
+        dropdown.appendChild(deleteDiv);
+        deleteDiv.addEventListener('click', function() {
+          dropdown.style.display = 'none';
+          showDeleteJournalConfirm(entryId);
+        });
+      }
+    });
     // Show More button logic
     const showMoreBtn = document.getElementById('showMoreJournalBtn');
     if (showMoreBtn) {
@@ -2553,32 +2581,94 @@ function showJournalFullModal(analysis) {
   // Remove any existing modal
   const oldModal = document.getElementById('journalFullModal');
   if (oldModal) oldModal.remove();
+  // If analysis_result is a string, try to parse it as JSON
+  let parsed = analysis;
+  if (typeof analysis.analysis_result === 'string') {
+    try {
+      parsed = JSON.parse(analysis.analysis_result);
+    } catch (e) {
+      parsed = {};
+    }
+  } else if (typeof analysis.analysis_result === 'object') {
+    parsed = analysis.analysis_result;
+  }
+  // Fallbacks for missing fields
+  const summary = parsed.summary || 'No summary available.';
+  const mood = parsed.mood || 'N/A';
+  const sentiment_score = parsed.sentiment_score !== undefined ? parsed.sentiment_score : 'N/A';
+  const key_topics = Array.isArray(parsed.key_topics) ? parsed.key_topics.map(escapeHTML).join(', ') : 'N/A';
+  const insights = Array.isArray(parsed.insights) ? parsed.insights.map(i => `<li>${escapeHTML(i)}</li>`).join('') : '';
+  const suggestions = Array.isArray(parsed.suggestions) ? parsed.suggestions.map(i => `<li>${escapeHTML(i)}</li>`).join('') : '';
+  // Modal markup with improved style
   const modal = document.createElement('div');
   modal.id = 'journalFullModal';
-  modal.style.position = 'fixed';
-  modal.style.top = '0';
-  modal.style.left = '0';
-  modal.style.width = '100vw';
-  modal.style.height = '100vh';
-  modal.style.background = 'rgba(0,0,0,0.32)';
-  modal.style.zIndex = '9999';
-  modal.style.display = 'flex';
-  modal.style.alignItems = 'center';
-  modal.style.justifyContent = 'center';
   modal.innerHTML = `
-    <div style="background:#fff;border-radius:16px;max-width:95vw;width:400px;padding:28px 20px;box-shadow:0 6px 32px 0 rgba(93,95,239,0.13);position:relative;">
-      <button id="closeJournalFullModal" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:1.3em;color:#888;cursor:pointer;"><i class="fas fa-times"></i></button>
-      <h2 style="font-size:1.2em;margin-bottom:10px;color:#5D5FEF;">Journal Analysis</h2>
-      <div style="margin-bottom:10px;"><b>Summary:</b><br>${escapeHTML(analysis.summary || 'No summary')}</div>
-      <div style="margin-bottom:10px;"><b>Mood:</b> ${escapeHTML(analysis.mood || 'N/A')}</div>
-      <div style="margin-bottom:10px;"><b>Sentiment Score:</b> ${analysis.sentiment_score ?? 'N/A'}</div>
-      <div style="margin-bottom:10px;"><b>Key Topics:</b> ${(analysis.key_topics || []).map(escapeHTML).join(', ')}</div>
-      <div style="margin-bottom:10px;"><b>Insights:</b><ul style="margin:0 0 0 18px;padding:0;">${(analysis.insights || []).map(i => `<li>${escapeHTML(i)}</li>`).join('')}</ul></div>
-      <div style="margin-bottom:10px;"><b>Suggestions:</b><ul style="margin:0 0 0 18px;padding:0;">${(analysis.suggestions || []).map(i => `<li>${escapeHTML(i)}</li>`).join('')}</ul></div>
+    <div class="journal-modal-content">
+      <button id="closeJournalFullModal" class="journal-modal-close"><i class="fas fa-times"></i></button>
+      <h2 class="journal-modal-title"><i class="fas fa-book-open"></i> Journal Analysis</h2>
+      <div class="journal-modal-section"><b>Summary:</b><br><span>${escapeHTML(summary)}</span></div>
+      <div class="journal-modal-section"><b>Mood:</b> <span>${escapeHTML(mood)}</span></div>
+      <div class="journal-modal-section"><b>Sentiment Score:</b> <span>${sentiment_score}</span></div>
+      <div class="journal-modal-section"><b>Key Topics:</b> <span>${key_topics}</span></div>
+      <div class="journal-modal-section"><b>Insights:</b><ul>${insights || '<li>No insights available.</li>'}</ul></div>
+      <div class="journal-modal-section"><b>Suggestions:</b><ul>${suggestions || '<li>No suggestions available.</li>'}</ul></div>
     </div>
   `;
   document.body.appendChild(modal);
   document.getElementById('closeJournalFullModal').onclick = () => modal.remove();
+}
+
+// Confirmation modal for deleting journal entry
+function showDeleteJournalConfirm(analysisId) {
+  // Remove any existing modal
+  const oldModal = document.getElementById('deleteJournalConfirmModal');
+  if (oldModal) oldModal.remove();
+  const modal = document.createElement('div');
+  modal.id = 'deleteJournalConfirmModal';
+  modal.innerHTML = `
+    <div class="delete-confirm-modal">
+      <div class="delete-confirm-content">
+        <div class="delete-confirm-header">
+          <i class="fas fa-exclamation-triangle"></i>
+          <h3>Delete Journal Entry?</h3>
+        </div>
+        <div class="delete-confirm-body">
+          <p>Are you sure you want to delete this journal entry? This action cannot be undone.</p>
+          <div class="delete-confirm-actions">
+            <button class="delete-confirm-cancel">Cancel</button>
+            <button class="delete-confirm-delete">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  // Cancel button
+  modal.querySelector('.delete-confirm-cancel').onclick = () => modal.remove();
+  // Delete button
+  modal.querySelector('.delete-confirm-delete').onclick = async function() {
+    const userEmail = localStorage.getItem('userEmail');
+    if (!userEmail) {
+      alert('Please log in.');
+      modal.remove();
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append('user_email', userEmail);
+      formData.append('analysis_id', analysisId);
+      const resp = await fetch('http://127.0.0.1:8000/delete-journal-history', {
+        method: 'POST',
+        body: formData
+      });
+      if (!resp.ok) throw new Error('Failed to delete journal entry');
+      modal.remove();
+      loadJournalHistory();
+    } catch (err) {
+      alert('Error deleting journal entry.');
+      modal.remove();
+    }
+  };
 }
 
 function escapeHTML(str) {

@@ -569,35 +569,82 @@ body.dark-theme .filter-row select {
 #journalFullModal {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.32);
+  background: rgba(93, 95, 239, 0.18); /* match app accent */
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.2s;
 }
-#journalFullModal > div {
-  background: #fff;
-  border-radius: 16px;
+.journal-modal-content {
+  background: #f7f8ff;
+  border-radius: 18px;
   max-width: 95vw;
   width: 400px;
-  padding: 28px 20px;
-  box-shadow: 0 6px 32px 0 rgba(93,95,239,0.13);
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 32px 22px 22px 22px;
+  box-shadow: 0 8px 32px 0 rgba(93,95,239,0.13);
   position: relative;
+  color: #23244a;
+  font-size: 1.04em;
+  animation: scaleIn 0.25s;
 }
-#journalFullModal h2 {
-  font-size: 1.2em;
-  margin-bottom: 10px;
+.journal-modal-title {
+  font-size: 1.25em;
   color: #5D5FEF;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-#closeJournalFullModal {
+.journal-modal-close {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 14px;
+  right: 16px;
   background: none;
   border: none;
   font-size: 1.3em;
   color: #888;
   cursor: pointer;
+  transition: color 0.2s;
+}
+.journal-modal-close:hover {
+  color: #5D5FEF;
+}
+.journal-modal-section {
+  margin-bottom: 12px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 4px 0 rgba(93,95,239,0.04);
+}
+.journal-modal-section ul {
+  margin: 0 0 0 18px;
+  padding: 0;
+}
+body.dark-theme #journalFullModal {
+  background: rgba(35,36,74,0.85);
+}
+body.dark-theme .journal-modal-content {
+  background: #23244a;
+  color: #e2e8f0;
+  /* keep max-height and scrolling in dark mode too */
+  max-height: 80vh;
+  overflow-y: auto;
+}
+body.dark-theme .journal-modal-title {
+  color: #a3bffa;
+}
+body.dark-theme .journal-modal-section {
+  background: #2d2e5a;
+  color: #e2e8f0;
+}
+body.dark-theme .journal-modal-close {
+  color: #bbb;
+}
+body.dark-theme .journal-modal-close:hover {
+  color: #a3bffa;
 }
 
 /* Dark theme for improved journal entry and modal */
