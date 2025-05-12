@@ -97,18 +97,14 @@
         <div class="section-title">
           <h3>Nutritional Tips</h3>
         </div>
-        
-        <div class="tips-carousel">
-          <div class="tip-card">
-            <div class="tip-icon"><i class="fas fa-leaf"></i></div>
-            <h4>Balanced Diet</h4>
-            <p>Include a variety of fruits, vegetables, lean proteins, and whole grains in your meals.</p>
+        <div class="tips-carousel" id="tipsCarousel">
+          <div class="tip-card" id="tipCard">
+            <div class="tip-icon" id="tipIcon"><i class="fas fa-leaf"></i></div>
+            <h4 id="tipTitle">Balanced Diet</h4>
+            <p id="tipText">Include a variety of fruits, vegetables, lean proteins, and whole grains in your meals.</p>
           </div>
-          
-          <div class="tip-indicator">
-            <span class="active"></span>
-            <span></span>
-            <span></span>
+          <div class="tip-controls">
+            <div class="tip-indicator" id="tipIndicator"></div>
           </div>
         </div>
       </div>
@@ -641,107 +637,110 @@
         <div class="tab-content" id="terms-tab" style="display: block;">
             <div class="content-section">
                 <h2>Terms of Service</h2>
-                <p class="last-updated">Last Updated: May 11, 2025</p>
+                <p class="last-updated">Last Updated: May 12, 2025</p>
+                <div class="terms-section">
+                <h3>1. Acceptance of Terms</h3>
+                <p>By accessing or using the MindScribe Health & Wellness App (“the App”), you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, you should not use the App.</p>
+                </div>
 
                 <div class="terms-section">
-                  <h3>1. Acceptance of Terms</h3>
-                  <p>By accessing or using the Calorie Tracking App, you agree to be bound by these Terms of Service. If you disagree with any part of these terms, you may not access the service.</p>
-              </div>
-              
-              <div class="terms-section">
                   <h3>2. Description of Service</h3>
-                  <p>The Calorie Tracking App provides users with tools to track their food intake, analyze nutritional content, and maintain dietary records. We reserve the right to modify or discontinue the service at any time without notice.</p>
-              </div>
+                  <p>The App provides tools to support mental and physical well-being, including voice journaling, mood and sentiment analysis, and optional fitness and calorie tracking. We reserve the right to modify, suspend, or discontinue any part of the service at any time without prior notice.</p>
+                </div>
 
-              <div class="terms-section">
+                <div class="terms-section">
                   <h3>3. User Accounts</h3>
-                  <p>To use certain features of the app, you must register for an account. You are responsible for maintaining the confidentiality of your account information and for all activities that occur under your account.</p>
-              </div>
+                  <p>Certain features require you to create an account. You are responsible for maintaining the confidentiality of your login information and for all activity under your account. You must notify us immediately of any unauthorized use or suspected breach.</p>
+                </div>
 
-              <div class="terms-section">
+                <div class="terms-section">
                   <h3>4. User Content</h3>
-                  <p>You retain ownership of any content you submit to the service, but grant us a worldwide, non-exclusive license to use, reproduce, and display such content in connection with the service.</p>
-              </div>
+                  <p>You retain ownership of any content you submit through the App (e.g., journal entries, logs), but grant us a non-exclusive, worldwide license to use, store, and process your content solely to provide and improve the service.</p>
+                </div>
 
-              <div class="terms-section">
+                <div class="terms-section">
                   <h3>5. Prohibited Conduct</h3>
-                  <p>You agree not to use the service for any unlawful purpose or in any way that could damage or impair the service. This includes but is not limited to uploading malicious code, attempting to gain unauthorized access, or harassing other users.</p>
-              </div>
+                  <p>You agree not to misuse the App. This includes, but is not limited to, uploading harmful code, attempting unauthorized access to other accounts, interfering with the service’s operation, or using it for unlawful or abusive purposes.</p>
+                </div>
 
-              <div class="terms-section">
-                  <h3>6. Limitations of Liability</h3>
-                  <p>The Calorie Tracking App and its owners shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use or inability to use the service.</p>
-              </div>
+                <div class="terms-section">
+                  <h3>6. Data & Privacy</h3>
+                  <p>We respect your privacy and process your data in accordance with our Privacy Policy. Your personal and journal data will not be shared or sold without your consent. You may request data deletion at any time.</p>
+                </div>
 
-              <div class="terms-section">
-                  <h3>7. Changes to Terms</h3>
-                  <p>We reserve the right to update these terms at any time. We will notify users of any significant changes via email or through the app.</p>
-              </div>
+                <div class="terms-section">
+                  <h3>7. Limitation of Liability</h3>
+                  <p>The App is provided on an “as is” basis. We do not guarantee specific outcomes from using the service. We are not liable for any indirect, incidental, or consequential damages arising from your use or inability to use the App.</p>
+                </div>
 
-              <div class="terms-section">
-                  <h3>8. Termination</h3>
-                  <p>We may terminate or suspend your account and access to the service immediately, without prior notice, for conduct that we believe violates these Terms or is harmful to other users, us, or third parties.</p>
-              </div>
+                <div class="terms-section">
+                  <h3>8. Modifications to Terms</h3>
+                  <p>We may update these Terms from time to time. We will notify users of significant changes via email or through an in-app notification. Continued use of the App after changes take effect constitutes acceptance of the new terms.</p>
+                </div>
 
-              <div class="terms-section">
-                  <h3>9. Governing Law</h3>
-                  <p>These terms shall be governed by and construed in accordance with the laws of the jurisdiction in which the app operates, without regard to its conflict of law provisions.</p>
-              </div>
+                <div class="terms-section">
+                  <h3>9. Termination</h3>
+                  <p>We reserve the right to suspend or terminate your account at any time if you violate these Terms, disrupt the service, or pose a security or legal risk. Upon termination, your access will be revoked and your data may be deleted.</p>
+                </div>
+
+                <div class="terms-section">
+                  <h3>10. Governing Law</h3>
+                  <p>These Terms shall be governed by the laws of the jurisdiction in which the App operates. Any disputes arising from the Terms will be resolved in the applicable local courts.</p>
+                </div>
+
             </div>
         </div>
         <div class="tab-content" id="privacy-tab" style="display: none;">
             <div class="content-section">
                 <h2>Privacy Policy</h2>
-                <p class="last-updated">Last Updated: May 11, 2025</p>
-
+                <p class="last-updated">Last Updated: May 12, 2025</p>
                 <div class="terms-section">
-                  <h3>1. Information We Collect</h3>
-                  <p>We collect information you provide directly, such as your name, email address, and food data. We also collect usage data, such as your interactions with the app and device information.</p>
+               <h3>1. Information We Collect</h3>
+              <p>We collect information you provide directly, including your name, email address, journal entries, food images, and any other data you submit. We also automatically collect usage data such as device type, IP address, and interaction patterns within the app.</p>
+              </div>
+              <div class="terms-section">
+                <h3>2. How We Use Your Information</h3>
+                <p>We use your information to operate, maintain, and improve our services, including AI-based journaling, calorie analysis, and user insights. Food images may be used to train machine learning models to improve our AI’s accuracy. We do not use your data for advertising purposes.</p>
               </div>
 
               <div class="terms-section">
-                  <h3>2. Use of Information</h3>
-                  <p>We use the information we collect to provide, maintain, and improve our services, communicate with you, and personalize your experience. Your food images may be used to train our AI models to improve accuracy.</p>
+                <h3>3. Data Storage</h3>
+                <p>Your data is stored securely on cloud-based servers. Journal entries, voice transcripts, food logs, and analysis results are retained as part of your account history unless you choose to delete them.</p>
               </div>
 
               <div class="terms-section">
-                  <h3>3. Data Storage</h3>
-                  <p>Your data is stored on secure servers. Food images and analysis data are retained in your account history until you choose to delete them.</p>
+                <h3>4. Sharing of Information</h3>
+                <p>We do not sell or rent your personal information. We may share limited data with trusted service providers who help us deliver key app functionality (such as hosting or AI analysis), and only to the extent necessary to provide those services securely and reliably.</p>
               </div>
 
               <div class="terms-section">
-                  <h3>4. Sharing of Information</h3>
-                  <p>We do not sell or rent your personal information to third parties. We may share data with service providers who help us operate our business, but only as necessary to provide our services.</p>
+                <h3>5. Data Security</h3>
+                <p>We take your privacy seriously and use encryption, access controls, and other industry-standard measures to protect your data. However, no method of data transmission over the Internet or storage is completely secure, and we cannot guarantee absolute security.</p>
               </div>
 
               <div class="terms-section">
-                  <h3>5. Data Security</h3>
-                  <p>We implement appropriate security measures to protect against unauthorized access, alteration, or destruction of your data. However, no method of transmission over the Internet is 100% secure.</p>
+                <h3>6. Your Rights</h3>
+                <p>You have the right to access, update, or delete your personal data at any time. You can do this via your account settings or by contacting us directly. We will process such requests promptly, in accordance with applicable privacy laws.</p>
               </div>
 
               <div class="terms-section">
-                  <h3>6. Your Rights</h3>
-                  <p>You have the right to access, correct, or delete your personal information. You can do this through your account settings or by contacting us.</p>
+                <h3>7. Cookies & Tracking Technologies</h3>
+                <p>We may use cookies, local storage, or similar technologies to improve functionality, personalize your experience, and analyze usage. You may control these preferences through your browser or device settings.</p>
               </div>
 
               <div class="terms-section">
-                  <h3>7. Cookies and Similar Technologies</h3>
-                  <p>Our app may use cookies or local storage to enhance your experience and collect information about how you use the app.</p>
+                <h3>8. Children's Privacy</h3>
+                <p>Our services are not intended for children under the age of 13. We do not knowingly collect or store personal information from anyone under 13. If we become aware that such information has been collected, we will take steps to delete it.</p>
               </div>
 
               <div class="terms-section">
-                  <h3>8. Children's Privacy</h3>
-                  <p>Our service is not directed to children under the age of 13, and we do not knowingly collect personal information from children under 13.</p>
+                <h3>9. Updates to This Policy</h3>
+                <p>We may update this privacy policy periodically. When we do, we will revise the "Last Updated" date and notify users of any significant changes through the app or email.</p>
               </div>
 
               <div class="terms-section">
-                  <h3>9. Changes to Privacy Policy</h3>
-                  <p>We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last Updated" date.</p>
-              </div>
-
-              <div class="terms-section">
-                  <h3>10. Contact Us</h3>
-                  <p>If you have any questions about this privacy policy, please contact us at caloriegeek@rojansapkota.com.np.</p>
+                <h3>10. Contact Us</h3>
+                <p>If you have questions or concerns about this Privacy Policy or your data, please contact us at <a href="mailto:mindscribe@rojansapkota.com.np">mindscribe@rojansapkota.com.np</a>.</p>
               </div>
             </div>
         </div>

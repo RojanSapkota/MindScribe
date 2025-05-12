@@ -2254,3 +2254,69 @@ if (aiChatForm && aiChatInput && aiChatMessages) {
 // window.switchTab = ... (already defined above)
 // You can add: if (viewId !== 'aiView') aiChatInput.blur();
 // --- End AI Chat Section Logic ---
+
+// Dynamic Nutritional Tips
+const nutritionalTips = [
+  {
+    icon: '<i class="fas fa-leaf"></i>',
+    title: 'Balanced Diet',
+    text: 'Include a variety of fruits, vegetables, lean proteins, and whole grains in your meals.'
+  },
+  {
+    icon: '<i class="fas fa-tint"></i>',
+    title: 'Stay Hydrated',
+    text: 'Drink plenty of water throughout the day to support digestion and overall health.'
+  },
+  {
+    icon: '<i class="fas fa-apple-alt"></i>',
+    title: 'Fruits & Veggies',
+    text: 'Aim for at least 5 servings of fruits and vegetables daily for essential vitamins and minerals.'
+  },
+  {
+    icon: '<i class="fas fa-bread-slice"></i>',
+    title: 'Whole Grains',
+    text: 'Choose whole grain options like brown rice, oats, and whole wheat bread for more fiber.'
+  },
+  {
+    icon: '<i class="fas fa-fish"></i>',
+    title: 'Healthy Fats',
+    text: 'Incorporate healthy fats from sources like fish, nuts, seeds, and olive oil.'
+  },
+  {
+    icon: '<i class="fas fa-stopwatch"></i>',
+    title: 'Mindful Eating',
+    text: 'Eat slowly and pay attention to hunger cues to avoid overeating.'
+  },
+  {
+    icon: '<i class="fas fa-utensils"></i>',
+    title: 'Portion Control',
+    text: 'Be mindful of portion sizes, especially with high-calorie foods.'
+  },
+  {
+    icon: '<i class="fas fa-ice-cream"></i>',
+    title: 'Limit Added Sugar',
+    text: 'Reduce intake of sugary drinks and snacks for better energy and mood.'
+  }
+];
+
+let currentTip = 0;
+
+function renderTip(index) {
+  const tip = nutritionalTips[index];
+  document.getElementById('tipIcon').innerHTML = tip.icon;
+  document.getElementById('tipTitle').textContent = tip.title;
+  document.getElementById('tipText').textContent = tip.text;
+  // Update indicator
+  const indicator = document.getElementById('tipIndicator');
+  indicator.innerHTML = nutritionalTips.map((_, i) => `<span class="${i === index ? 'active' : ''}"></span>`).join('');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Nutritional Tips Carousel
+  renderTip(currentTip);
+  // Auto-scroll tips every 5 seconds
+  setInterval(() => {
+    currentTip = (currentTip + 1) % nutritionalTips.length;
+    renderTip(currentTip);
+  }, 5000);
+});
