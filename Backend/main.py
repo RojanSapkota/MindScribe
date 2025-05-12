@@ -14,6 +14,7 @@ from groq import Groq
 from bson import ObjectId
 from fastapi.encoders import jsonable_encoder
 import google.generativeai as genai
+from prompts import EMOTIONAL_TEMPLATE, NUTRITION_TEMPLATE, JOURNAL_TEMPLATE, NUTRITION_TEMPLATE2
 #Not using this for now
 #import whisper
 #import tempfile
@@ -97,15 +98,9 @@ class FoodAnalysisResponse(BaseModel):
 class MoodBreakdownRequest(BaseModel):
     user_email: str
 
-#I know it's not secure but for temporary purposes
-# and to avoid complexity, I'm using in-memory storage for OTPs
-otp_store = {}
-forgot_password_otp_store = {}
-
 #-------------------------------------------------------------------------------------------
 #RAG LLM MODULES IMPORTS
 #-------------------------------------------------------------------------------------------
-
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -129,7 +124,17 @@ user_history = {}
 data_path = "KnowledgeBase/"
 load_dotenv()
 
+#I know these are duplicates :)
+
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def load_model(model_name: str = 'all-MiniLM-L6-v2') -> SentenceTransformer:
     return SentenceTransformer(model_name)
@@ -173,40 +178,16 @@ def ask_questions(faiss_index, stored_chunks, model, question, model_name="llama
         for chunk in relevant_chunks
     })
 
-    system_prompt = f'''
-    You are a compassionate mental health coach with extensive knowledge from various psychological guides and self-help books. Your goal is to provide support and practical advice to teenagers struggling with mental health challenges, such as anxiety, depression, and stress management.
-    Your task is to create a supportive dialogue for a teen seeking help. You should:
-    1. Acknowledge the teen's feelings and experiences.
-    2. Provide empathetic and non-judgmental responses.
-    3. Encourage the teen to seek professional help if needed.
-    4. Offer practical tips and strategies for managing their mental health.
-    5. Use the provided context and citations to support your responses.
-    6. Maintain a friendly and approachable tone.
-    7. Avoid giving medical advice or making diagnoses.
-    8. Focus on building a trusting relationship with the teen.
-    9. Use the context and citations to provide relevant information and resources.
-    10. Be mindful of the teen's age and developmental stage in your responses.
-    11. Use the citations to provide additional resources and support.
-    12. Be aware of the potential impact of your words on the teen's mental health.
-    Keep in mind the importance of empathy, active listening, and practical suggestions. Ensure that your responses are relatable and age-appropriate, using language that resonates with teenagers. Include affirmations and encouragement to help boost their confidence in managing their mental health.
-    Don't let user know that you are an AI. Instead, act as a compassionate mental health coach who is here to help them navigate their challenges.
-    Your responses should be based on the context provided and should not include any personal opinions or experiences. Instead, focus on providing evidence-based information and resources to support the teen's mental health journey.
-    Don't Answer irrelevant questions. Instead, focus on providing evidence-based information and resources to support the teen's mental health journey.
-
-    Context:
-    {context_str}
-
-    Citations:
-    {citations}
-
-    Question:
-    {question}
-    '''
+    prompt = EMOTIONAL_TEMPLATE.format(
+    context_str=f"{context_str}",
+    citations=f"{citations}",
+    question=f"{question}"
+)
 
     response = groq_chat.chat.completions.create(
         model=model_name,
         messages=[
-            {"role": "system", "content": system_prompt},
+            {"role": "system", "content": prompt},
             {"role": "user", "content": question}
         ],
         temperature=0.7,
@@ -226,11 +207,11 @@ async def ask_question(request:Request):
         if request.headers.get("content-type") == "application/x-www-form-urlencoded":
             form_data = await request.form()
             question = form_data.get("question")
-            print(f"Question: {question}")
+            #print(f"Question: {question}")
         elif request.headers.get("content-type") == "application/json":
             body = await request.json()
             question = body.get("question")
-            #print(f"Question: {question}")
+            print(f"Question: {question}")
         else:
             raise HTTPException(
                 status_code=415,
@@ -256,6 +237,12 @@ async def ask_question(request:Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 #-------------------------------------------------------------------------------------------
+
+#I know it's not secure but for temporary purposes
+# and to avoid complexity, I'm using in-memory storage for OTPs
+
+otp_store = {}
+forgot_password_otp_store = {}
 
 def generate_otp(length=6):
     """Generate a random OTP of specified length"""
@@ -399,6 +386,8 @@ async def login(user: UserLogin):
         logging.error(f"Login error: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error during login")
 
+
+#Doesnt WORK!
 @app.post("/forgot-password-request")
 async def forgot_password_request(data: ForgotPasswordRequest):
     user = await user_collection.find_one({"email": data.email})
@@ -427,6 +416,8 @@ async def forgot_password_reset(data: ForgotPasswordReset):
     await user_collection.update_one({"email": data.email}, {"$set": {"password": hashed_password}})
     del forgot_password_otp_store[data.email]
     return {"message": "Password reset successful"}
+
+#NOT NEEDED FOR NOW
 
 #@app.post("/whisper-transcribe")
 #async def whisper_audio(audio: UploadFile = File(...)):
@@ -462,26 +453,8 @@ async def analyze_text(user_email: str = Form(...), transcript: str = Form(...),
         except Exception as e:
             logging.error(f"Groq client initialization failed: {e}")
             raise HTTPException(status_code=500, detail="AI service unavailable")
-
-        prompt = (
-            f"You are a professional journal analysis AI assistant. "
-            f"Analyze this journal entry: '{transcript}'. "
-            f"Provide a detailed analysis in strict JSON format including: "
-            f"1. 'summary': A brief summary of the journal entry (2-3 sentences), "
-            f"2. 'mood': The predominant mood detected (single word or short phrase), "
-            f"3. 'sentiment_score': A score from -10 to 10 where -10 is extremely negative, 0 is neutral, and 10 is extremely positive, "
-            f"4. 'key_topics': An array of 3-5 main topics or themes discussed, "
-            f"5. 'insights': An array of 2-3 psychological insights or patterns observed, "
-            f"6. 'suggestions': An array of 2-3 actionable suggestions based on the journal content. "
-            f"Output strictly as valid JSON without any additional text. "
-            f"Example output: "
-            f"{{\"summary\": \"The author described a challenging day at work with multiple deadlines. Despite the stress, they managed to stay productive and received positive feedback from their manager.\", "
-            f"\"mood\": \"stressed but accomplished\", "
-            f"\"sentiment_score\": 2, "
-            f"\"key_topics\": [\"work stress\", \"deadlines\", \"productivity\", \"positive feedback\"], "
-            f"\"insights\": [\"Author tends to perform well under pressure\", \"Validation from authority figures significantly improves their mood\"], "
-            f"\"suggestions\": [\"Consider breaking large tasks into smaller milestones to reduce stress\", \"Schedule short breaks during intense work periods\", \"Continue seeking feedback to maintain motivation\"]}}"
-        )
+        
+        prompt = JOURNAL_TEMPLATE.replace("{transcript}", transcript)
 
         try:
             response = client.chat.completions.create(
@@ -619,34 +592,12 @@ async def analyze_food(user_email: str = Form(...), file: UploadFile = File(...)
         # Read uploaded file
         image_bytes = await file.read()
         image = Image.open(io.BytesIO(image_bytes))
-
-        # Construct the prompt for Gemini
-        prompt = (
-     "You are a professional food nutritionist AI. "
-     "Analyze this image and identify all visible foods. "
-     "For each food item, provide a detailed breakdown in strict JSON format including: "
-     "1. 'name' of the food item, "
-     "2. list of 'ingredients' used (be specific and include all major ingredients), "
-     "3. 'estimated_calories' (in kcal, provide a realistic estimate based on portion size), "
-     "4. 'protein' (in grams, provide a realistic estimate), "
-     "5. 'carbs' (in grams, provide a realistic estimate), "
-     "6. 'fats' (in grams, provide a realistic estimate), "
-     "7. 'health_score' from 1 to 10, where 1 is very unhealthy and 10 is very healthy (base this on the ingredients and nutritional content). "
-     "Finally, calculate an 'overall_health_score' for the entire meal on a scale of 1 to 10, "
-     "based on the balance of all items combined, portion sizes, and overall nutrient content. "
-     "Output strictly as valid JSON. "
-     "Example output: "
-     "{'foods': ["
-     "{'name': 'Grilled Chicken Breast', 'ingredients': ['Chicken', 'Olive Oil', 'Spices'], "
-     "'estimated_calories': '165 kcal', 'protein': '31g', 'carbs': '0g', 'fats': '3.6g', 'health_score': 9}, "
-     "{'name': 'French Fries', 'ingredients': ['Potatoes', 'Vegetable Oil', 'Salt'], "
-     "'estimated_calories': '312 kcal', 'protein': '3.4g', 'carbs': '41g', 'fats': '15g', 'health_score': 3}"
-     "], 'overall_health_score': 6, 'overall_calories': '200 kcal'}"
- )
+        
+        prompt = NUTRITION_TEMPLATE
 
         genai.configure(api_key=FOOD_API_KEY)
         model = genai.GenerativeModel('gemini-2.0-flash')
-        # Call Gemini API
+
         response = model.generate_content(
             [prompt, image],
             generation_config={"temperature": 0.3}
@@ -813,28 +764,7 @@ async def analyze_food(user_email: str = Form(...), food_text: str = Form(...), 
         if not existing_user:
             raise HTTPException(status_code=400, detail="User not found")
         
-        prompt = (
-            f"You are a professional food nutritionist AI. "
-            f"Analyze this food description and identify all foods: '{food_text}'. "
-            f"For each food item, provide a detailed breakdown in strict JSON format including: "
-            f"1. 'name' of the food item, "
-            f"2. list of 'ingredients' used (be specific and include all major ingredients), "
-            f"3. 'estimated_calories' (in kcal, provide a realistic estimate based on portion size), "
-            f"4. 'protein' (in grams, provide a realistic estimate), "
-            f"5. 'carbs' (in grams, provide a realistic estimate), "
-            f"6. 'fats' (in grams, provide a realistic estimate), "
-            f"7. 'health_score' from 1 to 10, where 1 is very unhealthy and 10 is very healthy (base this on the ingredients and nutritional content). "
-            f"Finally, calculate an 'overall_health_score' for the entire meal on a scale of 1 to 10, "
-            f"based on the balance of all items combined, portion sizes, and overall nutrient content. "
-            f"Output strictly as valid JSON. "
-            f"Example output: "
-            f"{{'foods': ["
-            f"{{'name': 'Grilled Chicken Breast', 'ingredients': ['Chicken', 'Olive Oil', 'Spices'], "
-            f"'estimated_calories': '165 kcal', 'protein': '31g', 'carbs': '0g', 'fats': '3.6g', 'health_score': 9}}, "
-            f"{{'name': 'French Fries', 'ingredients': ['Potatoes', 'Vegetable Oil', 'Salt'], "
-            f"'estimated_calories': '312 kcal', 'protein': '3.4g', 'carbs': '41g', 'fats': '15g', 'health_score': 3}}"
-            f"], 'overall_health_score': 6, 'overall_calories': 477}}"
-        )
+        prompt = NUTRITION_TEMPLATE2.replace("{food_text}", food_text)
 
         # Initialize Groq client
         client = Groq(api_key=os.environ.get("LLM_API_KEY"))
@@ -854,15 +784,12 @@ async def analyze_food(user_email: str = Form(...), food_text: str = Form(...), 
         
         if "```" in result_text:
             result_text = result_text.split("```")[1].strip()
-        # Parse response
         try:
             json_compatible_response = json.loads(result_text)
-            #logging.info(f"Response from Groq processed successfully")
         except json.JSONDecodeError as e:
             logging.error(f"Failed to parse Groq response: {e}")
             return JSONResponse(status_code=500, content={"error": f"Failed to parse response: {str(e)}"})
 
-        # Save the result to MongoDB with the user's email
         analysis_data = {
             "email": user_email,
             "foods": json_compatible_response.get("foods", []),
@@ -871,17 +798,14 @@ async def analyze_food(user_email: str = Form(...), food_text: str = Form(...), 
             "timestamp": timestamp
         }
 
-        # Insert analysis data into MongoDB collection
         await food_collection.insert_one(analysis_data)
 
-        # Return the response as JSON
         return JSONResponse(content=json_compatible_response)
 
     except Exception as e:
         logging.error(f"Error in analyzing food: {e}")
         return JSONResponse(status_code=500, content={"error": f"Internal server error: {str(e)}"})
-
-
+    
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Mindscribe API!","status": "200"}

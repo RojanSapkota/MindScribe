@@ -52,7 +52,7 @@ NUTRITION_TEMPLATE = '''\n
 
      '''
 
-JOURNEY_TEMPLATE = '''\n
+JOURNAL_TEMPLATE = '''\n
 f"You are a professional journal analysis AI assistant. "
             f"Analyze this journal entry: '{transcript}'. "
             f"Provide a detailed analysis in strict JSON format including: "
@@ -71,3 +71,27 @@ f"You are a professional journal analysis AI assistant. "
             f"\"insights\": [\"Author tends to perform well under pressure\", \"Validation from authority figures significantly improves their mood\"], "
             f"\"suggestions\": [\"Consider breaking large tasks into smaller milestones to reduce stress\", \"Schedule short breaks during intense work periods\", \"Continue seeking feedback to maintain motivation\"]}}"
             '''
+
+
+NUTRITION_TEMPLATE2 = '''\n
+            f"You are a professional food nutritionist AI. "
+            f"Analyze this food description and identify all foods: '{food_text}'. "
+            f"For each food item, provide a detailed breakdown in strict JSON format including: "
+            f"1. 'name' of the food item, "
+            f"2. list of 'ingredients' used (be specific and include all major ingredients), "
+            f"3. 'estimated_calories' (in kcal, provide a realistic estimate based on portion size), "
+            f"4. 'protein' (in grams, provide a realistic estimate), "
+            f"5. 'carbs' (in grams, provide a realistic estimate), "
+            f"6. 'fats' (in grams, provide a realistic estimate), "
+            f"7. 'health_score' from 1 to 10, where 1 is very unhealthy and 10 is very healthy (base this on the ingredients and nutritional content). "
+            f"Finally, calculate an 'overall_health_score' for the entire meal on a scale of 1 to 10, "
+            f"based on the balance of all items combined, portion sizes, and overall nutrient content. "
+            f"Output strictly as valid JSON. "
+            f"Example output: "
+            f"{{'foods': ["
+            f"{{'name': 'Grilled Chicken Breast', 'ingredients': ['Chicken', 'Olive Oil', 'Spices'], "
+            f"'estimated_calories': '165 kcal', 'protein': '31g', 'carbs': '0g', 'fats': '3.6g', 'health_score': 9}}, "
+            f"{{'name': 'French Fries', 'ingredients': ['Potatoes', 'Vegetable Oil', 'Salt'], "
+            f"'estimated_calories': '312 kcal', 'protein': '3.4g', 'carbs': '41g', 'fats': '15g', 'health_score': 3}}"
+            f"], 'overall_health_score': 6, 'overall_calories': 477}}")
+        '''
