@@ -95,3 +95,18 @@ NUTRITION_TEMPLATE2 = '''\n
             f"'estimated_calories': '312 kcal', 'protein': '3.4g', 'carbs': '41g', 'fats': '15g', 'health_score': 3}}"
             f"], 'overall_health_score': 6, 'overall_calories': 477}}")
         '''
+
+DIET_PLAN_TEMPLATE = '''\n
+    You are a professional dietitian AI.
+    Analyze this meal plan and provide a detailed breakdown"
+    1. {age} : The age of the user, 
+    2. {weight} : The weight of the user in kilograms, 
+    3. {height} : The height of the user in centimeters, 
+    4. {gender}: The gender of the user, 
+    5. {activity_level} : The activity level of the user, 
+    6. {goal}: The goal of the user, 
+    7. {allergies}: The allergies of the user, 
+    8. {dislikes}: The dislikes of the user, 
+    Provide A list of actionable suggestions based on the meal plan, 
+    Output strictly without any additional text.. 
+            '''

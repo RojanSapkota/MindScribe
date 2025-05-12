@@ -14,7 +14,7 @@ from groq import Groq
 from bson import ObjectId
 from fastapi.encoders import jsonable_encoder
 import google.generativeai as genai
-from prompts import EMOTIONAL_TEMPLATE, NUTRITION_TEMPLATE, JOURNAL_TEMPLATE, NUTRITION_TEMPLATE2
+from prompts import EMOTIONAL_TEMPLATE, NUTRITION_TEMPLATE, JOURNAL_TEMPLATE, NUTRITION_TEMPLATE2, DIET_PLAN_TEMPLATE
 #Not using this for now
 #import whisper
 #import tempfile
@@ -302,6 +302,73 @@ async def send_otp_email(email: str, otp: str):
     except Exception as e:
         logging.error(f"Error sending OTP email: {e}")
         return False
+
+async def deliver_diet_plan(email: str, diet_plan: str):
+    if not smtp_user or not smtp_password:
+        logging.warning("Email credentials not set, skipping email")
+        return True
+    
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = f"MindScribe <{smtp_user}>"
+        msg['To'] = email
+        msg['Subject'] = "Your Personalized Diet Plan"
+        
+        body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background-color: #f9f9f9; border-radius: 5px; padding: 20px;">
+                <h2 style="color: #5D5FEF;">Your Personalized Diet Plan</h2>
+                <p>{diet_plan}</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(body, 'html'))
+
+        text_body = f"""
+        Your Personalized Diet Plan
+        
+        {diet_plan}
+        """
+        
+        #msg.attach(MIMEText(text_body, 'plain'))
+        
+        server = smtplib.SMTP_SSL(smtp_server, smtp_port)
+        server.login(smtp_user, smtp_password)
+        server.send_message(msg)
+        server.quit()
+        
+        logging.info(f"Diet plan email sent to {email}")
+        return True
+    except Exception as e:
+        logging.error(f"Error sending diet plan email: {e}")
+        return False
+
+def diet_plan_json_to_html(plan: dict) -> str:
+    html = "<html><body style='font-family:Arial,sans-serif;'>"
+    for key, value in plan.items():
+        pretty_key = key.replace('_', ' ').title()
+        if isinstance(value, dict):
+            html += f"<h3>{pretty_key}</h3><ul>"
+            for k, v in value.items():
+                html += f"<li><b>{k.replace('_', ' ').title()}:</b> {v}</li>"
+            html += "</ul>"
+        elif isinstance(value, list):
+            html += f"<h3>{pretty_key}</h3><ul>"
+            for item in value:
+                if isinstance(item, dict):
+                    html += "<li>"
+                    html += ", ".join(f"<b>{k.replace('_', ' ').title()}:</b> {v}" for k, v in item.items())
+                    html += "</li>"
+                else:
+                    html += f"<li>{item}</li>"
+            html += "</ul>"
+        else:
+            html += f"<p><b>{pretty_key}:</b> {value}</p>"
+    html += "</body></html>"
+    return html
 
 def hash_password(password: str) -> str:
     password_bytes = password.encode('utf-8')
@@ -885,6 +952,74 @@ async def analyze_food(user_email: str = Form(...), food_text: str = Form(...), 
         logging.error(f"Error in analyzing food: {e}")
         return JSONResponse(status_code=500, content={"error": f"Internal server error: {str(e)}"})
     
+@app.post("/diet-plan")
+async def generate_diet_plan(user_email: str = Form(...),age: str = Form(...), weight: str = Form(...),
+                              height: str = Form(...), gender : str = Form(...),activity_level: str = Form(...),
+                              goal: str = Form(...), allergies: str = Form(...), dislikes: str = Form(...),email_deliver: str = Form(...)):
+
+    try:
+        existing_user = await user_collection.find_one({"email": user_email})
+        if not existing_user:
+            raise HTTPException(status_code=400, detail="User not found")
+ 
+        client = Groq(api_key=os.environ.get("LLM_API_KEY"))
+        prompt = DIET_PLAN_TEMPLATE \
+        .replace("{age}", str(age)) \
+        .replace("{weight}", str(weight)) \
+        .replace("{height}", str(height)) \
+        .replace("{gender}", gender) \
+        .replace("{activity_level}", activity_level) \
+        .replace("{goal}", goal) \
+        .replace("{allergies}", allergies) \
+        .replace("{dislikes}", dislikes)
+
+        
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": "You are a diet plan generation AI. Respond ONLY with valid JSON, no markdown, no headings, no explanations, no code blocks, and no extra text. Output only the JSON object."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.3,
+            max_tokens=1024
+        )
+
+        result_text = response.choices[0].message.content.strip()
+        
+        # Convert email_deliver to boolean
+        email_deliver_bool = str(email_deliver).lower() in ["true", "1", "yes", "on"]
+        try:
+            json_compatible_response = json.loads(result_text)
+            plan_for_email = json.dumps(json_compatible_response, indent=2)
+            html_body = diet_plan_json_to_html(json_compatible_response)
+        except json.JSONDecodeError as e:
+            logging.error(f"Failed to parse Groq response: {e}. Raw response: {result_text}")
+            # Fallback: if result_text is empty or not useful, send a default message
+            if not result_text or result_text.lower().startswith("meal plan analysis"):
+                plan_for_email = "Diet plan could not be generated. Please try again later."
+                html_body = f"<html><body style='font-family:Arial,sans-serif;'><h2>Your Personalized Diet Plan</h2><p>Diet plan could not be generated. Please try again later.</p></body></html>"
+            else:
+                plan_for_email = result_text
+                html_body = f"<html><body style='font-family:Arial,sans-serif;'><h2>Your Personalized Diet Plan</h2><pre>{plan_for_email}</pre></body></html>"
+            if email_deliver_bool:
+                email_sent = await deliver_diet_plan(user_email, html_body)
+                if not email_sent:
+                    logging.error(f"Failed to send diet plan email to {user_email}")
+                    return JSONResponse(status_code=500, content={"error": "Failed to send diet plan email."})
+            return JSONResponse(status_code=200, content={"raw_diet_plan": result_text, "error": f"Failed to parse as JSON: {str(e)}"})
+        
+        if email_deliver_bool:
+            email_sent = await deliver_diet_plan(user_email, html_body)
+            if not email_sent:
+                logging.error(f"Failed to send diet plan email to {user_email}")
+                return JSONResponse(status_code=500, content={"error": "Failed to send diet plan email."})
+
+        return JSONResponse(content=json_compatible_response)
+
+    except Exception as e:
+        logging.error(f"Error in generating diet plan: {e}")
+        return JSONResponse(status_code=500, content={"error": f"Internal server error: {str(e)}"})                        
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Mindscribe API!","status": "200"}
