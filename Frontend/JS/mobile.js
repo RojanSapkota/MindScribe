@@ -2142,8 +2142,8 @@ if (saveTranscriptionBtn) {
       alert('No transcript to save.');
       return;
     }
-    // Save transcript to backend
-    const userEmail = localStorage.getItem('mindscribe_email');
+
+    userEmail = localStorage.getItem('userEmail');
     if (!userEmail) {
       alert('Please log in to save your journal entry.');
       return;
@@ -2249,6 +2249,59 @@ if (aiChatForm && aiChatInput && aiChatMessages) {
     sendAIMessage(question);
   });
 }
+
+// --- AI Chat Speech-to-Text Logic ---
+const aiMicBtn = document.getElementById('aiMicBtn');
+let aiRecognition = null;
+let aiIsListening = false;
+
+if (aiMicBtn && aiChatInput) {
+  aiMicBtn.addEventListener('click', function() {
+    if (aiIsListening) {
+      if (aiRecognition) aiRecognition.stop();
+      return;
+    }
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert('Speech recognition is not supported in your browser. Please use Chrome, Edge, or Safari.');
+      return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    aiRecognition = new SpeechRecognition();
+    aiRecognition.continuous = false;
+    aiRecognition.interimResults = true;
+    aiRecognition.lang = 'en-US';
+    aiIsListening = true;
+    aiMicBtn.classList.add('active');
+    aiChatInput.placeholder = 'Listening...';
+    let interim = '';
+    aiRecognition.onresult = (event) => {
+      interim = '';
+      let final = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          final += transcript + ' ';
+        } else {
+          interim += transcript;
+        }
+      }
+      aiChatInput.value = (aiChatInput.value ? aiChatInput.value + ' ' : '') + final + interim;
+    };
+    aiRecognition.onend = () => {
+      aiIsListening = false;
+      aiMicBtn.classList.remove('active');
+      aiChatInput.placeholder = 'Type your question...';
+    };
+    aiRecognition.onerror = (event) => {
+      aiIsListening = false;
+      aiMicBtn.classList.remove('active');
+      aiChatInput.placeholder = 'Type your question...';
+      alert('Speech recognition error: ' + event.error);
+    };
+    aiRecognition.start();
+  });
+}
+// --- End AI Chat Speech-to-Text Logic ---
 
 // Optional: clear chat when switching away from AI view (if desired)
 // window.switchTab = ... (already defined above)

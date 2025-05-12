@@ -3,7 +3,7 @@ let recognition = null;
 let isRecording = false;
 let finalTranscript = '';
 let interimTranscript = '';
-let currentUser = localStorage.getItem('mindscribe_email'); // Use the correct key
+let currentUser = localStorage.getItem('Useremail'); // Use the correct key
 
 // Use API_BASE_URL from mobile-home.js
 
