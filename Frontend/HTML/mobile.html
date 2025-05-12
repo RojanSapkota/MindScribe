@@ -109,7 +109,6 @@
         </div>
       </div>
     </div>
-    
     <div class="mobile-view hidden" id="activityView">
       <div class="mobile-header">
         <h1>Activity</h1>
@@ -367,37 +366,91 @@
     
     <div class="mobile-view hidden" id="recordView">
       <div class="mobile-header">
-        <h1>Record</h1>
+        <h1>Journal</h1>
       </div>
       <div class="mobile-content">
-        <div class="voice-transcription-section modern-voice-journal">
-          <div class="voice-header modern-voice-header">
-            <div class="voice-mic-bg">
-              <i class="fas fa-microphone-alt fa-3x"></i>
+        <div class="section-container">
+          <div class="activity-section">
+            <div class="section-title">
+              <h3>Journal</h3>
             </div>
-            <h2 class="voice-title">Voice Journal</h2>
-            <p class="voice-desc">Tap the button and start speaking to record your thoughts or mood.</p>
-          </div>
-          <div class="voice-controls modern-voice-controls">
-            <button id="startTranscriptionBtn" class="btn btn-primary modern-voice-btn">
-              <i class="fas fa-microphone"></i> Start Recording
-            </button>
-            <button id="stopTranscriptionBtn" class="btn btn-secondary modern-voice-btn" style="display:none;">
-              <i class="fas fa-stop"></i> Stop
-            </button>
-          </div>
-          <div class="transcription-status modern-transcription-status" id="transcriptionStatus" style="display:none;">
-            <span class="mic-pulse-bg"><i class="fas fa-microphone-alt pulse"></i></span>
-            <span>Listening...</span>
-          </div>
-          <div class="transcription-result modern-transcription-result" id="transcriptionResult" style="display:none;"></div>
-          <div class="transcription-actions modern-transcription-actions" id="transcriptionActions" style="display:none;">
-            <button id="saveTranscriptionBtn" class="btn btn-primary modern-voice-btn">
-              <i class="fas fa-save"></i> Save Entry
-            </button>
-            <button id="discardTranscriptionBtn" class="btn btn-secondary modern-voice-btn">
-              <i class="fas fa-times"></i> Discard
-            </button>
+            <div class="action-buttons scan-buttons">
+              <button id="recordJournalBtn" class="btn btn-primary fade-in">
+                <i class="fas fa-microphone"></i> Record a Journal
+              </button>
+              <button id="logJournalBtn" class="btn btn-secondary fade-in">
+                <i class="fas fa-keyboard"></i> Log Journal Manually
+              </button>
+              <button id="viewJournalHistoryBtn" class="btn btn-outline fade-in" style="margin-top: 10px;">
+                <i class="fas fa-history"></i> View Journal History
+              </button>
+            </div>
+            <!-- Voice Journal Section (hidden by default, shown on Record a Journal) -->
+            <div class="voice-transcription-section modern-voice-journal" id="voiceJournalSection" style="display:none;">
+              <div class="voice-header modern-voice-header">
+                <div class="voice-mic-bg">
+                  <i class="fas fa-microphone-alt fa-3x"></i>
+                </div>
+                <h2 class="voice-title">Voice Journal</h2>
+                <p class="voice-desc">Tap the button and start speaking to record your thoughts or mood.</p>
+              </div>
+              <div class="voice-controls modern-voice-controls">
+                <button id="startTranscriptionBtn" class="btn btn-primary modern-voice-btn">
+                  <i class="fas fa-microphone"></i> Start Recording
+                </button>
+                <button id="stopTranscriptionBtn" class="btn btn-secondary modern-voice-btn" style="display:none;">
+                  <i class="fas fa-stop"></i> Stop
+                </button>
+              </div>
+              <div class="transcription-status modern-transcription-status" id="transcriptionStatus" style="display:none;">
+                <span class="mic-pulse-bg"><i class="fas fa-microphone-alt pulse"></i></span>
+                <span>Listening...</span>
+              </div>
+              <div class="transcription-result modern-transcription-result" id="transcriptionResult" style="display:none;"></div>
+              <div class="transcription-actions modern-transcription-actions" id="transcriptionActions" style="display:none;">
+                <button id="saveTranscriptionBtn" class="btn btn-primary modern-voice-btn">
+                  <i class="fas fa-save"></i> Save Entry
+                </button>
+                <button id="discardTranscriptionBtn" class="btn btn-secondary modern-voice-btn">
+                  <i class="fas fa-times"></i> Discard
+                </button>
+              </div>
+            </div>
+            <!-- Manual Journal Section (hidden by default, shown on Log Journal Manually) -->
+            <div class="log-journal-container fade-in" id="logJournalContainer" style="display:none;">
+              <div class="log-journal-header">
+                <h3>Log Journal Manually</h3>
+                <p>Write your thoughts, feelings, or experiences below (e.g., "Today I felt happy after my walk").</p>
+              </div>
+              <div class="journal-description-wrapper" style="position:relative;display:flex;align-items:flex-start;gap:8px;">
+                <textarea id="journalDescription" class="journal-description" placeholder="Write your journal entry here..." style="flex:1;min-height:90px;max-width:100%;border-radius:12px;padding:12px 14px;font-size:1em;border:1.5px solid #5D5FEF;background:#f7f8ff;"></textarea>
+                <!-- Optionally, add a mic button for speech-to-text in future -->
+              </div>
+              <div class="log-journal-actions" style="display:flex;gap:10px;margin-top:12px;">
+                <button id="submitJournalLog" class="btn btn-primary">
+                  <i class="fas fa-check"></i> Save Journal
+                </button>
+                <button id="cancelJournalLog" class="btn btn-secondary">
+                  <i class="fas fa-times"></i> Cancel
+                </button>
+              </div>
+            </div>
+            <!-- Journal History Section (hidden by default) -->
+            <div id="journalHistorySection" class="fade-in" style="display:none;margin-top:18px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <h3 style="margin:0;font-size:1.1em;">Journal History</h3>
+                <button id="closeJournalHistoryBtn" class="btn btn-secondary btn-sm" style="padding:4px 12px;font-size:0.95em;">
+                  <i class="fas fa-times"></i> Close
+                </button>
+              </div>
+              <div id="journalHistoryContainer" style="min-height:60px;background:#f7f8ff;border-radius:10px;padding:10px 8px 8px 8px;box-shadow:0 1px 6px 0 rgba(93,95,239,0.04);">
+                <!-- Journal entries will be loaded here by JS -->
+                <div id="emptyJournalHistory" style="text-align:center;color:#888;padding:18px 0;display:none;">
+                  <i class="fas fa-book" style="font-size:1.5em;"></i>
+                  <div style="margin-top:6px;">No journal entries yet</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -795,10 +848,10 @@
       <button class="nav-item nav-item-record" data-view="recordView">
         <div class="scan-button-wrapper">
           <div class="scan-button-inner">
-            <i class="fas fa-microphone"></i>
+            <i class="fas fa-book"></i>
           </div>
         </div>
-        <span>Record</span>
+        <span>Journal</span>
       </button>
       <button class="nav-item" data-view="communityView">
         <i class="fas fa-history"></i>

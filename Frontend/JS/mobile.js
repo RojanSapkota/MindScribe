@@ -2301,12 +2301,6 @@ if (aiMicBtn && aiChatInput) {
     aiRecognition.start();
   });
 }
-// --- End AI Chat Speech-to-Text Logic ---
-
-// Optional: clear chat when switching away from AI view (if desired)
-// window.switchTab = ... (already defined above)
-// You can add: if (viewId !== 'aiView') aiChatInput.blur();
-// --- End AI Chat Section Logic ---
 
 // Dynamic Nutritional Tips
 const nutritionalTips = [
@@ -2373,3 +2367,156 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTip(currentTip);
   }, 5000);
 });
+
+// --- Journal Section Functionality ---
+const recordJournalBtn = document.getElementById('recordJournalBtn');
+const logJournalBtn = document.getElementById('logJournalBtn');
+const viewJournalHistoryBtn = document.getElementById('viewJournalHistoryBtn');
+const voiceJournalSection = document.getElementById('voiceJournalSection');
+const logJournalContainer = document.getElementById('logJournalContainer');
+const submitJournalLog = document.getElementById('submitJournalLog');
+const cancelJournalLog = document.getElementById('cancelJournalLog');
+const journalDescription = document.getElementById('journalDescription');
+
+if (recordJournalBtn) {
+  recordJournalBtn.addEventListener('click', () => {
+    // Show voice journal UI, hide manual
+    if (voiceJournalSection) voiceJournalSection.style.display = 'block';
+    if (logJournalContainer) logJournalContainer.style.display = 'none';
+  });
+}
+if (logJournalBtn) {
+  logJournalBtn.addEventListener('click', () => {
+    // Show manual journal UI, hide voice
+    if (voiceJournalSection) voiceJournalSection.style.display = 'none';
+    if (logJournalContainer) logJournalContainer.style.display = 'block';
+  });
+}
+if (cancelJournalLog) {
+  cancelJournalLog.addEventListener('click', () => {
+    if (logJournalContainer) logJournalContainer.style.display = 'none';
+    if (journalDescription) journalDescription.value = '';
+  });
+}
+if (submitJournalLog) {
+  submitJournalLog.addEventListener('click', async () => {
+    const text = journalDescription.value.trim();
+    if (!text) {
+      alert('Please write something in your journal entry.');
+      return;
+    }
+    const userEmail = localStorage.getItem('userEmail');
+    if (!userEmail) {
+      alert('Please log in to save your journal entry.');
+      return;
+    }
+    submitJournalLog.disabled = true;
+    submitJournalLog.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    try {
+      const formData = new FormData();
+      formData.append('user_email', userEmail);
+      formData.append('transcript', text);
+      formData.append('timestamp', new Date().toISOString());
+      const response = await fetch('http://127.0.0.1:8000/transcribe', {
+        method: 'POST',
+        body: formData
+      });
+      if (!response.ok) throw new Error('Failed to save journal entry');
+      const data = await response.json();
+      alert('Journal entry saved!');
+      logJournalContainer.style.display = 'none';
+      journalDescription.value = '';
+      // Optionally show analysis result
+      // You can display data in a modal or below the form
+    } catch (err) {
+      alert('Error saving journal entry: ' + err.message);
+    } finally {
+      submitJournalLog.disabled = false;
+      submitJournalLog.innerHTML = '<i class="fas fa-check"></i> Save Journal';
+    }
+  });
+}
+
+//if (viewJournalHistoryBtn) {
+//  viewJournalHistoryBtn.addEventListener('click', function() {
+//    // For now, reuse the communityView for journal history, or implement a new view
+//    // Here, we switch to communityView and could filter for journal entries
+//    document.querySelector('[data-view="communityView"]').click();
+//    // Optionally, trigger a filter for journal entries only
+//  });
+//}
+
+// --- Journal History Section Logic ---
+const journalHistorySection = document.getElementById('journalHistorySection');
+const journalHistoryContainer = document.getElementById('journalHistoryContainer');
+const viewJournalHistoryBtn2 = document.getElementById('viewJournalHistoryBtn');
+const closeJournalHistoryBtn = document.getElementById('closeJournalHistoryBtn');
+const emptyJournalHistory = document.getElementById('emptyJournalHistory');
+
+function showJournalHistory() {
+  if (journalHistorySection) journalHistorySection.style.display = 'block';
+  // Hide other sections for clarity
+  if (voiceJournalSection) voiceJournalSection.style.display = 'none';
+  if (logJournalContainer) logJournalContainer.style.display = 'none';
+  loadJournalHistory();
+}
+function hideJournalHistory() {
+  if (journalHistorySection) journalHistorySection.style.display = 'none';
+}
+if (viewJournalHistoryBtn2) {
+  viewJournalHistoryBtn2.addEventListener('click', showJournalHistory);
+}
+if (closeJournalHistoryBtn) {
+  closeJournalHistoryBtn.addEventListener('click', hideJournalHistory);
+}
+async function loadJournalHistory() {
+  if (!journalHistoryContainer) return;
+  const userEmail = localStorage.getItem('userEmail');
+  if (!userEmail) {
+    journalHistoryContainer.innerHTML = '<div style="color:#888;text-align:center;padding:18px 0;">Please log in to view your journal history.</div>';
+    return;
+  }
+  journalHistoryContainer.innerHTML = '<div style="text-align:center;padding:18px 0;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/history?user_email=${encodeURIComponent(userEmail)}`);
+    if (!response.ok) throw new Error('Failed to fetch journal history');
+    const data = await response.json();
+    const entries = data.entries || [];
+    if (entries.length === 0) {
+      if (emptyJournalHistory) emptyJournalHistory.style.display = 'block';
+      journalHistoryContainer.innerHTML = '';
+      journalHistoryContainer.appendChild(emptyJournalHistory);
+      return;
+    } else {
+      if (emptyJournalHistory) emptyJournalHistory.style.display = 'none';
+    }
+    // Render entries
+    journalHistoryContainer.innerHTML = entries.map(entry => `
+      <div class="journal-history-entry" style="background:#fff;border-radius:8px;padding:10px 12px;margin-bottom:10px;box-shadow:0 1px 4px 0 rgba(93,95,239,0.04);">
+        <div style="font-size:0.98em;color:#333;margin-bottom:4px;white-space:pre-line;">${escapeHTML(entry.transcript)}</div>
+        <div style="font-size:0.92em;color:#888;">${formatJournalDate(entry.timestamp)}</div>
+      </div>
+    `).join('');
+  } catch (err) {
+    journalHistoryContainer.innerHTML = '<div style="color:#F56565;text-align:center;padding:18px 0;">Error loading journal history.</div>';
+  }
+}
+function escapeHTML(str) {
+  if (!str) return '';
+  return str.replace(/[&<>'"]/g, function(tag) {
+    const charsToReplace = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    };
+    return charsToReplace[tag] || tag;
+  });
+}
+function formatJournalDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d)) return dateStr;
+  return d.toLocaleString();
+}

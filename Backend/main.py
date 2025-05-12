@@ -469,7 +469,6 @@ async def analyze_text(user_email: str = Form(...), transcript: str = Form(...),
             result_text = response.choices[0].message.content.strip()
         except Exception as e:
             raise HTTPException(status_code=502, detail="AI analysis service error!")
-
         try:
             parsed_json = json.loads(result_text)
         except json.JSONDecodeError as json_error:
@@ -487,30 +486,12 @@ async def analyze_text(user_email: str = Form(...), transcript: str = Form(...),
         except Exception as db_error:
             logging.error(f"Failed to save analysis to DB: {db_error}")
 
-
         return parsed_json
     except HTTPException as he:
         raise he
     except Exception as e:
         logging.error(f"Unexpected error during transcription: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error during transcription!")
-
-
-@app.post("/analytics")
-async def analytics(user_email: str = Form(...), analysis_id: str = Form(...)):
-    try:
-        user = await user_collection.find_one({"email": user_email})
-        if not user:
-            raise HTTPException(status_code=400, detail="User not found")
-
-        analysis = await analysis_collection.find_one({"_id": analysis_id})
-        if not analysis:
-            raise HTTPException(status_code=400, detail="Analysis not found")
-
-        return JSONResponse(content={"analysis": analysis})
-    except Exception as e:
-        logging.error(f"Error fetching analytics: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error during analytics retrieval!")
 
 @app.get("/history")
 async def get_history(user_email: str):
@@ -525,8 +506,49 @@ async def get_history(user_email: str):
     except Exception as e:
         logging.error(f"Error fetching history: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch journal history")
-    
+
+#DATA FROM TRANSCRIBE TO ANALYTICS
+
+#not so useful and secure
+@app.post("/analytics")
+#{
+#  "analysis": {
+#    "_id": "68215fb974e84fc7f2f8009a",
+#    "user_email": "test@gmail.com",
+#    "transcript": "This is a test.",
+#    "timestamp": "2025-05-12T02:40:54.834Z",
+#    "analysis_result": "{\n\"summary\": \"The journal entry is a brief test statement with no emotional or thematic content. It lacks personal details or experiences, making it difficult to analyze. The author's intention appears to be verifying the functionality of the journal analysis AI.\",\n\"mood\": \"neutral\",\n\"sentiment_score\": 0,\n\"key_topics\": [\"test\", \"journal entry\", \"analysis\"],\n\"insights\": [\"The author is likely testing the AI's functionality\", \"There is a lack of personal or emotional content in the entry\"],\n\"suggestions\": [\"Consider writing more detailed and personal journal entries for meaningful analysis\", \"Explore using journaling as a tool for self-expression and reflection\", \"Use this AI as a resource for gaining insights into your thoughts and feelings\"]\n}"
+#  }
+#}
+async def analytics(user_email: str = Form(...), analysis_id: str = Form(...)):
+    try:
+        user = await user_collection.find_one({"email": user_email})
+        if not user:
+            raise HTTPException(status_code=400, detail="User not found")
+
+        # Convert analysis_id to ObjectId for MongoDB lookup
+        try:
+            obj_id = ObjectId(analysis_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid analysis_id format")
+        analysis = await analysis_collection.find_one({"_id": obj_id})
+        if not analysis:
+            raise HTTPException(status_code=400, detail="Analysis not found")
+
+        # Convert ObjectId to string for JSON serialization
+        analysis["_id"] = str(analysis["_id"])
+        return JSONResponse(content={"analysis": analysis})
+    except Exception as e:
+        logging.error(f"Error fetching analytics: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error during analytics retrieval!")
+
+#useful for overall sentiment
 @app.post("/sentiment")
+#    {
+#      "sentiment_score": 0,
+#      "mood": "neutral",
+#      "summary": "The author is testing the functionality of the journal analysis system with a simple statement. The entry lacks emotional depth or personal content, indicating a neutral or experimental tone. The purpose is to gauge the system's response rather than express personal feelings or experiences."
+#    }
 async def sentiment(user_email: str = Form(...), analysis_id: str = Form(...)):
     try:
         # Use ObjectId for MongoDB lookup
@@ -552,7 +574,23 @@ async def sentiment(user_email: str = Form(...), analysis_id: str = Form(...)):
         logging.error(f"Error fetching sentiment: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error during sentiment retrieval!")
 
+#overall sentiment from a week
 @app.post("/mood-breakdown")
+#{
+#  "mood_data": [
+#    {
+#      "date": "2025-05-12T02:51:03.231Z",
+#      "score": 0,
+#      "mood": "neutral"
+#    },
+#    {
+#      "date": "2025-05-12T02:40:54.834Z",
+#      "score": 0,
+#      "mood": "neutral"
+#    }
+#  ]
+#}
+
 async def mood_breakdown(data: MoodBreakdownRequest):
     user_email = data.user_email
     try:
