@@ -508,25 +508,12 @@ async def get_history(user_email: str):
         raise HTTPException(status_code=500, detail="Failed to fetch journal history")
 
 #DATA FROM TRANSCRIBE TO ANALYTICS
-
-#not so useful and secure
-@app.post("/analytics")
-#{
-#  "analysis": {
-#    "_id": "68215fb974e84fc7f2f8009a",
-#    "user_email": "test@gmail.com",
-#    "transcript": "This is a test.",
-#    "timestamp": "2025-05-12T02:40:54.834Z",
-#    "analysis_result": "{\n\"summary\": \"The journal entry is a brief test statement with no emotional or thematic content. It lacks personal details or experiences, making it difficult to analyze. The author's intention appears to be verifying the functionality of the journal analysis AI.\",\n\"mood\": \"neutral\",\n\"sentiment_score\": 0,\n\"key_topics\": [\"test\", \"journal entry\", \"analysis\"],\n\"insights\": [\"The author is likely testing the AI's functionality\", \"There is a lack of personal or emotional content in the entry\"],\n\"suggestions\": [\"Consider writing more detailed and personal journal entries for meaningful analysis\", \"Explore using journaling as a tool for self-expression and reflection\", \"Use this AI as a resource for gaining insights into your thoughts and feelings\"]\n}"
-#  }
-#}
-async def analytics(user_email: str = Form(...), analysis_id: str = Form(...)):
+@app.get("/analytics")
+async def get_analytics(analysis_id: str, user_email: str):
     try:
         user = await user_collection.find_one({"email": user_email})
         if not user:
             raise HTTPException(status_code=400, detail="User not found")
-
-        # Convert analysis_id to ObjectId for MongoDB lookup
         try:
             obj_id = ObjectId(analysis_id)
         except Exception:
@@ -534,12 +521,10 @@ async def analytics(user_email: str = Form(...), analysis_id: str = Form(...)):
         analysis = await analysis_collection.find_one({"_id": obj_id})
         if not analysis:
             raise HTTPException(status_code=400, detail="Analysis not found")
-
-        # Convert ObjectId to string for JSON serialization
         analysis["_id"] = str(analysis["_id"])
         return JSONResponse(content={"analysis": analysis})
     except Exception as e:
-        logging.error(f"Error fetching analytics: {str(e)}")
+        logging.error(f"Error fetching analytics (GET): {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error during analytics retrieval!")
 
 #useful for overall sentiment
@@ -706,6 +691,62 @@ async def get_food_history(user_email: str = Form(...)):
         return JSONResponse(status_code=500, content={"error": "Internal server error while fetching food history."})
 
 
+@app.post("/delete-journal-history")
+async def delete_journal_history(user_email: str = Form(...), analysis_id: str = Form(...)):
+    try:
+        logging.info(f"Delete request: analysis_id={analysis_id}, user_email={user_email}")
+        # Verify if user exists
+        existing_user = await user_collection.find_one({"email": user_email})
+        if not existing_user:
+            raise HTTPException(status_code=404, detail="User not found.")
+
+        # Use analysis_id (ObjectId) for lookup
+        try:
+            obj_id = ObjectId(analysis_id)
+        except Exception:
+            logging.error(f"Invalid analysis_id format received: {analysis_id}")
+            raise HTTPException(status_code=400, detail="Invalid analysis_id format")
+
+        # Pre-delete debug: check if document exists for _id and user_email
+        doc = await analysis_collection.find_one({"_id": obj_id, "user_email": user_email})
+        if not doc:
+            # Check if document exists for _id only (user_email mismatch?)
+            doc_id_only = await analysis_collection.find_one({"_id": obj_id})
+            if doc_id_only:
+                logging.error(f"Delete failed: analysis_id {analysis_id} exists but user_email mismatch. Received user_email: {user_email}, stored user_email: {doc_id_only.get('user_email')}")
+            else:
+                logging.error(f"Delete failed: analysis_id {analysis_id} not found in analysis_collection.")
+            return JSONResponse(
+                status_code=404, 
+                content={"message": "Journal entry not found or already deleted.", "debug": f"analysis_id: {analysis_id}, user_email: {user_email}"}
+            )
+
+        # Proceed to delete
+        result = await analysis_collection.delete_one({
+            "_id": obj_id,
+            "user_email": user_email
+        })
+
+        if result.deleted_count == 0:
+            logging.error(f"Delete failed: Matched pre-delete but delete_one deleted 0. analysis_id: {analysis_id}, user_email: {user_email}")
+            return JSONResponse(
+                status_code=404, 
+                content={"message": "Journal entry not found or already deleted.", "debug": f"analysis_id: {analysis_id}, user_email: {user_email}"}
+            )
+
+        logging.info(f"Journal entry deleted. analysis_id: {analysis_id}, user_email: {user_email}")
+        return JSONResponse(content={
+            "message": "Journal entry deleted successfully.",
+            "deleted": True
+        })
+
+    except Exception as e:
+        logging.error(f"Error deleting journal history: {e}")
+        return JSONResponse(
+            status_code=500, 
+            content={"error": "Internal server error while deleting journal history."}
+        )
+
 @app.post("/delete-food-history")
 async def delete_food_history(user_email: str = Form(...), timestamp: str = Form(...)):
     try:
@@ -793,7 +834,7 @@ async def get_exercises(
             status_code=500, 
             content={"error": "Internal server error while fetching exercises."}
         )
-    
+
 @app.post("/log-food", response_model=FoodAnalysisResponse)
 async def analyze_food(user_email: str = Form(...), food_text: str = Form(...), timestamp: str = Form(...)):
     try:

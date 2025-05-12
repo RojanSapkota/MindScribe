@@ -1,3 +1,5 @@
 .env
 __pycache__/
 /LLM Trainer
+todo.txt
+test.txt
