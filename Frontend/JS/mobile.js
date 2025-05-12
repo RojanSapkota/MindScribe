@@ -2437,15 +2437,6 @@ if (submitJournalLog) {
   });
 }
 
-//if (viewJournalHistoryBtn) {
-//  viewJournalHistoryBtn.addEventListener('click', function() {
-//    // For now, reuse the communityView for journal history, or implement a new view
-//    // Here, we switch to communityView and could filter for journal entries
-//    document.querySelector('[data-view="communityView"]').click();
-//    // Optionally, trigger a filter for journal entries only
-//  });
-//}
-
 // --- Journal History Section Logic ---
 const journalHistorySection = document.getElementById('journalHistorySection');
 const journalHistoryContainer = document.getElementById('journalHistoryContainer');
@@ -2469,7 +2460,7 @@ if (viewJournalHistoryBtn2) {
 if (closeJournalHistoryBtn) {
   closeJournalHistoryBtn.addEventListener('click', hideJournalHistory);
 }
-async function loadJournalHistory() {
+async function loadJournalHistory(showAll = false) {
   if (!journalHistoryContainer) return;
   const userEmail = localStorage.getItem('userEmail');
   if (!userEmail) {
@@ -2490,17 +2481,106 @@ async function loadJournalHistory() {
     } else {
       if (emptyJournalHistory) emptyJournalHistory.style.display = 'none';
     }
-    // Render entries
-    journalHistoryContainer.innerHTML = entries.map(entry => `
-      <div class="journal-history-entry" style="background:#fff;border-radius:8px;padding:10px 12px;margin-bottom:10px;box-shadow:0 1px 4px 0 rgba(93,95,239,0.04);">
-        <div style="font-size:0.98em;color:#333;margin-bottom:4px;white-space:pre-line;">${escapeHTML(entry.transcript)}</div>
-        <div style="font-size:0.92em;color:#888;">${formatJournalDate(entry.timestamp)}</div>
+    // Show only 3 entries by default, with Show More if needed
+    let visibleEntries = showAll ? entries : entries.slice(0, 3);
+    let html = visibleEntries.map(entry => `
+      <div class="journal-history-entry improved-journal-entry" style="background:#fff;border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 2px 8px 0 rgba(93,95,239,0.07);position:relative;">
+        <div style="font-size:1em;color:#222;margin-bottom:4px;white-space:pre-line;">${escapeHTML(entry.transcript)}</div>
+        <div style="font-size:0.93em;color:#888;">${formatJournalDate(entry.timestamp)}</div>
+        <button class="journal-entry-menu-btn" style="position:absolute;top:10px;right:10px;background:none;border:none;padding:4px 8px;border-radius:6px;cursor:pointer;">
+          <i class="fas fa-ellipsis-v"></i>
+        </button>
+        <div class="journal-entry-dropdown" style="display:none;position:absolute;top:32px;right:10px;background:#fff;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.13);z-index:10;min-width:120px;">
+          <div class="journal-dropdown-item view-full" data-id="${entry._id}" style="padding:10px 16px;cursor:pointer;font-size:15px;color:#333;">
+            <i class="fas fa-eye"></i> View Full
+          </div>
+        </div>
       </div>
     `).join('');
+    if (!showAll && entries.length > 3) {
+      html += `<div style="text-align:center;margin-top:8px;">
+        <button id="showMoreJournalBtn" class="btn btn-outline" style="padding:7px 22px;border-radius:8px;font-size:1em;">Show More</button>
+      </div>`;
+    }
+    journalHistoryContainer.innerHTML = html;
+    // Dropdown logic for three-dot menu
+    journalHistoryContainer.querySelectorAll('.journal-entry-menu-btn').forEach((btn, idx) => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        // Hide all other dropdowns
+        journalHistoryContainer.querySelectorAll('.journal-entry-dropdown').forEach(d => d.style.display = 'none');
+        const dropdown = btn.parentElement.querySelector('.journal-entry-dropdown');
+        if (dropdown) dropdown.style.display = 'block';
+        // Hide dropdown on click outside
+        document.addEventListener('click', function handler(ev) {
+          if (!dropdown.contains(ev.target) && ev.target !== btn) {
+            dropdown.style.display = 'none';
+            document.removeEventListener('click', handler);
+          }
+        });
+      });
+    });
+    // View Full logic
+    journalHistoryContainer.querySelectorAll('.journal-dropdown-item.view-full').forEach(item => {
+      item.addEventListener('click', async function() {
+        const entryId = item.getAttribute('data-id');
+        if (!entryId) return;
+        // Fetch full info from API (replace with your endpoint if needed)
+        try {
+          const resp = await fetch(`http://127.0.0.1:8000/analytics?analysis_id=${entryId}&user_email=${encodeURIComponent(userEmail)}`);
+          if (!resp.ok) throw new Error('Failed to fetch full journal info');
+          const fullData = await resp.json();
+          showJournalFullModal(fullData.analysis || {});
+        } catch (err) {
+          alert('Error loading full journal info.');
+        }
+      });
+    });
+    // Show More button logic
+    const showMoreBtn = document.getElementById('showMoreJournalBtn');
+    if (showMoreBtn) {
+      showMoreBtn.addEventListener('click', function() {
+        loadJournalHistory(true);
+      });
+    }
   } catch (err) {
     journalHistoryContainer.innerHTML = '<div style="color:#F56565;text-align:center;padding:18px 0;">Error loading journal history.</div>';
   }
 }
+
+// Modal to show full journal info
+function showJournalFullModal(analysis) {
+  // Remove any existing modal
+  const oldModal = document.getElementById('journalFullModal');
+  if (oldModal) oldModal.remove();
+  const modal = document.createElement('div');
+  modal.id = 'journalFullModal';
+  modal.style.position = 'fixed';
+  modal.style.top = '0';
+  modal.style.left = '0';
+  modal.style.width = '100vw';
+  modal.style.height = '100vh';
+  modal.style.background = 'rgba(0,0,0,0.32)';
+  modal.style.zIndex = '9999';
+  modal.style.display = 'flex';
+  modal.style.alignItems = 'center';
+  modal.style.justifyContent = 'center';
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:16px;max-width:95vw;width:400px;padding:28px 20px;box-shadow:0 6px 32px 0 rgba(93,95,239,0.13);position:relative;">
+      <button id="closeJournalFullModal" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:1.3em;color:#888;cursor:pointer;"><i class="fas fa-times"></i></button>
+      <h2 style="font-size:1.2em;margin-bottom:10px;color:#5D5FEF;">Journal Analysis</h2>
+      <div style="margin-bottom:10px;"><b>Summary:</b><br>${escapeHTML(analysis.summary || 'No summary')}</div>
+      <div style="margin-bottom:10px;"><b>Mood:</b> ${escapeHTML(analysis.mood || 'N/A')}</div>
+      <div style="margin-bottom:10px;"><b>Sentiment Score:</b> ${analysis.sentiment_score ?? 'N/A'}</div>
+      <div style="margin-bottom:10px;"><b>Key Topics:</b> ${(analysis.key_topics || []).map(escapeHTML).join(', ')}</div>
+      <div style="margin-bottom:10px;"><b>Insights:</b><ul style="margin:0 0 0 18px;padding:0;">${(analysis.insights || []).map(i => `<li>${escapeHTML(i)}</li>`).join('')}</ul></div>
+      <div style="margin-bottom:10px;"><b>Suggestions:</b><ul style="margin:0 0 0 18px;padding:0;">${(analysis.suggestions || []).map(i => `<li>${escapeHTML(i)}</li>`).join('')}</ul></div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  document.getElementById('closeJournalFullModal').onclick = () => modal.remove();
+}
+
 function escapeHTML(str) {
   if (!str) return '';
   return str.replace(/[&<>'"]/g, function(tag) {
@@ -2514,6 +2594,7 @@ function escapeHTML(str) {
     return charsToReplace[tag] || tag;
   });
 }
+
 function formatJournalDate(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr);

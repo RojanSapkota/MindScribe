@@ -511,6 +511,115 @@ body.dark-theme .filter-row select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23EDF2F7' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
 }
 
+/* Improved Journal History Entry */
+.improved-journal-entry {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px 0 rgba(93,95,239,0.07);
+  position: relative;
+  transition: box-shadow 0.2s;
+}
+.improved-journal-entry:hover {
+  box-shadow: 0 4px 16px 0 rgba(93,95,239,0.13);
+}
+.journal-entry-menu-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #888;
+  font-size: 1.1em;
+  transition: background 0.2s;
+}
+.journal-entry-menu-btn:hover {
+  background: #f0f0f9;
+}
+.journal-entry-dropdown {
+  display: none;
+  position: absolute;
+  top: 32px;
+  right: 10px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.13);
+  z-index: 10;
+  min-width: 120px;
+}
+.journal-entry-dropdown .journal-dropdown-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+.journal-entry-dropdown .journal-dropdown-item:hover {
+  background: #f7f8ff;
+}
+
+/* Modal for full journal view */
+#journalFullModal {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.32);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#journalFullModal > div {
+  background: #fff;
+  border-radius: 16px;
+  max-width: 95vw;
+  width: 400px;
+  padding: 28px 20px;
+  box-shadow: 0 6px 32px 0 rgba(93,95,239,0.13);
+  position: relative;
+}
+#journalFullModal h2 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  color: #5D5FEF;
+}
+#closeJournalFullModal {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.3em;
+  color: #888;
+  cursor: pointer;
+}
+
+/* Dark theme for improved journal entry and modal */
+body.dark-theme .improved-journal-entry {
+  background: #23244a;
+  color: #e2e8f0;
+}
+body.dark-theme .journal-entry-dropdown {
+  background: #2d3748;
+  color: #e2e8f0;
+}
+body.dark-theme #journalFullModal > div {
+  background: #23244a;
+  color: #e2e8f0;
+}
+body.dark-theme #journalFullModal h2 {
+  color: #a3bffa;
+}
+body.dark-theme .journal-entry-menu-btn {
+  color: #bbb;
+}
+
 /* Settings View Styles */
 .settings-section {
   background-color: white;
