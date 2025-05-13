@@ -1,5 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Form, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Optional
@@ -15,6 +15,7 @@ from bson import ObjectId
 from fastapi.encoders import jsonable_encoder
 import google.generativeai as genai
 from prompts import EMOTIONAL_TEMPLATE, NUTRITION_TEMPLATE, JOURNAL_TEMPLATE, NUTRITION_TEMPLATE2, DIET_PLAN_TEMPLATE
+from fpdf import FPDF
 #Not using this for now
 #import whisper
 #import tempfile
@@ -249,10 +250,10 @@ def generate_otp(length=6):
     return ''.join(random.choices(string.digits, k=length))
 
 async def send_otp_email(email: str, otp: str):
+    logging.debug(f"send_otp_email called for {email} with OTP {otp}")
     if not smtp_user or not smtp_password:
-        logging.warning("Email credentials not set, skipping email")
+        logging.warning(f"Email credentials not set, skipping email. smtp_user={smtp_user}, smtp_password={'set' if smtp_password else 'unset'}")
         return True
-    
     try:
         msg = MIMEMultipart()
         msg['From'] = f"MindScribe <{smtp_user}>"
@@ -292,16 +293,17 @@ async def send_otp_email(email: str, otp: str):
         
         msg.attach(MIMEText(text_body, 'plain'))
         
+        logging.info(f"Attempting SMTP connection: server={smtp_server}, port={smtp_port}, user={smtp_user}")
         server = smtplib.SMTP_SSL(smtp_server, smtp_port)
         server.login(smtp_user, smtp_password)
         server.send_message(msg)
         server.quit()
         
-        logging.info(f"OTP email sent to {email}")
+        logging.info(f"OTP email sent to {email} (OTP: {otp})")
         return True
     except Exception as e:
-        logging.error(f"Error sending OTP email: {e}")
-        return False
+        logging.error(f"Error sending OTP email: {e}. SMTP config: server={smtp_server}, port={smtp_port}, user={smtp_user}")
+        return str(e)
 
 async def deliver_diet_plan(email: str, diet_plan: str):
     if not smtp_user or not smtp_password:
@@ -454,7 +456,6 @@ async def login(user: UserLogin):
         raise HTTPException(status_code=500, detail="Internal server error during login")
 
 
-#Doesnt WORK!
 @app.post("/forgot-password-request")
 async def forgot_password_request(data: ForgotPasswordRequest):
     user = await user_collection.find_one({"email": data.email})
@@ -466,8 +467,9 @@ async def forgot_password_request(data: ForgotPasswordRequest):
         "created_at": datetime.now()
     }
     email_sent = await send_otp_email(data.email, otp)
-    if not email_sent:
-        raise HTTPException(status_code=500, detail="Failed to send OTP email. Please try again later.")
+    if email_sent is not True:
+        logging.error(f"Failed to send OTP email for forgot-password-request: {email_sent}")
+        raise HTTPException(status_code=500, detail=f"Failed to send OTP email: {email_sent}")
     return {"message": "OTP sent to your email"}
 
 @app.post("/forgot-password-reset")
@@ -483,25 +485,6 @@ async def forgot_password_reset(data: ForgotPasswordReset):
     await user_collection.update_one({"email": data.email}, {"$set": {"password": hashed_password}})
     del forgot_password_otp_store[data.email]
     return {"message": "Password reset successful"}
-
-#NOT NEEDED FOR NOW
-
-#@app.post("/whisper-transcribe")
-#async def whisper_audio(audio: UploadFile = File(...)):
-#    try:
-#        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
-#            tmp.write(await audio.read())
-#            tmp_path = tmp.name
-#
-#        model = whisper.load_model("base")
-#        result = model.transcribe(tmp_path)
-#
-#        os.remove(tmp_path)
-#
-#        return JSONResponse(content={"transcript": result["text"]})
-#    except Exception as e:
-#        logging.error(f"Whisper transcription error: {e}")
-#        raise HTTPException(status_code=500, detail="Failed to transcribe audio")
 
 @app.options("/transcribe")
 async def options_transcribe(request: Request):
@@ -596,11 +579,6 @@ async def get_analytics(analysis_id: str, user_email: str):
 
 #useful for overall sentiment
 @app.post("/sentiment")
-#    {
-#      "sentiment_score": 0,
-#      "mood": "neutral",
-#      "summary": "The author is testing the functionality of the journal analysis system with a simple statement. The entry lacks emotional depth or personal content, indicating a neutral or experimental tone. The purpose is to gauge the system's response rather than express personal feelings or experiences."
-#    }
 async def sentiment(user_email: str = Form(...), analysis_id: str = Form(...)):
     try:
         # Use ObjectId for MongoDB lookup
@@ -628,21 +606,6 @@ async def sentiment(user_email: str = Form(...), analysis_id: str = Form(...)):
 
 #overall sentiment from a week
 @app.post("/mood-breakdown")
-#{
-#  "mood_data": [
-#    {
-#      "date": "2025-05-12T02:51:03.231Z",
-#      "score": 0,
-#      "mood": "neutral"
-#    },
-#    {
-#      "date": "2025-05-12T02:40:54.834Z",
-#      "score": 0,
-#      "mood": "neutral"
-#    }
-#  ]
-#}
-
 async def mood_breakdown(data: MoodBreakdownRequest):
     user_email = data.user_email
     try:
@@ -1020,6 +983,91 @@ async def generate_diet_plan(user_email: str = Form(...),age: str = Form(...), w
         logging.error(f"Error in generating diet plan: {e}")
         return JSONResponse(status_code=500, content={"error": f"Internal server error: {str(e)}"})                        
 
+# OTP store for export
+export_pdf_otp_store = {}
+# Track OTP requests per user per day
+export_pdf_otp_request_count = {}
+OTP_EXPORT_LIMIT_PER_DAY = 3
+
+@app.post("/request-export-otp")
+async def request_export_otp(user_email: str = Form(...)):
+    logging.debug(f"/request-export-otp called for {user_email}")
+    user = await user_collection.find_one({"email": user_email})
+    if not user:
+        logging.error(f"User not found for export OTP: {user_email}")
+        raise HTTPException(status_code=404, detail="User not found.")
+    # OTP request limiting logic
+    today = datetime.now().date()
+    user_count = export_pdf_otp_request_count.get(user_email, {})
+    if user_count.get("date") != today:
+        user_count = {"date": today, "count": 0}
+    if user_count["count"] >= OTP_EXPORT_LIMIT_PER_DAY:
+        logging.warning(f"OTP export limit reached for {user_email} on {today}")
+        return JSONResponse(status_code=429, content={"error": f"OTP request limit reached. You can only request {OTP_EXPORT_LIMIT_PER_DAY} export OTPs per day."})
+    user_count["count"] += 1
+    export_pdf_otp_request_count[user_email] = user_count
+    otp = generate_otp()
+    export_pdf_otp_store[user_email] = {
+        "otp": otp,
+        "created_at": datetime.now()
+    }
+    logging.debug(f"Generated OTP {otp} for {user_email} (export)")
+    email_sent = await send_otp_email(user_email, otp)
+    if email_sent is not True:
+        logging.error(f"Failed to send OTP email for export: {email_sent}")
+        return JSONResponse(status_code=500, content={"error": f"Failed to send OTP email: {email_sent}"})
+    logging.info(f"OTP for export sent to {user_email}")
+    return {"message": "OTP sent to your email for PDF export."}
+
+@app.post("/export-profile-pdf")
+async def export_profile_pdf(user_email: str = Form(...), otp: str = Form(...)):
+    try:
+        # OTP verification for export
+        record = export_pdf_otp_store.get(user_email)
+        if not record or record["otp"] != otp:
+            raise HTTPException(status_code=400, detail="Invalid or expired OTP.")
+        time_diff = datetime.now() - record["created_at"]
+        if time_diff.total_seconds() > 600:
+            del export_pdf_otp_store[user_email]
+            raise HTTPException(status_code=400, detail="OTP has expired.")
+        del export_pdf_otp_store[user_email]
+        # ...existing code for PDF export...
+        user = await user_collection.find_one({"email": user_email})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found.")
+        history = await analysis_collection.find({"user_email": user_email}).sort("timestamp", -1).to_list(length=20)
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=14)
+        pdf.cell(200, 10, txt="MindScribe Profile Export", ln=True, align="C")
+        pdf.ln(10)
+        pdf.set_font("Arial", size=12)
+        pdf.cell(200, 10, txt=f"Name: {user.get('name', '')}", ln=True)
+        pdf.cell(200, 10, txt=f"Email: {user.get('email', '')}", ln=True)
+        pdf.cell(200, 10, txt=f"Status: {user.get('status', '')}", ln=True)
+        pdf.cell(200, 10, txt=f"Verified: {user.get('verified', False)}", ln=True)
+        pdf.ln(10)
+        pdf.set_font("Arial", 'B', 12)
+        pdf.cell(200, 10, txt="Recent Journal Entries:", ln=True)
+        pdf.set_font("Arial", size=11)
+        for entry in history:
+            ts = entry.get("timestamp")
+            if isinstance(ts, datetime):
+                ts = ts.strftime("%Y-%m-%d %H:%M")
+            pdf.multi_cell(0, 8, txt=f"- {ts}: {entry.get('transcript', '')[:100]}...", align="L")
+        # Write PDF to bytes using dest='S'
+        pdf_bytes = pdf.output(dest='S').encode('latin1')
+        pdf_output = io.BytesIO(pdf_bytes)
+        pdf_output.seek(0)
+        return StreamingResponse(pdf_output, media_type="application/pdf", headers={
+            "Content-Disposition": f"attachment; filename=profile_{user_email}.pdf"
+        })
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logging.error(f"Error exporting profile PDF: {e}")
+        return JSONResponse(status_code=500, content={"error": "Failed to export profile PDF."})
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Mindscribe API!","status": "200"}
@@ -1027,4 +1075,3 @@ def read_root():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app)
-    
