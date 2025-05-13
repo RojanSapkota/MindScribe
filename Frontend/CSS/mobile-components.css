@@ -1295,7 +1295,7 @@ body.dark-theme .coming-soon-container p {
 
 #dietWizardForm input[type="number"], #dietWizardForm input[type="text"], #dietWizardForm select {
     background: #2d3748;
-    color: #fff;
+    color: #ffffff;
     
 }
 
@@ -1578,10 +1578,8 @@ body.dark-theme .coming-soon-container p {
 
 .wizard-btn.next, .wizard-btn.find {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-  color: white;
   box-shadow: 0 4px 10px rgba(93, 95, 239, 0.2);
 }
-
 .wizard-btn:active {
   transform: scale(0.98);
 }
