@@ -34,8 +34,14 @@
       font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, 'system-ui', sans-serif !important;
       letter-spacing: 0.01em;
     }
+
+    #dietWizardForm .wizard-step {
+    background:  #4a5568 !important; 
+    }
+
+
     .modern-diet-wizard .wizard-step {
-      background: #fff;
+      background: #384150;
       border-radius: 18px;
       box-shadow: 0 2px 16px 0 rgba(93,95,239,0.07);
       padding: 28px 18px 22px 18px;
@@ -124,7 +130,7 @@
       font-family: inherit;
       margin-bottom: 10px;
       transition: border 0.2s;
-      color: #232347;
+      color: #dc212d !important;
     }
     #dietWizardForm input[type="number"]::placeholder,
     #dietWizardForm input[type="text"]::placeholder {
@@ -144,7 +150,7 @@
       font-size: 1.05em;
       border-radius: 10px;
       padding: 11px 22px;
-      background: linear-gradient(90deg, #5D5FEF 70%, #34D399 100%);
+      background: #5D5FEF;
       color: #fff;
       border: none;
       margin: 0 4px;
@@ -894,40 +900,40 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
           <!-- Modals for each activity -->
           <div class="activity-modal" id="sleepModal" style="display:none;position:fixed;z-index:1000;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);align-items:center;justify-content:center;">
-            <div style="background:#fff;padding:22px 18px 18px 18px;border-radius:16px;max-width:90vw;width:320px;box-shadow:0 2px 12px 0 rgba(93,95,239,0.13);position:relative;">
+            <div style="background:#4a5568;;padding:22px 18px 18px 18px;border-radius:16px;max-width:90vw;width:320px;box-shadow:0 2px 12px 0 rgba(93,95,239,0.13);position:relative;">
               <button class="close-modal-btn" data-modal="sleepModal" style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:1.2em;color:#888;cursor:pointer;"><i class="fas fa-times"></i></button>
               <h3 style="margin-top:0;">Log Sleep</h3>
               <form id="sleepForm">
                 <label for="sleepHours">Hours Slept</label>
-                <input type="number" id="sleepHours" name="sleepHours" min="0" max="24" step="0.1" placeholder="E.g. 7.5" required style="width:100%;padding:10px;border-radius:8px;border:1.2px solid #e0e3f3;margin-bottom:10px;">
+                <input type="number" id="sleepHours" name="sleepHours" min="0" max="24" step="0.1" placeholder="E.g. 7" required style="width:100%;padding:10px;border-radius:8px;border:1.2px solid #e0e3f3;margin-bottom:10px;">
                 <button type="submit" class="btn btn-primary" style="width:100%;">Save</button>
               </form>
             </div>
           </div>
           <div class="activity-modal" id="hydrationModal" style="display:none;position:fixed;z-index:1000;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);align-items:center;justify-content:center;">
-            <div style="background:#fff;padding:22px 18px 18px 18px;border-radius:16px;max-width:90vw;width:320px;box-shadow:0 2px 12px 0 rgba(93,95,239,0.13);position:relative;">
+            <div style="background:#4a5568;padding:22px 18px 18px 18px;border-radius:16px;max-width:90vw;width:320px;box-shadow:0 2px 12px 0 rgba(93,95,239,0.13);position:relative;">
               <button class="close-modal-btn" data-modal="hydrationModal" style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:1.2em;color:#888;cursor:pointer;"><i class="fas fa-times"></i></button>
               <h3 style="margin-top:0;">Log Hydration</h3>
               <form id="hydrationForm">
                 <label for="hydrationLiters">Water Drank (liters)</label>
-                <input type="number" id="hydrationLiters" name="hydrationLiters" min="0" max="10" step="0.1" placeholder="E.g. 2.0" required style="width:100%;padding:10px;border-radius:8px;border:1.2px solid #e0e3f3;margin-bottom:10px;">
+                <input type="number" id="hydrationLiters" name="hydrationLiters" min="0" max="10" step="0.1" placeholder="E.g. 2" required style="width:100%;padding:10px;border-radius:8px;border:1.2px solid #e0e3f3;margin-bottom:10px;">
                 <button type="submit" class="btn btn-primary" style="width:100%;">Save</button>
               </form>
             </div>
           </div>
           <div class="activity-modal" id="screenTimeModal" style="display:none;position:fixed;z-index:1000;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);align-items:center;justify-content:center;">
-            <div style="background:#fff;padding:22px 18px 18px 18px;border-radius:16px;max-width:90vw;width:320px;box-shadow:0 2px 12px 0 rgba(93,95,239,0.13);position:relative;">
+            <div style="background:#4a5568;padding:22px 18px 18px 18px;border-radius:16px;max-width:90vw;width:320px;box-shadow:0 2px 12px 0 rgba(93,95,239,0.13);position:relative;">
               <button class="close-modal-btn" data-modal="screenTimeModal" style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:1.2em;color:#888;cursor:pointer;"><i class="fas fa-times"></i></button>
               <h3 style="margin-top:0;">Log Screen Time</h3>
               <form id="screenTimeForm">
                 <label for="screenTimeHours">Screen Time (hours)</label>
-                <input type="number" id="screenTimeHours" name="screenTimeHours" min="0" max="24" step="0.1" placeholder="E.g. 3.5" required style="width:100%;padding:10px;border-radius:8px;border:1.2px solid #e0e3f3;margin-bottom:10px;">
+                <input type="number" id="screenTimeHours" name="screenTimeHours" min="0" max="24" step="0.1" placeholder="E.g. 3" required style="width:100%;padding:10px;border-radius:8px;border:1.2px solid #e0e3f3;margin-bottom:10px;">
                 <button type="submit" class="btn btn-primary" style="width:100%;">Save</button>
               </form>
             </div>
           </div>
           <div class="activity-modal" id="walkModal" style="display:none;position:fixed;z-index:1000;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);align-items:center;justify-content:center;">
-            <div style="background:#fff;padding:22px 18px 18px 18px;border-radius:16px;max-width:90vw;width:320px;box-shadow:0 2px 12px 0 rgba(93,95,239,0.13);position:relative;">
+            <div style="background:#4a5568;padding:22px 18px 18px 18px;border-radius:16px;max-width:90vw;width:320px;box-shadow:0 2px 12px 0 rgba(93,95,239,0.13);position:relative;">
               <button class="close-modal-btn" data-modal="walkModal" style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:1.2em;color:#888;cursor:pointer;"><i class="fas fa-times"></i></button>
               <h3 style="margin-top:0;">Log Walk</h3>
               <form id="walkForm">
