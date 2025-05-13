@@ -97,6 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.requestAnimationFrame(step);
   }
 
+  
   // Start camera when user clicks "Take a Photo"
   startCameraButton.addEventListener('click', function() {
     // Improved video constraints for better mobile compatibility

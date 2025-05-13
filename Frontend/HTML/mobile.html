@@ -953,11 +953,11 @@ document.addEventListener('DOMContentLoaded', function() {
             <i class="fas fa-user-circle"></i>
           </div>
           <h2 id="profileUserEmail">user@example.com</h2>
-          <p>Member since <span id="memberSince">2023</span></p>
+          <p>Member since <span id="memberSince">2025</span></p>
         </div>
         
         <div class="profile-menu">
-          <a href="#" class="profile-menu-item">
+          <a href="#" class="profile-menu-item" id="viewGoals">
             <i class="fas fa-chart-line"></i>
             <span>Goals</span>
             <i class="fas fa-chevron-right"></i>
@@ -985,8 +985,51 @@ document.addEventListener('DOMContentLoaded', function() {
         </button>
       </div>
     </div>
-    
+
+    <div class="mobile-view hidden" id="goalsView">
+      <div class="mobile-header">
+        <h1>Goals</h1>
+      </div>
+      
+      <div class="mobile-content">
+        <div class="settings-section">
+          <h2>Set Your Goals</h2>
+          <p>Choose your fitness goals to get personalized recommendations.</p>
+          <div class="settings-item goal-card" id="loseWeightGoal">
+            <div class="settings-item-info">
+              <i class="fas fa-weight settings-icon"></i>
+              <div>
+                <h3>Lose Weight</h3>
+                <p>Focus on fat loss and a leaner physique</p>
+              </div>
+            </div>
+          </div>
+          <div class="settings-item goal-card" id="gainMuscleGoal">
+            <div class="settings-item-info">
+              <i class="fas fa-dumbbell settings-icon"></i>
+              <div>
+                <h3>Gain Muscle</h3>
+                <p>Build muscle mass and strength</p>
+              </div>
+            </div>
+          </div>
+          <div class="settings-item goal-card" id="maintainWeightGoal">
+            <div class="settings-item-info">
+              <i class="fas fa-balance-scale settings-icon"></i>
+              <div>
+                <h3>Maintain Weight</h3>
+                <p>Stay healthy and keep your current weight</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="back-button" id="backToProfileBtn">
+          <i class="fas fa-arrow-left"></i> Back to Profile
+        </button>
+      </div>
+    </div>
     <div class="mobile-view hidden" id="settingsView">
+
       <div class="mobile-header">
         <h1>Settings</h1>
       </div>
@@ -1293,6 +1336,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </nav>
   </div>
   
+  
   <div class="tooltip" id="tooltip"></div>
   <script src="../JS/mobile.js"></script>
   <script>
@@ -1359,6 +1403,30 @@ document.addEventListener('DOMContentLoaded', function() {
             }
           });
         }
+      });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add navigation for Goals
+      var viewGoals = document.getElementById('viewGoals');
+      if (viewGoals) {
+        viewGoals.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (typeof switchTab === 'function') {
+            switchTab('goalsView');
+          }
+        });
+      }
+      // Add back button for Goals view
+      var backToProfileBtns = document.querySelectorAll('#goalsView .back-button');
+      backToProfileBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          if (typeof switchTab === 'function') {
+            switchTab('profileView');
+          }
+        });
+
+      
       });
     });
   </script>

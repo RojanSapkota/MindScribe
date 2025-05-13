@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const fileUpload = document.getElementById('fileUpload');
   const results = document.getElementById('results');
   const tooltip = document.getElementById('tooltip');
-  const darkModeToggle = document.getElementById('darkModeToggle');
+  const darkModeToggle = document.getElementById('darkModeToggle')
+  const viewGoals = document.getElementById('viewGoals');
   const viewSettings = document.getElementById('viewSettings');
   const backToProfileBtn = document.getElementById('backToProfileBtn');
   const refreshHistoryBtn = document.getElementById('refreshHistoryBtn');
@@ -156,6 +157,13 @@ document.addEventListener('DOMContentLoaded', function() {
     viewSettings.addEventListener('click', function(e) {
       e.preventDefault();
       switchTab('settingsView');
+    });
+  }
+
+  if (viewGoals) {
+    viewGoals.addEventListener('click', function(e) {
+      e.preventDefault();
+      switchTab('goalsView');
     });
   }
   
