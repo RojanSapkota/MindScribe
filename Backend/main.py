@@ -1068,6 +1068,25 @@ async def export_profile_pdf(user_email: str = Form(...), otp: str = Form(...)):
         logging.error(f"Error exporting profile PDF: {e}")
         return JSONResponse(status_code=500, content={"error": "Failed to export profile PDF."})
 
+@app.post("/log-activity")
+async def log_activity(user_email: str = Form(...), activity: str = Form(...), count: int = Form(...),timestamp: str = Form(...)):
+    try:
+        existing_user = await user_collection.find_one({"email": user_email})
+        if not existing_user:
+            raise HTTPException(status_code=400, detail="User not found")
+
+        activity_data = {
+            "user_email": user_email,
+            "activity": activity,
+            "count": count,
+            "timestamp": timestamp}
+        
+        await food_collection.insert_one(activity_data)
+
+    except Exception as e:
+        logging.error(f"Error logging activity: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error while logging activity.")
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Mindscribe API!","status": "200"}
