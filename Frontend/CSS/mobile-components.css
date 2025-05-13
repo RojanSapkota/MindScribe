@@ -1293,6 +1293,16 @@ body.dark-theme .coming-soon-container p {
   animation: fadeInUp 0.4s ease-out;
 }
 
+#dietWizardForm input[type="number"], #dietWizardForm input[type="text"], #dietWizardForm select {
+    background: #2d3748;
+    color: #fff;
+    
+}
+
+#dietWizardForm .wizard-step {
+    background: #4a5568;
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
