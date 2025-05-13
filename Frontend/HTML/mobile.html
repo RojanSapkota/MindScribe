@@ -774,6 +774,99 @@ document.addEventListener('DOMContentLoaded', function() {
   if (dislikes) dislikes.placeholder = 'E.g. broccoli, mushrooms';
 });
 </script>
+<script>
+// --- Activity Tracking Logic ---
+const ACTIVITY_API_URL = "http://127.0.0.1:8000/log-activity";
+const ACTIVITY_HISTORY_API_URL = "http://127.0.0.1:8000/activity-history"; // You need to implement this endpoint in backend
+const activityTypes = [
+  { key: 'sleep', label: 'Sleep', form: 'sleepForm', input: 'sleepHours', unit: 'hours' },
+  { key: 'hydration', label: 'Hydration', form: 'hydrationForm', input: 'hydrationLiters', unit: 'liters' },
+  { key: 'screen_time', label: 'Screen Time', form: 'screenTimeForm', input: 'screenTimeHours', unit: 'hours' },
+  { key: 'walk', label: 'Walk', form: 'walkForm', input: 'walkSteps', unit: 'steps' }
+];
+
+function getUserEmail() {
+  return localStorage.getItem('userEmail') || '';
+}
+
+function getCurrentTimestamp() {
+  return new Date().toISOString();
+}
+
+function showActivityTotals(totals) {
+  let html = '<div class="activity-totals-row" style="display:flex;justify-content:space-around;margin:10px 0 18px 0;gap:10px;">';
+  activityTypes.forEach(act => {
+    const val = totals[act.key] || 0;
+    html += `<div style="text-align:center;font-size:0.98em;min-width:60px;">
+      <div style="font-weight:600;">${val} <span style="font-size:0.85em;color:#888;">${act.unit}</span></div>
+      <div style="font-size:0.93em;color:#5D5FEF;">${act.label}</div>
+    </div>`;
+  });
+  html += '</div>';
+  let totalsDiv = document.getElementById('activityTotalsRow');
+  if (!totalsDiv) {
+    totalsDiv = document.createElement('div');
+    totalsDiv.id = 'activityTotalsRow';
+    const iconsRow = document.querySelector('.activity-icons-row');
+    if (iconsRow) iconsRow.parentNode.insertBefore(totalsDiv, iconsRow.nextSibling);
+  }
+  totalsDiv.innerHTML = html;
+}
+
+async function fetchActivityTotals() {
+  const user_email = getUserEmail();
+  if (!user_email) return;
+  try {
+    const resp = await fetch(ACTIVITY_HISTORY_API_URL + `?user_email=${encodeURIComponent(user_email)}`);
+    if (!resp.ok) throw new Error('Failed to fetch activity history');
+    const data = await resp.json();
+    // data should be { sleep: x, hydration: y, screen_time: z, walk: w }
+    showActivityTotals(data.totals || {});
+  } catch (e) {
+    // fallback: show zeros
+    showActivityTotals({});
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  fetchActivityTotals();
+  activityTypes.forEach(act => {
+    const form = document.getElementById(act.form);
+    if (form) {
+      form.onsubmit = async function(e) {
+        e.preventDefault();
+        const user_email = getUserEmail();
+        const value = parseFloat(document.getElementById(act.input).value);
+        if (!user_email || isNaN(value) || value <= 0) {
+          alert('Please enter a valid value and make sure you are logged in.');
+          return;
+        }
+        const now = new Date();
+        const timestamp = now.toISOString();
+        // Send to backend
+        try {
+          const resp = await fetch(ACTIVITY_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              user_email,
+              activity: act.key,
+              count: value,
+              timestamp
+            })
+          });
+          if (!resp.ok) throw new Error('Failed to log activity');
+          document.getElementById(act.form.replace('Form', 'Modal')).style.display = 'none';
+          document.getElementById(act.input).value = '';
+          await fetchActivityTotals();
+        } catch (err) {
+          alert('Failed to log activity. Please try again.');
+        }
+      };
+    }
+  });
+});
+</script>
           </div>
           <br>
           <!-- Coming Soon Section for Additional Features -->
@@ -875,27 +968,6 @@ document.addEventListener('DOMContentLoaded', function() {
               if (e.target === modal) modal.style.display = 'none';
             });
           });
-          // Example submit handlers (replace with real logic)
-          document.getElementById('sleepForm').onsubmit = function(e) {
-            e.preventDefault();
-            alert('Sleep logged: ' + document.getElementById('sleepHours').value + ' hours');
-            document.getElementById('sleepModal').style.display = 'none';
-          };
-          document.getElementById('hydrationForm').onsubmit = function(e) {
-            e.preventDefault();
-            alert('Hydration logged: ' + document.getElementById('hydrationLiters').value + ' liters');
-            document.getElementById('hydrationModal').style.display = 'none';
-          };
-          document.getElementById('screenTimeForm').onsubmit = function(e) {
-            e.preventDefault();
-            alert('Screen time logged: ' + document.getElementById('screenTimeHours').value + ' hours');
-            document.getElementById('screenTimeModal').style.display = 'none';
-          };
-          document.getElementById('walkForm').onsubmit = function(e) {
-            e.preventDefault();
-            alert('Walk logged: ' + document.getElementById('walkSteps').value + ' steps');
-            document.getElementById('walkModal').style.display = 'none';
-          };
         });
         </script>
         </div>

@@ -7,7 +7,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import logging, json , io, os ,bcrypt, random, string , smtplib, requests
 from PIL import Image
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from groq import Groq
@@ -52,6 +52,7 @@ food_collection = db['food_analysis']
 user_collection = db['users']
 analysis_collection = db['analysis']
 sentiment_collection = db['sentiment']
+activity_collection = db['activity_list']
 
 smtp_server = os.getenv("smtp_server")
 smtp_port = int(os.getenv("smtp_port"))
@@ -1069,23 +1070,51 @@ async def export_profile_pdf(user_email: str = Form(...), otp: str = Form(...)):
         return JSONResponse(status_code=500, content={"error": "Failed to export profile PDF."})
 
 @app.post("/log-activity")
-async def log_activity(user_email: str = Form(...), activity: str = Form(...), count: int = Form(...),timestamp: str = Form(...)):
+async def log_activity(user_email: str = Form(...), activity: str = Form(...), count: int = Form(...), timestamp: str = Form(...)):
     try:
         existing_user = await user_collection.find_one({"email": user_email})
         if not existing_user:
             raise HTTPException(status_code=400, detail="User not found")
-
+        # Accept new activity types
+        valid_activities = ["exercise", "meditation", "reading", "journaling", "sleep", "hydration", "screen_time", "walk"]
+        if activity not in valid_activities:
+            raise HTTPException(status_code=400, detail="Invalid activity type")
+        if not isinstance(count, int) or count < 0:
+            raise HTTPException(status_code=400, detail="Count must be a positive integer")
         activity_data = {
             "user_email": user_email,
             "activity": activity,
             "count": count,
-            "timestamp": timestamp}
-        
-        await food_collection.insert_one(activity_data)
-
+            "timestamp": timestamp
+        }
+        await activity_collection.insert_one(activity_data)
+        return {"message": "Activity logged successfully"}
     except Exception as e:
         logging.error(f"Error logging activity: {e}")
         raise HTTPException(status_code=500, detail="Internal server error while logging activity.")
+
+@app.get("/activity-history")
+async def activity_history(user_email: str):
+    try:
+        now = datetime.utcnow()
+        since = now - timedelta(hours=24)
+        activities = await activity_collection.find({
+            "user_email": user_email,
+            "timestamp": {"$gte": since.isoformat()}
+        }).to_list(length=500)
+        totals = {"sleep": 0, "hydration": 0, "screen_time": 0, "walk": 0}
+        for act in activities:
+            act_type = act.get("activity")
+            if act_type in totals:
+                try:
+                    val = int(act.get("count", 0))
+                except Exception:
+                    val = 0
+                totals[act_type] += val
+        return {"totals": totals}
+    except Exception as e:
+        logging.error(f"Error fetching activity history: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error while fetching activity history.")
 
 @app.get("/")
 def read_root():
