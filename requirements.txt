@@ -13,4 +13,5 @@ NumPy
 Sentence-Transformers
 Langchain
 Langchain-Core
+google-generativeai
 langchain-community
