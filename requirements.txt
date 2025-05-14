@@ -16,3 +16,4 @@ Langchain-Core
 google-generativeai
 langchain-community
 fpdf
+huggingface_hub[hf_xet]

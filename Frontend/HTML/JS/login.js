@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const tooltip = document.getElementById('tooltip');
   const loginTab = document.getElementById('login-tab');
   const signupTab = document.getElementById('signup-tab');
-  const api_server = 'http://127.0.0.1:8000';
+  const api_server = 'https://hackclubapi.rojansapkota.com.np';
   
   let darkMode = localStorage.getItem('darkMode') === 'true';
   

@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Check if user is logged in
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   const userEmail = localStorage.getItem('userEmail');
-  const api_server = 'http://127.0.0.1:8000';
+  const api_server = 'https://hackclubapi.rojansapkota.com.np';
   
   // Redirect to login page if not logged in
   if (!isLoggedIn) {
@@ -1697,7 +1697,7 @@ async function findExercises() {
     if (muscle) formData.append('muscle', muscle);
     if (difficulty) formData.append('difficulty', difficulty);
     
-    api_server = 'http://127.0.0.1:8000'
+    api_server = 'https://hackclubapi.rojansapkota.com.np'
     // Call the API with the correct server URL
     const response = await fetch(`${api_server}/exercises`, {
       method: 'POST',
@@ -1959,7 +1959,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Fetch user's food history data
   async function fetchFoodHistory() {
     const userEmail = getUserEmail();
-    const api_server = 'http://127.0.0.1:8000';
+    const api_server = 'https://hackclubapi.rojansapkota.com.np';
     
     if (!userEmail) return null;
     
@@ -2163,7 +2163,7 @@ if (saveTranscriptionBtn) {
       formData.append('user_email', userEmail);
       formData.append('transcript', finalTranscript.trim());
       formData.append('timestamp', new Date().toISOString());
-      const response = await fetch('http://127.0.0.1:8000/transcribe', {
+      const response = await fetch('https://hackclubapi.rojansapkota.com.np/transcribe', {
         method: 'POST',
         body: formData
       });
@@ -2211,7 +2211,7 @@ const aiChatForm = document.getElementById('aiChatForm');
 const aiChatInput = document.getElementById('aiChatInput');
 const aiChatMessages = document.getElementById('aiChatMessages');
 let aiChatHistory = [];
-api_server = 'http://127.0.0.1:8000';
+api_server = 'https://hackclubapi.rojansapkota.com.np';
 
 function renderAIChatMessages() {
   aiChatMessages.innerHTML = '';
@@ -2432,7 +2432,7 @@ if (submitJournalLog) {
       formData.append('user_email', userEmail);
       formData.append('transcript', text);
       formData.append('timestamp', new Date().toISOString());
-      const response = await fetch('http://127.0.0.1:8000/transcribe', {
+      const response = await fetch('https://hackclubapi.rojansapkota.com.np/transcribe', {
         method: 'POST',
         body: formData
       });
@@ -2489,7 +2489,7 @@ async function loadJournalHistory(showAll = false) {
   }
   journalHistoryContainer.innerHTML = '<div style="text-align:center;padding:18px 0;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
   try {
-    const response = await fetch(`http://127.0.0.1:8000/history?user_email=${encodeURIComponent(userEmail)}`);
+    const response = await fetch(`https://hackclubapi.rojansapkota.com.np/history?user_email=${encodeURIComponent(userEmail)}`);
     if (!response.ok) throw new Error('Failed to fetch journal history');
     const data = await response.json();
     const entries = data.entries || [];
@@ -2547,7 +2547,7 @@ async function loadJournalHistory(showAll = false) {
         if (!entryId) return;
         // Fetch full info from API (replace with your endpoint if needed)
         try {
-          const resp = await fetch(`http://127.0.0.1:8000/analytics?analysis_id=${entryId}&user_email=${encodeURIComponent(userEmail)}`);
+          const resp = await fetch(`https://hackclubapi.rojansapkota.com.np/analytics?analysis_id=${entryId}&user_email=${encodeURIComponent(userEmail)}`);
           if (!resp.ok) throw new Error('Failed to fetch full journal info');
           const fullData = await resp.json();
           showJournalFullModal(fullData.analysis || {});
@@ -2665,7 +2665,7 @@ function showDeleteJournalConfirm(analysisId) {
       const formData = new FormData();
       formData.append('user_email', userEmail);
       formData.append('analysis_id', analysisId);
-      const resp = await fetch('http://127.0.0.1:8000/delete-journal-history', {
+      const resp = await fetch('https://hackclubapi.rojansapkota.com.np/delete-journal-history', {
         method: 'POST',
         body: formData
       });

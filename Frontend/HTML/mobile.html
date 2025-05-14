@@ -7,8 +7,8 @@
   <meta name="description" content="AI-powered voice journaling app">
   
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="../../Assets/icon.png">
-  <link rel="apple-touch-icon" href="../../Assets/icon.png">
+  <link rel="icon" type="image/png" href="/Assets/icon.png">
+  <link rel="apple-touch-icon" href="/Assets/icon.png">
   
   <!-- PWA Meta Tags -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -24,10 +24,10 @@
   <link rel="manifest" href="manifest.json">
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="../CSS/styles.css">
+  <link rel="stylesheet" href="CSS/styles.css">
   <!-- Split mobile styles into two files for better organization -->
-  <link rel="stylesheet" href="../CSS/mobile-styles.css">
-  <link rel="stylesheet" href="../CSS/mobile-components.css">
+  <link rel="stylesheet" href="CSS/mobile-styles.css">
+  <link rel="stylesheet" href="CSS/mobile-components.css">
   <style>
     /* Modern font for the diet wizard */
     .modern-diet-wizard, .modern-diet-wizard input, .modern-diet-wizard select, .modern-diet-wizard label, .modern-diet-wizard button {
@@ -742,7 +742,7 @@ document.addEventListener('DOMContentLoaded', function() {
       email_deliver: 'Yes'
     };
     try {
-      const response = await fetch('http://127.0.0.1:8000/diet-plan', {
+      const response = await fetch('https://hackclubapi.rojansapkota.com.np/diet-plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams(data)
@@ -782,8 +782,8 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script>
 // --- Activity Tracking Logic ---
-const ACTIVITY_API_URL = "http://127.0.0.1:8000/log-activity";
-const ACTIVITY_HISTORY_API_URL = "http://127.0.0.1:8000/activity-history"; // You need to implement this endpoint in backend
+const ACTIVITY_API_URL = "https://hackclubapi.rojansapkota.com.np/log-activity";
+const ACTIVITY_HISTORY_API_URL = "https://hackclubapi.rojansapkota.com.np/activity-history"; // You need to implement this endpoint in backend
 const activityTypes = [
   { key: 'sleep', label: 'Sleep', form: 'sleepForm', input: 'sleepHours', unit: 'hours' },
   { key: 'hydration', label: 'Hydration', form: 'hydrationForm', input: 'hydrationLiters', unit: 'liters' },

@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   const userName = localStorage.getItem('userName');
   const userEmail = localStorage.getItem('userEmail');
-  const api_server = 'http://127.0.0.1:8000';
+  const api_server = 'https://hackclubapi.rojansapkota.com.np/';
   
   // Redirect to login page if not logged in
   if (!isLoggedIn) {

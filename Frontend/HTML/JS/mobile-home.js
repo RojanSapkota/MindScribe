@@ -1,5 +1,5 @@
 // Set up API base URL - defined at top level so it's accessible to all scripts
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = 'https://hackclubapi.rojansapkota.com.np/';
 
 // Variables and DOM elements
 const thoughts = [
