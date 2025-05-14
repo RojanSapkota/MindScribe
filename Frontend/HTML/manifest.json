@@ -1,19 +1,20 @@
 {
   "name": "MindScribe",
   "short_name": "MindScribe",
-  "start_url": "./mobile.html",
+  "start_url": "mobile.html",
+  "lang": "en-US",
   "display": "fullscreen",
   "background_color": "#ffffff",
   "theme_color": "#5D5FEF",
   "description": "AI-powered voice journaling app",
   "icons": [
     {
-      "src": "../Assets/icon.png",
+      "src": "Assets/icon.png",
       "sizes": "192x192",
       "type": "image/jpeg"
     },
     {
-      "src": "../Assets/icon.png",
+      "src": "Assets/icon.png",
       "sizes": "512x512",
       "type": "image/jpeg"
     }
