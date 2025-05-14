@@ -113,7 +113,7 @@ from sentence_transformers import SentenceTransformer
 from fastapi import FastAPI, HTTPException, Request, Form, Body
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from chain_functions import load_documents, split_text, save_to_faiss, load_faiss_index
+from Backend.chain_functions import load_documents, split_text, save_to_faiss, load_faiss_index
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from groq import Groq
