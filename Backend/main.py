@@ -14,7 +14,11 @@ from groq import Groq
 from bson import ObjectId
 from fastapi.encoders import jsonable_encoder
 import google.generativeai as genai
-from prompts import EMOTIONAL_TEMPLATE, NUTRITION_TEMPLATE, JOURNAL_TEMPLATE, NUTRITION_TEMPLATE2, DIET_PLAN_TEMPLATE
+from Backend.prompts import EMOTIONAL_TEMPLATE  
+from Backend.prompts import NUTRITION_TEMPLATE
+from Backend.prompts import JOURNAL_TEMPLATE
+from Backend.prompts import NUTRITION_TEMPLATE2
+from Backend.prompts import DIET_PLAN_TEMPLATE
 from fpdf import FPDF
 #Not using this for now
 #import whisper
