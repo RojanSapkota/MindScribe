@@ -35,8 +35,8 @@ FOOD_API_KEY = os.getenv("FOOD_API_KEY")
 if not API_KEY:
     raise ValueError("FOOD_API_KEY environment variable is not set.")
 
+# Create FastAPI app and add CORS middleware ONCE at the top
 app = FastAPI()
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -129,18 +129,6 @@ from dotenv import load_dotenv
 user_history = {}
 data_path = "KnowledgeBase/"
 load_dotenv()
-
-#I know these are duplicates :)
-
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 def load_model(model_name: str = 'all-MiniLM-L6-v2') -> SentenceTransformer:
     return SentenceTransformer(model_name)
