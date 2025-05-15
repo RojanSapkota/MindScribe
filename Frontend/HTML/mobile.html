@@ -204,6 +204,91 @@
           <h2>Welcome back</h2>
           <p id="welcomeUserEmail">track your nutrition</p>
         </div>
+        <!-- Sign-in Tracker -->
+        <div class="signin-tracker-card" id="signinTrackerCard" style="margin:10px 0 0 0;padding:18px 18px 14px 18px;background:#2d3748;border-radius:18px;box-shadow:0 2px 12px 0 rgba(93,95,239,0.10);font-size:1.05em;display:block;max-width:100%;width:100%;cursor:pointer;min-height:74px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <i class="fas fa-calendar-check" style="color:#34D399;font-size:1.25em;"></i>
+            <span style="color:#dddddd;font-weight:600;letter-spacing:0.01em;">Sign-in Tracker</span>
+          </div>
+          <div id="signinTrackerDays" style="margin-top:10px;display:flex;gap:8px;"></div>
+        </div>
+        <br>
+        <script>
+        // --- Sign-in Tracker Logic ---
+        document.addEventListener('DOMContentLoaded', function() {
+          const trackerCard = document.getElementById('signinTrackerCard');
+          const daysDiv = document.getElementById('signinTrackerDays');
+          function getLast7Days() {
+            const days = [];
+            const today = new Date();
+            for (let i = 6; i >= 0; i--) {
+              const d = new Date(today);
+              d.setDate(today.getDate() - i);
+              days.push({
+                date: d.toISOString().slice(0,10),
+                label: d.toLocaleDateString(undefined, { weekday: 'short' })
+              });
+            }
+            return days;
+          }
+          function getSigninData() {
+            return JSON.parse(localStorage.getItem('signinTracker') || '[]');
+          }
+          function setSigninData(arr) {
+            localStorage.setItem('signinTracker', JSON.stringify(arr));
+          }
+          function markTodaySignin() {
+            const arr = getSigninData();
+            const today = new Date().toISOString().slice(0,10);
+            if (!arr.includes(today)) {
+              arr.push(today);
+              setSigninData(arr);
+            }
+          }
+          function renderSigninTracker() {
+            const arr = getSigninData();
+            const days = getLast7Days();
+            daysDiv.innerHTML = '';
+            days.forEach(day => {
+              const signed = arr.includes(day.date);
+              const isToday = day.date === new Date().toISOString().slice(0,10);
+              const el = document.createElement('div');
+              el.textContent = day.label.charAt(0);
+              el.title = day.label + ' ' + day.date;
+              el.style = `width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:10px;font-weight:700;font-size:1.08em;transition:background 0.2s;box-shadow:0 1px 4px 0 rgba(93,95,239,0.08);margin:0;${isToday ? 'background:#5D5FEF;color:#fff;' : signed ? 'background:#34D399;color:#fff;' : 'background:#f3f4fa;color:#b3b3cc;'}cursor:pointer;`;
+              daysDiv.appendChild(el);
+            });
+          }
+          trackerCard.addEventListener('click', function() {
+            const arr = getSigninData();
+            const days = getLast7Days();
+            let modal = document.getElementById('signinTrackerModal');
+            if (modal) modal.remove();
+            modal = document.createElement('div');
+            modal.id = 'signinTrackerModal';
+            modal.style = 'position:fixed;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);z-index:3000;display:flex;align-items:center;justify-content:center;';
+            modal.innerHTML = `
+              <div style="background:#fff;padding:32px 18px 22px 18px;border-radius:22px;max-width:90vw;width:340px;box-shadow:0 4px 32px 0 rgba(93,95,239,0.13);position:relative;">
+                <button id="closeSigninTrackerModal" style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:1.2em;color:#888;cursor:pointer;"><i class="fas fa-times"></i></button>
+                <h3 style="margin:0 0 14px 0;font-size:1.13em;color:#5D5FEF;letter-spacing:0.01em;">Sign-in Tracker</h3>
+                <div style="display:flex;gap:12px;justify-content:center;margin-bottom:12px;">
+                  ${days.map(day => {
+                    const signed = arr.includes(day.date);
+                    const isToday = day.date === new Date().toISOString().slice(0,10);
+                    return `<div title="${day.label} ${day.date}" style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:12px;font-weight:700;font-size:1.13em;box-shadow:0 1px 4px 0 rgba(93,95,239,0.08);margin:0;${isToday ? 'background:#5D5FEF;color:#fff;' : signed ? 'background:#34D399;color:#fff;' : 'background:#f3f4fa;color:#b3b3cc;'}">${day.label.charAt(0)}</div>`;
+                  }).join('')}
+                </div>
+                <div style="text-align:center;color:#888;font-size:1em;">Today's sign-in is <span style="color:#5D5FEF;font-weight:600;">${days[6].label}</span></div>
+              </div>
+            `;
+            document.body.appendChild(modal);
+            document.getElementById('closeSigninTrackerModal').onclick = () => modal.remove();
+            modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+          });
+          markTodaySignin();
+          renderSigninTracker();
+        });
+        </script>
         
         <div class="stats-cards">
           <div class="stat-card">
