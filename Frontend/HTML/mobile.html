@@ -1011,6 +1011,27 @@ function showExportOtpModal(userEmail) {
   };
 }
 </script>
+<script>
+// Render on view show
+function showView(viewId) {
+  // Hide all views
+  document.querySelectorAll('.mobile-view').forEach(function(v) {
+    v.classList.add('hidden');
+  });
+  // Show the requested view
+  var view = document.getElementById(viewId);
+  if (view) {
+    view.classList.remove('hidden');
+    // Custom event for view logic
+    var event = new CustomEvent('showView', { detail: viewId });
+    document.dispatchEvent(event);
+  }
+}
+// Patch switchTab to also call showView if it exists
+if (typeof switchTab !== 'function') {
+  window.switchTab = showView;
+}
+</script>
           </div>
           <br>
           <!-- Coming Soon Section for Additional Features -->
@@ -1287,6 +1308,11 @@ function showExportOtpModal(userEmail) {
             <span>Goals</span>
             <i class="fas fa-chevron-right"></i>
           </a>
+          <a href="#" class="profile-menu-item" id="viewBucketList">
+            <i class="fas fa-list-ul"></i>
+            <span>Bucket List</span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
           <div class="profile-menu-item" id="viewSettings">
             <i class="fas fa-cog"></i>
             <span>Settings</span>
@@ -1354,6 +1380,25 @@ function showExportOtpModal(userEmail) {
           </div>
         </div>
         <button class="back-button" id="backToProfileBtn">
+          <i class="fas fa-arrow-left"></i> Back to Profile
+        </button>
+      </div>
+    </div>
+    <div class="mobile-view hidden" id="bucketListView">
+      <div class="mobile-header">
+        <h1>Bucket List</h1>
+      </div>
+      <div class="mobile-content">
+        <div class="settings-section">
+          <h2>Your Bucket List</h2>
+          <p>Add and track your life goals or dreams!</p>
+          <div id="bucketListItems" class="bucket-list-items" style="margin-bottom:18px;"></div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" id="newBucketListItem" placeholder="Add new item..." style="flex:1;padding:10px;border-radius:8px;border:1.2px solid #e0e3f3;">
+            <button id="addBucketListItemBtn" class="btn btn-primary"><i class="fas fa-plus"></i></button>
+          </div>
+        </div>
+        <button class="back-button" id="backToProfileBtnBucket">
           <i class="fas fa-arrow-left"></i> Back to Profile
         </button>
       </div>
@@ -1747,6 +1792,16 @@ function showExportOtpModal(userEmail) {
           }
         });
       }
+      // Add navigation for Bucket List
+      var viewBucketList = document.getElementById('viewBucketList');
+      if (viewBucketList) {
+        viewBucketList.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (typeof switchTab === 'function') {
+            switchTab('bucketListView');
+          }
+        });
+      }
       // Add back button for Goals view
       var backToProfileBtns = document.querySelectorAll('#goalsView .back-button');
       backToProfileBtns.forEach(function(btn) {
@@ -1755,6 +1810,67 @@ function showExportOtpModal(userEmail) {
             switchTab('profileView');
           }
         });
+      });
+      // Add back button for Bucket List view
+      var backToProfileBtnBucket = document.getElementById('backToProfileBtnBucket');
+      if (backToProfileBtnBucket) {
+        backToProfileBtnBucket.addEventListener('click', function() {
+          if (typeof switchTab === 'function') {
+            switchTab('profileView');
+          }
+        });
+      }
+      // Bucket List logic
+      function renderBucketList() {
+        const container = document.getElementById('bucketListItems');
+        if (!container) return;
+        const items = JSON.parse(localStorage.getItem('bucketList') || '[]');
+        container.innerHTML = '';
+        if (items.length === 0) {
+          container.innerHTML = '<div style="color:#888;text-align:center;padding:18px 0;">No items yet. Add your first bucket list item!</div>';
+          return;
+        }
+        items.forEach((item, idx) => {
+          const div = document.createElement('div');
+          div.className = 'bucket-list-item';
+          div.style = 'display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;';
+          div.innerHTML = `<span style="flex:1;">${item}</span><button data-idx="${idx}" class="remove-bucket-item-btn" style="background:none;border:none;color:#e53e3e;font-size:1.1em;cursor:pointer;"><i class="fas fa-trash"></i></button>`;
+          container.appendChild(div);
+        });
+        // Remove handlers
+        container.querySelectorAll('.remove-bucket-item-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const idx = parseInt(this.getAttribute('data-idx'));
+            const items = JSON.parse(localStorage.getItem('bucketList') || '[]');
+            items.splice(idx, 1);
+            localStorage.setItem('bucketList', JSON.stringify(items));
+            renderBucketList();
+          });
+        });
+      }
+      var addBtn = document.getElementById('addBucketListItemBtn');
+      var input = document.getElementById('newBucketListItem');
+      if (addBtn && input) {
+        addBtn.addEventListener('click', function() {
+          const val = input.value.trim();
+          if (!val) return;
+          let items = JSON.parse(localStorage.getItem('bucketList') || '[]');
+          items.push(val);
+          localStorage.setItem('bucketList', JSON.stringify(items));
+          input.value = '';
+          renderBucketList();
+        });
+        input.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            addBtn.click();
+          }
+        });
+      }
+      // Render on view show
+      document.addEventListener('showView', function(e) {
+        if (e.detail === 'bucketListView') {
+          renderBucketList();
+        }
       });
     });
 
