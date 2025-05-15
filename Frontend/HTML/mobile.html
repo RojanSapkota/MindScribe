@@ -873,6 +873,144 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
+<script>
+// Export to PDF (OTP-protected)
+document.addEventListener('DOMContentLoaded', function() {
+  var exportBtn = document.getElementById('exportToPDFBtn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      const userEmail = localStorage.getItem('userEmail');
+      if (!userEmail) {
+        alert('Please log in to export your journal history.');
+        return;
+      }
+      // Show OTP modal
+      showExportOtpModal(userEmail);
+    });
+  }
+});
+
+function showExportOtpModal(userEmail) {
+  // Remove any existing modal
+  const oldModal = document.getElementById('exportOtpModal');
+  if (oldModal) oldModal.remove();
+  // Modal HTML
+  const modal = document.createElement('div');
+  modal.id = 'exportOtpModal';
+  modal.style.position = 'fixed';
+  modal.style.left = '0';
+  modal.style.top = '0';
+  modal.style.width = '100vw';
+  modal.style.height = '100vh';
+  modal.style.background = 'rgba(0,0,0,0.25)';
+  modal.style.zIndex = '2000';
+  modal.style.display = 'flex';
+  modal.style.alignItems = 'center';
+  modal.style.justifyContent = 'center';
+  modal.innerHTML = `
+    <div class="otp-container" style="background:#fff;padding:32px 22px 28px 22px;border-radius:22px;max-width:90vw;width:340px;box-shadow:0 4px 32px 0 rgba(93,95,239,0.13);position:relative;display:flex;flex-direction:column;align-items:center;">
+      <button id="closeExportOtpModal" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:1.2em;color:#888;cursor:pointer;"><i class="fas fa-times"></i></button>
+      <div class="otp-header" style="display:flex;flex-direction:column;align-items:center;">
+        <i class="fas fa-envelope-circle-check otp-icon" style="font-size:2.2em;color:#5D5FEF;margin-bottom:8px;"></i>
+        <h2 style="font-weight:700;font-size:1.25em;margin-bottom:2px;color:#232347;">Export to PDF</h2>
+        <p style="color:#5D5FEF;font-size:1.05em;margin-bottom:0;">Code will be sent to</p>
+        <p class="otp-email" style="color:#232347;font-weight:600;font-size:1.08em;margin:8px 0 0 0;word-break:break-all;">${userEmail}</p>
+      </div>
+      <form id="exportOtpForm" class="otp-form" style="width:100%;margin-top:18px;">
+        <div class="form-group" style="width:100%;display:flex;flex-direction:column;align-items:center;">
+          <label for="exportOtpInput" style="font-weight:500;color:#232347;margin-bottom:8px;">Enter 6-digit Code</label>
+          <div class="otp-input-container" style="display:flex;gap:8px;justify-content:center;">
+            <input id="exportOtpInput" type="text" inputmode="numeric" maxlength="6" pattern="\\d{6}" autocomplete="one-time-code" style="font-size:1.5em;text-align:center;width:140px;letter-spacing:0.35em;padding:10px 0;border-radius:10px;border:1.5px solid #e3e6f0;background:#f7f8ff;color:#232347;font-family:inherit;outline:none;transition:border 0.2s;" required />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary login-btn" style="margin-top:18px;width:100%;background:linear-gradient(90deg,#5D5FEF 70%,#34D399 100%);color:#fff;font-weight:600;font-size:1.08em;border-radius:10px;padding:12px 0;box-shadow:0 2px 8px 0 rgba(93,95,239,0.08);">
+          <i class="fas fa-file-pdf"></i> Export PDF
+        </button>
+        <div class="otp-footer" style="margin-top:18px;text-align:center;">
+          <span style="color:#888;">Didn't get the code?</span>
+          <button type="button" id="resendExportOtp" class="btn-link" style="color:#5D5FEF;font-weight:600;background:none;border:none;cursor:pointer;margin-left:6px;">Resend OTP</button>
+        </div>
+      </form>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  // Focus input
+  setTimeout(() => { document.getElementById('exportOtpInput').focus(); }, 200);
+  // Close modal handler
+  modal.querySelector('#closeExportOtpModal').onclick = () => modal.remove();
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  // Send OTP immediately
+  fetch('https://hackclubapi.rojansapkota.com.np/request-export-otp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ user_email: userEmail })
+  });
+  // Resend OTP handler
+  modal.querySelector('#resendExportOtp').onclick = async function() {
+    this.disabled = true;
+    this.textContent = 'Sending...';
+    try {
+      const resp = await fetch('https://hackclubapi.rojansapkota.com.np/request-export-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ user_email: userEmail })
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.detail || 'Failed to resend OTP.');
+      alert('OTP has been resent to your email.');
+    } catch (err) {
+      alert('Failed to resend OTP. Please try again.');
+    } finally {
+      setTimeout(() => {
+        this.disabled = false;
+        this.textContent = 'Resend OTP';
+      }, 60000);
+    }
+  };
+  // OTP form submit handler
+  modal.querySelector('#exportOtpForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const otp = document.getElementById('exportOtpInput').value.trim();
+    if (!otp || otp.length < 6) {
+      alert('Please enter a valid 6-digit code.');
+      return;
+    }
+    const submitBtn = this.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
+    try {
+      // Step 2: Request PDF from backend
+      const pdfResp = await fetch('https://hackclubapi.rojansapkota.com.np/export-profile-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ user_email: userEmail, otp })
+      });
+      if (!pdfResp.ok) {
+        const err = await pdfResp.json();
+        throw new Error(err.detail || 'Failed to export PDF.');
+      }
+      // Download PDF
+      const blob = await pdfResp.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'MindScribe_Profile.pdf';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        a.remove();
+      }, 100);
+      modal.remove();
+    } catch (err) {
+      alert('Export failed: ' + (err.message || err));
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Export PDF';
+    }
+  };
+}
+</script>
           </div>
           <br>
           <!-- Coming Soon Section for Additional Features -->
@@ -1162,6 +1300,11 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="profile-menu-item" id="viewTermsAndPrivacy">
             <i class="fas fa-file-alt"></i>
             <span>Terms & Privacy</span>
+            <i class="fas fa-chevron-right"></i>
+          </div>
+          <div class="profile-menu-item" id="exportToPDFBtn">
+            <i class="fas fa-file-pdf"></i>
+            <span>Export to PDF</span>
             <i class="fas fa-chevron-right"></i>
           </div>
         </div>
