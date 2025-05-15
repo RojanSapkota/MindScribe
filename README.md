@@ -1,17 +1,26 @@
 # MindScribe 🧠✨  
 *Your voice. Your thoughts. Your growth.*
 
-**MindScribe** is an AI-powered voice journaling app that helps teens reflect on their emotions, track mental and physical wellness over time, and receive supportive, personalised feedback.
-Users can speak their thoughts, which are transcribed, analysed for emotional tone, and enhanced with insights using NLP and GPT. In addition to mood tracking, the app now also supports logging physical health patterns, promoting holistic self-care through expressive, voice-driven interaction.
+**MindScribe** is an AI-powered voice journaling and wellness assistant designed to help teens and young adults reflect deeply, track mental and physical wellbeing, and gain actionable, personalised insights.
+Through a seamless voice interface, users can speak their thoughts, which are transcribed, emotionally analysed, and enriched using GPT-powered feedback. Whether you're tracking your mood, logging your activity, or building healthy routines, MindScribe is your companion in self-awareness and discipline.
+
+
+---
+
+## 🖼️ Live Preview
+<img src="https://github.com/user-attachments/assets/dbc943dd-02e2-4fc6-aa24-32ac790f279d" width="300" alt="Home"/>
 
 ---
 
 ## 💡 Features
-- 🎙️ **Voice-to-text journaling** with Whisper API
-- 🧠 **Sentiment & emotion analysis** using NLP classifiers
-- 💬 **GPT-based reflections** tailored to your tone
-- 📊 **Mood trends visualization** over time
-- 🔐 **Secure, private journaling** 
+- 🎙️ **Voice-to-text journaling** with powered by Whisper/JS
+- 🧠 **Sentiment & emotion analysis** (NLP-based)
+- 💬 **GPT-based reflections** tailored to user tone.
+- 📊 **Mood, food, and activity** trend visualizations
+- 🏃 **Fitness goal** tracking & **physical activity** logs.
+- 🔐 **Secure, private journaling**
+- 📄 **Export reports as PDFs** for journaling and analytics
+
 
 ---
 
@@ -25,13 +34,15 @@ Users can speak their thoughts, which are transcribed, analysed for emotional to
 ## 🛠️ Tech Stack
 **Frontend**:  
 - HTML, CSS, JavaScript  
-- Chart.js for visual mood analytics  
+- Chart.js for visual mood analytics
+- Custom-built UI for accessibility and responsiveness
 
 **Backend**:  
-- Python (Flask or FastAPI)  
-- Whisper API for speech-to-text  
+- Python (FastAPI)
+- JS/Whisper API for speech-to-text  
 - GPT (via OpenAI/Groq) for responses  
-- MongoDB for storage (optional)
+- MongoDB for persistent storage
+- LangChain + FAISS for RAG-based knowledge grounding
 
 ---
 
