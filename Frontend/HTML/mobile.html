@@ -1755,8 +1755,45 @@ function showExportOtpModal(userEmail) {
             switchTab('profileView');
           }
         });
+      });
+    });
 
-      
+    document.addEventListener('DOMContentLoaded', function() {
+      const goals = [
+        { id: 'loseWeightGoal', text: 'Lose Weight' },
+        { id: 'gainMuscleGoal', text: 'Gain Muscle' },
+        { id: 'maintainWeightGoal', text: 'Maintain Weight' }
+      ];
+      function showGoalSpinner(goalId, goalText) {
+        const goalCard = document.getElementById(goalId);
+        if (!goalCard) return;
+        // Remove any previous spinner/result
+        let old = goalCard.querySelector('.goal-spinner, .goal-set-result');
+        if (old) old.remove();
+        // Add spinner
+        const spinner = document.createElement('div');
+        spinner.className = 'goal-spinner';
+        spinner.innerHTML = `<div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
+          <span class="spinner" style="width:22px;height:22px;border:3px solid #5D5FEF;border-top:3px solid #34D399;border-radius:50%;display:inline-block;animation:spin 1s linear infinite;"></span>
+          <span style="color:#5D5FEF;font-weight:600;">Setting goal...</span>
+        </div>`;
+        goalCard.appendChild(spinner);
+        setTimeout(() => {
+          spinner.remove();
+          // Show result
+          const result = document.createElement('div');
+          result.className = 'goal-set-result';
+          result.innerHTML = `<div style="margin-top:10px;color:#22c55e;font-weight:700;"><i class='fas fa-check-circle'></i> Goal set: ${goalText}</div>`;
+          goalCard.appendChild(result);
+        }, 1200);
+      }
+      goals.forEach(g => {
+        const el = document.getElementById(g.id);
+        if (el) {
+          el.addEventListener('click', function() {
+            showGoalSpinner(g.id, g.text);
+          });
+        }
       });
     });
   </script>
