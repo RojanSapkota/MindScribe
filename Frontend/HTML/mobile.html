@@ -1773,7 +1773,39 @@ if (typeof switchTab !== 'function') {
     </div>
     <!-- End AI Chat Section -->
 
-   
+    <div class="mobile-view hidden" id="aitalk">
+      <div class="mobile-header ai-chat-header" style="background:linear-gradient(90deg,#232347 70%,#34D399 100%);color:#fff;height:52px;padding:0 12px 0 8px;border-radius:0 0 16px 16px;box-shadow:0 2px 8px 0 rgba(93,95,239,0.08);display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-robot" style="font-size:1.3em;"></i>
+          <span style="font-size:1.05em;font-weight:600;letter-spacing:0.5px;">Live AI Chat</span>
+        </div>
+        <button id="closeAIChatBtn" class="close-header-btn" onclick="switchTab('homeView')" style="background:none;border:none;color:#fff;font-size:1.1em;padding:4px 8px;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="mobile-content" style="background:linear-gradient(180deg,#232347 80%,#232347 100%);padding:0;display:flex;flex-direction:column;height:calc(100dvh - 52px);overflow:hidden;align-items:center;justify-content:center;">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;width:100%;height:100%;padding:0 0 32px 0;">
+          <div style="width:100vw;max-width:420px;padding:0 8px;display:flex;align-items:center;justify-content:center;">
+            
+            <elevenlabs-convai agent-id="a81xOemgC3Jq0iHJc9OT" style="width:100%;min-width:220px;min-height:300px;"></elevenlabs-convai>
+
+          </div>
+          </div>
+        </div>
+        <script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
+        <style>
+          @media (max-width: 480px) {
+            #aitalk .mobile-content > div > div {
+              max-width: 98vw;
+              padding: 0 2vw;
+            }
+            #aitalk elevenlabs-convai {
+              min-width: 180px;
+            }
+          }
+        </style>
+      </div>
+    </div>
      
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
