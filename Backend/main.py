@@ -571,61 +571,61 @@ async def get_analytics(analysis_id: str, user_email: str):
         raise HTTPException(status_code=500, detail="Internal server error during analytics retrieval!")
 
 #useful for overall sentiment
-@app.post("/sentiment")
-async def sentiment(user_email: str = Form(...), analysis_id: str = Form(...)):
-    try:
-        # Use ObjectId for MongoDB lookup
-        try:
-            obj_id = ObjectId(analysis_id)
-        except Exception:
-            raise HTTPException(status_code=400, detail="Invalid analysis_id format")
-        analysis = await analysis_collection.find_one({"_id": obj_id, "user_email": user_email})
-        if not analysis:
-            raise HTTPException(status_code=400, detail="Analysis not found")
-        # Parse analysis_result JSON and return only sentiment fields
-        try:
-            result = json.loads(analysis["analysis_result"])
-            sentiment_data = {
-                "sentiment_score": result.get("sentiment_score"),
-                "mood": result.get("mood"),
-                "summary": result.get("summary"),
-            }
-        except Exception:
-            sentiment_data = {"raw": analysis["analysis_result"]}
-        return JSONResponse(content={"sentiment": sentiment_data})
-    except Exception as e:
-        logging.error(f"Error fetching sentiment: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error during sentiment retrieval!")
+#@app.post("/sentiment")
+#async def sentiment(user_email: str = Form(...), analysis_id: str = Form(...)):
+#    try:
+#        # Use ObjectId for MongoDB lookup
+#        try:
+#            obj_id = ObjectId(analysis_id)
+#        except Exception:
+#            raise HTTPException(status_code=400, detail="Invalid analysis_id format")
+#        analysis = await analysis_collection.find_one({"_id": obj_id, "user_email": user_email})
+#        if not analysis:
+#            raise HTTPException(status_code=400, detail="Analysis not found")
+#        # Parse analysis_result JSON and return only sentiment fields
+#        try:
+#            result = json.loads(analysis["analysis_result"])
+#            sentiment_data = {
+#                "sentiment_score": result.get("sentiment_score"),
+#                "mood": result.get("mood"),
+#                "summary": result.get("summary"),
+#            }
+#        except Exception:
+#            sentiment_data = {"raw": analysis["analysis_result"]}
+#        return JSONResponse(content={"sentiment": sentiment_data})
+#    except Exception as e:
+#        logging.error(f"Error fetching sentiment: {str(e)}")
+#        raise HTTPException(status_code=500, detail="Internal server error during sentiment retrieval!")
 
 #overall sentiment from a week
-@app.post("/mood-breakdown")
-async def mood_breakdown(data: MoodBreakdownRequest):
-    user_email = data.user_email
-    try:
-        entries = await analysis_collection.find({"user_email": user_email}).sort("timestamp", -1).to_list(length=30)
-        breakdown = []
-        for entry in entries:
-            try:
-                result = json.loads(entry["analysis_result"])
-                score = result.get("sentiment_score", 0)
-                mood = result.get("mood", "unknown")
-            except Exception:
-                score = 0
-                mood = "unknown"
-            # Handle timestamp serialization
-            if isinstance(entry.get("timestamp"), datetime):
-                date_str = entry["timestamp"].strftime("%Y-%m-%d")
-            else:
-                date_str = str(entry.get("timestamp", ""))
-            breakdown.append({
-                "date": date_str,
-                "score": score,
-                "mood": mood
-            })
-        return JSONResponse(content={"mood_data": breakdown})
-    except Exception as e:
-        logging.error(f"Mood breakdown error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to generate mood data")
+#@app.post("/mood-breakdown")
+#async def mood_breakdown(data: MoodBreakdownRequest):
+#    user_email = data.user_email
+#    try:
+#        entries = await analysis_collection.find({"user_email": user_email}).sort("timestamp", -1).to_list(length=30)
+#        breakdown = []
+#        for entry in entries:
+#            try:
+#                result = json.loads(entry["analysis_result"])
+#                score = result.get("sentiment_score", 0)
+#                mood = result.get("mood", "unknown")
+#            except Exception:
+#                score = 0
+#                mood = "unknown"
+#            # Handle timestamp serialization
+#            if isinstance(entry.get("timestamp"), datetime):
+#                date_str = entry["timestamp"].strftime("%Y-%m-%d")
+#            else:
+#                date_str = str(entry.get("timestamp", ""))
+#            breakdown.append({
+#                "date": date_str,
+#                "score": score,
+#                "mood": mood
+#            })
+#        return JSONResponse(content={"mood_data": breakdown})
+#    except Exception as e:
+#        logging.error(f"Mood breakdown error: {e}")
+#        raise HTTPException(status_code=500, detail="Failed to generate mood data")
     
 @app.post("/analyze-food", response_model=FoodAnalysisResponse)
 async def analyze_food(user_email: str = Form(...), file: UploadFile = File(...), timestamp: str = Form(...)):
