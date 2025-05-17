@@ -1,5 +1,163 @@
 /* Mobile App Component Styles */
 
+ .modern-diet-wizard, .modern-diet-wizard input, .modern-diet-wizard select, .modern-diet-wizard label, .modern-diet-wizard button {
+      font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, 'system-ui', sans-serif !important;
+      letter-spacing: 0.01em;
+    }
+
+    #dietWizardForm .wizard-step {
+    background:  #4a5568 !important; 
+    }
+
+
+    .modern-diet-wizard .wizard-step {
+      background: #384150;
+      border-radius: 18px;
+      box-shadow: 0 2px 16px 0 rgba(93,95,239,0.07);
+      padding: 28px 18px 22px 18px;
+      margin-bottom: 10px;
+      transition: box-shadow 0.2s;
+    }
+    .modern-diet-wizard label {
+      font-size: 1.08em;
+      font-weight: 600;
+      color: #232347;
+      margin-bottom: 10px;
+      display: block;
+      letter-spacing: 0.01em;
+    }
+    .modern-diet-wizard input[type="number"],
+    .modern-diet-wizard input[type="text"],
+    .modern-diet-wizard select {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid #e3e6f0;
+      border-radius: 12px;
+      font-size: 1.05em;
+      background: #f7f8ff;
+      margin-bottom: 18px;
+      margin-top: 6px;
+      transition: border 0.2s, box-shadow 0.2s;
+      outline: none;
+      color: #232347;
+    }
+    .modern-diet-wizard input:focus, .modern-diet-wizard select:focus {
+      border-color: #5D5FEF;
+      box-shadow: 0 0 0 2px #5d5fef22;
+    }
+    .modern-diet-wizard .wizard-btn {
+      background: linear-gradient(90deg,#5D5FEF 70%,#34D399 100%);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 26px;
+      font-size: 1.05em;
+      font-weight: 600;
+      margin: 0 6px;
+      cursor: pointer;
+      box-shadow: 0 1px 6px 0 rgba(93,95,239,0.08);
+      transition: background 0.18s, box-shadow 0.18s;
+    }
+    .modern-diet-wizard .wizard-btn.back {
+      background: #e3e6f0;
+      color: #5D5FEF;
+    }
+    .modern-diet-wizard .wizard-btn:active {
+      box-shadow: 0 2px 10px 0 rgba(93,95,239,0.13);
+    }
+    .modern-diet-wizard .radio-group label {
+      font-weight: 500;
+      font-size: 1em;
+      margin-right: 18px;
+      color: #232347;
+    }
+    .modern-diet-wizard .radio-group input[type="radio"] {
+      accent-color: #5D5FEF;
+      margin-right: 6px;
+    }
+
+    /* Modern font and placeholder styles for diet wizard */
+    #dietWizardBox, .modern-diet-wizard, #dietWizardForm {
+      font-family: 'Inter', 'system-ui', 'Segoe UI', Arial, sans-serif !important;
+    }
+    #dietWizardForm label {
+      font-size: 1.08em;
+      font-weight: 500;
+      color: #232347;
+      letter-spacing: 0.01em;
+      margin-bottom: 8px;
+      display: block;
+    }
+    #dietWizardForm input[type="number"],
+    #dietWizardForm input[type="text"],
+    #dietWizardForm select {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 12px;
+      border: 1.5px solid #e0e3f3;
+      background: #f7f8ff;
+      font-size: 1.05em;
+      font-family: inherit;
+      margin-bottom: 10px;
+      transition: border 0.2s;
+      color: #dc212d !important;
+    }
+    #dietWizardForm input[type="number"]::placeholder,
+    #dietWizardForm input[type="text"]::placeholder {
+      color: #b3b3cc;
+      font-size: 1em;
+      font-family: inherit;
+      opacity: 1;
+    }
+    #dietWizardForm select:invalid {
+      color: #b3b3cc;
+    }
+    #dietWizardForm select option[value=""] {
+      color: #b3b3cc;
+    }
+    #dietWizardForm .wizard-btn {
+      font-family: inherit;
+      font-size: 1.05em;
+      border-radius: 10px;
+      padding: 11px 22px;
+      background: #5D5FEF;
+      color: #fff;
+      border: none;
+      margin: 0 4px;
+      font-weight: 600;
+      box-shadow: 0 2px 8px 0 rgba(93,95,239,0.08);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    #dietWizardForm .wizard-btn.back {
+      background: #e0e3f3;
+      color: #232347;
+    }
+    #dietWizardForm .wizard-btn:active {
+      box-shadow: 0 1px 3px 0 rgba(93,95,239,0.10);
+    }
+    #dietWizardForm .wizard-step {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 2px 12px 0 rgba(93,95,239,0.07);
+      padding: 22px 18px 18px 18px;
+      margin-bottom: 10px;
+      min-width: 0;
+    }
+    #dietWizardForm .radio-group label {
+      font-size: 1em;
+      font-weight: 500;
+      color: #232347;
+      margin-right: 18px;
+    }
+    #dietWizardForm .radio-group input[type="radio"] {
+      accent-color: #5D5FEF;
+      margin-right: 6px;
+    }
+    #dietWizardForm input:focus, #dietWizardForm select:focus {
+      border-color: #5D5FEF;
+      outline: none;
+    }
+
 /* Community View (History) Specific Styles */
 .filter-row {
   display: flex;
