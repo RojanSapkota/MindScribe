@@ -129,6 +129,29 @@
           renderSigninTracker();
         });
         </script>
+        <script>
+        // Free Writing Box Logic
+        document.addEventListener('DOMContentLoaded', function() {
+          const textarea = document.getElementById('freeWritingBox');
+          const saveBtn = document.getElementById('saveFreeWritingBtn');
+          const savedMsg = document.getElementById('freeWritingSavedMsg');
+          // Load saved content
+          if (textarea) {
+            const saved = localStorage.getItem('freeWritingContent');
+            if (saved) textarea.value = saved;
+          }
+          // Save on button click
+          if (saveBtn && textarea) {
+            saveBtn.addEventListener('click', function() {
+              localStorage.setItem('freeWritingContent', textarea.value);
+              if (savedMsg) {
+                savedMsg.style.display = 'inline';
+                setTimeout(() => { savedMsg.style.display = 'none'; }, 1200);
+              }
+            });
+          }
+        });
+        </script>
         
         <div class="stats-cards">
           <div class="stat-card">
@@ -1158,6 +1181,19 @@ if (typeof switchTab !== 'function') {
               </div>
             </div>
           </div>
+          </div>
+        <div class="free-writing-card" style="margin:18px 0 0 0;padding:18px;background:#2d3748;border-radius:18px;box-shadow:0 2px 12px 0 rgba(93,95,239,0.08);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <i class="fas fa-pen-nib" style="color:#5D5FEF;font-size:1.25em;"></i>
+            <span style="color:#5D5FEF;font-weight:600;letter-spacing:0.01em;">Free Writing</span>
+          </div>
+          <textarea id="freeWritingBox" placeholder="Write anything on your mind..." style="width:100%;min-height:70px;border:none;outline:none;background:#f3f4fa;border-radius:10px;padding:10px 12px;font-size:1em;resize:vertical;color:#222;margin-bottom:8px;"></textarea>
+          <div style="text-align:right;">
+            <button id="saveFreeWritingBtn" class="btn btn-primary" style="padding:6px 18px;font-size:0.98em;border-radius:8px;"><i class="fas fa-save"></i> Save</button>
+            <span id="freeWritingSavedMsg" style="color:#34D399;font-size:0.97em;display:none;margin-left:10px;">Saved!</span>
+          </div>
+        </div>
+          
         </div>
       </div>
     </div>
