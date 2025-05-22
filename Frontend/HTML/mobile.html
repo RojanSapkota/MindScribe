@@ -205,6 +205,12 @@
             <i class="fas fa-comments"></i>
             <span>Live Chat</span>
           </button>
+          <div class="action-buttons">
+          <button class="action-btn" onclick="switchTab('convoai')">
+            <i class="fas fa-fist-raised"></i>
+            <span>Convo AI</span>
+          </button>
+        </div>
         </div>
         </div>
         
@@ -1614,6 +1620,63 @@ if (typeof switchTab !== 'function') {
       </div>
     </div>
     
+    <div class="mobile-view hidden" id="convoai">
+      <div class="mobile-header ai-chat-header" style="background:linear-gradient(90deg,#232347 70%,#34D399 100%);color:#fff;height:52px;padding:0 12px 0 8px;border-radius:0 0 16px 16px;box-shadow:0 2px 8px 0 rgba(93,95,239,0.08);display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-robot" style="font-size:1.3em;"></i>
+          <span style="font-size:1.05em;font-weight:600;letter-spacing:0.5px;">Convo AI</span>
+        </div>
+        <button id="closeAIChatBtn" class="close-header-btn" onclick="switchTab('homeView')" style="background:none;border:none;color:#fff;font-size:1.1em;padding:4px 8px;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="mobile-content" style="background:linear-gradient(180deg,#232347 80%,#232347 100%);padding:0;display:flex;flex-direction:column;height:calc(100dvh - 52px);">
+        <div class="welcome-card" style="margin:18px 12px 10px 12px;background:rgba(52,211,153,0.08);color:#fff;">
+          <div class="welcome-avatar" style="background:rgba(93,95,239,0.13);color:#34D399;">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h2 style="font-size:1.1em;">Convo AI</h2>
+          <p style="font-size:0.98em;color:#b3b3cc;">Attach Screenshot or Send Message for Replies Suggestion!</p>
+        </div>
+        <div class="ai-chat-messages" id="aiChatMessages" style="flex:1 1 0;overflow-y:auto;padding:0 12px 0 12px;display:flex;flex-direction:column;gap:10px;min-height:0;">
+          <!-- Messages will be rendered here -->
+        </div>
+        <form id="aiChatForm" class="ai-chat-form" style="display:flex;gap:8px;padding:0 8px 18px 8px;position:fixed;left:0;right:0;bottom:0;width:100vw;max-width:480px;margin:auto;background:linear-gradient(180deg,#232347 90%,#232347 100%);z-index:100;">
+          <input type="file" id="aiFileInput" style="display:none;" accept="image/*,.pdf,.doc,.docx,.txt" />
+          <button type="button" id="aiFileBtn" class="btn btn-secondary" style="padding:0 12px;border-radius:50%;background:#5D5FEF;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px 0 rgba(52,211,153,0.10);min-width:40px;min-height:40px;">
+            <i class="fas fa-paperclip" style="color:#fff;font-size:1.1em;"></i>
+          </button>
+          <input type="text" id="aiChatInput" class="ai-chat-input" placeholder="Type your message..." autocomplete="off" style="flex:1;padding:13px 14px;border-radius:18px;border:1.5px solid #34D399;font-size:1em;outline:none;background:#232347;color:#fff;box-shadow:0 1px 4px 0 rgba(93,95,239,0.04);margin-bottom:0;">
+          <button type="submit" class="btn btn-primary" style="padding:0 16px;border-radius:50%;background:#5D5FEF;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px 0 rgba(93,95,239,0.10);min-width:40px;min-height:40px;">
+          <i class="fas fa-paper-plane" style="color:#fff;font-size:1.1em;"></i>
+          </button>
+        </form>
+        <script>
+        // File upload button logic for Convo AI
+        document.addEventListener('DOMContentLoaded', function() {
+          var fileBtn = document.getElementById('aiFileBtn');
+          var fileInput = document.getElementById('aiFileInput');
+          if (fileBtn && fileInput) {
+            fileBtn.addEventListener('click', function(e) {
+              e.preventDefault();
+              fileInput.click();
+            });
+            fileInput.addEventListener('change', function() {
+              if (fileInput.files && fileInput.files[0]) {
+                // You can handle the file upload here (e.g., display file name, send to backend, etc.)
+                // Example: show file name in chat input
+                var chatInput = document.getElementById('aiChatInput');
+                if (chatInput) {
+                  chatInput.value = fileInput.files[0].name;
+                }
+              }
+            });
+          }
+        });
+        </script>
+      </div>
+    </div>
+
     <!-- AI Chat Section -->
     <div class="mobile-view hidden" id="aiView">
       <div class="mobile-header ai-chat-header" style="background:linear-gradient(90deg,#232347 70%,#34D399 100%);color:#fff;height:52px;padding:0 12px 0 8px;border-radius:0 0 16px 16px;box-shadow:0 2px 8px 0 rgba(93,95,239,0.08);display:flex;align-items:center;justify-content:space-between;">
