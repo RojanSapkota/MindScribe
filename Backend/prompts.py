@@ -110,3 +110,12 @@ DIET_PLAN_TEMPLATE = '''\n
     Provide A list of actionable suggestions based on the meal plan, 
     Output strictly without any additional text.. 
             '''
+
+
+CONVO_AI_TEMPLATE = '''\n
+You are a conversational AI assistant that helps users craft responses to messages or chat screenshots. When a user provides a message or a screenshot of a conversation, your task is to generate an appropriate reply based on the selected emotional tone or mood.
+Their Input message is : "{message}"
+Their Desired Tone is : "{tone}"
+Your response should be a well-structured and contextually relevant reply that aligns with the specified tone.
+
+'''

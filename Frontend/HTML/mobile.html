@@ -1641,36 +1641,56 @@ if (typeof switchTab !== 'function') {
         <div class="ai-chat-messages" id="aiChatMessages" style="flex:1 1 0;overflow-y:auto;padding:0 12px 0 12px;display:flex;flex-direction:column;gap:10px;min-height:0;">
           <!-- Messages will be rendered here -->
         </div>
-        <form id="aiChatForm" class="ai-chat-form" style="display:flex;gap:8px;padding:0 8px 18px 8px;position:fixed;left:0;right:0;bottom:0;width:100vw;max-width:480px;margin:auto;background:linear-gradient(180deg,#232347 90%,#232347 100%);z-index:100;">
-          <input type="file" id="aiFileInput" style="display:none;" accept="image/*,.pdf,.doc,.docx,.txt" />
-          <button type="button" id="aiFileBtn" class="btn btn-secondary" style="padding:0 12px;border-radius:50%;background:#5D5FEF;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px 0 rgba(52,211,153,0.10);min-width:40px;min-height:40px;">
-            <i class="fas fa-paperclip" style="color:#fff;font-size:1.1em;"></i>
-          </button>
-          <input type="text" id="aiChatInput" class="ai-chat-input" placeholder="Type your message..." autocomplete="off" style="flex:1;padding:13px 14px;border-radius:18px;border:1.5px solid #34D399;font-size:1em;outline:none;background:#232347;color:#fff;box-shadow:0 1px 4px 0 rgba(93,95,239,0.04);margin-bottom:0;">
-          <button type="submit" class="btn btn-primary" style="padding:0 16px;border-radius:50%;background:#5D5FEF;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px 0 rgba(93,95,239,0.10);min-width:40px;min-height:40px;">
-          <i class="fas fa-paper-plane" style="color:#fff;font-size:1.1em;"></i>
-          </button>
+        <form id="aiChatForm" class="ai-chat-form" style="display:flex;flex-direction:column;gap:6px;padding:0 8px 18px 8px;position:fixed;left:0;right:0;bottom:0;width:100vw;max-width:480px;margin:auto;background:linear-gradient(180deg,#232347 90%,#232347 100%);z-index:100;">
+          <div style="display:flex;gap:8px;align-items:center;width:100%;">
+            <input type="file" id="aiFileInput" style="display:none;" accept="image/*,.pdf,.doc,.docx,.txt" />
+            <button type="button" id="aiFileBtn" class="btn btn-secondary" style="display:flex;align-items:center;gap:6px;padding:0 12px;border-radius:14px;background:#5D5FEF;border:none;min-width:40px;min-height:40px;">
+              <i class="fas fa-paperclip" style="color:#fff;font-size:1.1em;"></i>
+              <span style="color:#fff;font-size:0.98em;display:none;" class="file-btn-label">Attach</span>
+            </button>
+            <input type="text" id="aiChatInput" class="ai-chat-input" placeholder="Type your message..." autocomplete="off" style="flex:1;padding:13px 14px;border-radius:18px;border:1.5px solid #34D399;font-size:1em;outline:none;background:#232347;color:#fff;box-shadow:0 1px 4px 0 rgba(93,95,239,0.04);margin-bottom:0;">
+            <button type="submit" class="btn btn-primary" style="padding:0 16px;border-radius:50%;background:#5D5FEF;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px 0 rgba(93,95,239,0.10);min-width:40px;min-height:40px;">
+              <i class="fas fa-paper-plane" style="color:#fff;font-size:1.1em;"></i>
+            </button>
+          </div>
+          <div id="aiFileInfo" style="display:none;margin-left:4px;margin-top:2px;font-size:0.97em;color:#b3b3cc;align-items:center;gap:8px;">
+            <span id="aiFileName"></span>
+            <button type="button" id="aiRemoveFileBtn" style="background:none;border:none;color:#e53e3e;font-size:1.1em;cursor:pointer;vertical-align:middle;" title="Remove file"><i class="fas fa-times-circle"></i></button>
+          </div>
         </form>
         <script>
-        // File upload button logic for Convo AI
+        // Enhanced file upload UI for Convo AI
         document.addEventListener('DOMContentLoaded', function() {
           var fileBtn = document.getElementById('aiFileBtn');
           var fileInput = document.getElementById('aiFileInput');
-          if (fileBtn && fileInput) {
+          var fileInfo = document.getElementById('aiFileInfo');
+          var fileName = document.getElementById('aiFileName');
+          var removeFileBtn = document.getElementById('aiRemoveFileBtn');
+          var chatInput = document.getElementById('aiChatInput');
+          if (fileBtn && fileInput && fileInfo && fileName && removeFileBtn) {
             fileBtn.addEventListener('click', function(e) {
               e.preventDefault();
               fileInput.click();
             });
             fileInput.addEventListener('change', function() {
               if (fileInput.files && fileInput.files[0]) {
-                // You can handle the file upload here (e.g., display file name, send to backend, etc.)
-                // Example: show file name in chat input
-                var chatInput = document.getElementById('aiChatInput');
-                if (chatInput) {
-                  chatInput.value = fileInput.files[0].name;
-                }
+                fileName.textContent = fileInput.files[0].name;
+                fileInfo.style.display = 'flex';
+              } else {
+                fileName.textContent = '';
+                fileInfo.style.display = 'none';
               }
             });
+            removeFileBtn.addEventListener('click', function() {
+              fileInput.value = '';
+              fileName.textContent = '';
+              fileInfo.style.display = 'none';
+            });
+          }
+          // Show label on larger screens
+          if (window.innerWidth > 400) {
+            var label = fileBtn.querySelector('.file-btn-label');
+            if (label) label.style.display = 'inline';
           }
         });
         </script>

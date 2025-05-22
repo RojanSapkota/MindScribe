@@ -19,6 +19,7 @@ from Backend.prompts import NUTRITION_TEMPLATE
 from Backend.prompts import JOURNAL_TEMPLATE
 from Backend.prompts import NUTRITION_TEMPLATE2
 from Backend.prompts import DIET_PLAN_TEMPLATE
+from Backend.prompts import CONVO_AI_TEMPLATE
 from fpdf import FPDF
 #Not using this for now
 #import whisper
@@ -1107,6 +1108,57 @@ async def activity_history(user_email: str):
     except Exception as e:
         logging.error(f"Error fetching activity history: {e}")
         raise HTTPException(status_code=500, detail="Internal server error while fetching activity history.")
+
+@app.post("/conversation-helper", response_model=FoodAnalysisResponse)
+async def analyze_food(user_email: str = Form(...), file: UploadFile = File(...), message: str = Form(...), tone: str = Form(...)):
+    try:
+        # Check if user exists
+        existing_user = await user_collection.find_one({"email": user_email})
+        if not existing_user:
+            raise HTTPException(status_code=400, detail="User not found")
+
+        # Ensure at least one of file or message is provided
+        if not (file and file.filename) and not (message and message.strip()):
+            raise HTTPException(status_code=400, detail="Please provide at least an image or a message.")
+
+        image = None
+        if file and file.filename:
+            image_bytes = await file.read()
+            image = Image.open(io.BytesIO(image_bytes))
+
+        # Format the prompt with message and tone (use empty string if message is None)
+        prompt = CONVO_AI_TEMPLATE.format(message=message or '', tone=tone or '')
+
+        genai.configure(api_key=FOOD_API_KEY)
+        model = genai.GenerativeModel('gemini-2.0-flash')
+
+        # Build AI input: always send prompt, optionally image
+        ai_inputs = [prompt]
+        if image:
+            ai_inputs.append(image)
+
+        response = model.generate_content(
+            ai_inputs,
+            generation_config={"temperature": 0.3}
+        )
+
+        result_text = response.text.strip()
+
+        if result_text.startswith("```json"):
+            result_text = result_text[7:-3].strip()
+
+        try:
+            json_compatible_response = json.loads(result_text.replace("'", '"'))
+        except json.JSONDecodeError as e:
+            logging.error(f"Failed to parse Gemini response: {e}")
+            return JSONResponse(status_code=500, content={"error": "Failed to parse response."})
+
+        # Return the response as JSON
+        return JSONResponse(content=json_compatible_response)
+
+    except Exception as e:
+        logging.error(f"Error in analyzing food: {e}")
+        return JSONResponse(status_code=500, content={"error": "Internal server error."})
 
 @app.get("/")
 def read_root():
