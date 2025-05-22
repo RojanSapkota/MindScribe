@@ -1642,6 +1642,23 @@ if (typeof switchTab !== 'function') {
           <!-- Messages will be rendered here -->
         </div>
         <form id="aiChatForm" class="ai-chat-form" style="display:flex;flex-direction:column;gap:6px;padding:0 8px 18px 8px;position:fixed;left:0;right:0;bottom:0;width:100vw;max-width:480px;margin:auto;background:linear-gradient(180deg,#232347 90%,#232347 100%);z-index:100;">
+          <!-- Modern Tone Selector -->
+          <div id="aiToneDropdownWrapper" style="display:flex;justify-content:flex-end;width:100%;margin-bottom:2px;">
+            <div class="custom-tone-dropdown" style="position:relative;">
+              <button type="button" id="aiToneDropdownBtn" style="background:#232347;border:1.2px solid #34D399;color:#34D399;padding:8px 18px 8px 14px;border-radius:16px;font-size:1em;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px 0 rgba(52,211,153,0.10);min-width:110px;cursor:pointer;">
+                <i class="fas fa-sliders-h"></i>
+                <span id="aiToneDropdownLabel">Direct</span>
+                <i class="fas fa-chevron-down" style="font-size:0.95em;"></i>
+              </button>
+              <div id="aiToneDropdownMenu" style="display:none;position:absolute;right:0;bottom:110%;background:#232347;border:1.2px solid #34D399;border-radius:14px;box-shadow:0 4px 16px 0 rgba(52,211,153,0.13);z-index:10;min-width:140px;">
+                <div class="tone-option" data-tone="Friendly" style="padding:10px 16px;cursor:pointer;color:#34D399;">Friendly</div>
+                <div class="tone-option" data-tone="Formal" style="padding:10px 16px;cursor:pointer;color:#34D399;">Formal</div>
+                <div class="tone-option" data-tone="Empathetic" style="padding:10px 16px;cursor:pointer;color:#34D399;">Empathetic</div>
+                <div class="tone-option" data-tone="Flirty" style="padding:10px 16px;cursor:pointer;color:#34D399;">Flirty</div>
+                <div class="tone-option" data-tone="Direct" style="padding:10px 16px;cursor:pointer;color:#34D399;">Direct</div>
+              </div>
+            </div>
+          </div>
           <div style="display:flex;gap:8px;align-items:center;width:100%;">
             <input type="file" id="aiFileInput" style="display:none;" accept="image/*,.pdf,.doc,.docx,.txt" />
             <button type="button" id="aiFileBtn" class="btn btn-secondary" style="display:flex;align-items:center;gap:6px;padding:0 12px;border-radius:14px;background:#5D5FEF;border:none;min-width:40px;min-height:40px;">
@@ -1659,7 +1676,7 @@ if (typeof switchTab !== 'function') {
           </div>
         </form>
         <script>
-        // Enhanced file upload UI for Convo AI
+        // Enhanced file upload UI for Convo AI + Tone + API integration
         document.addEventListener('DOMContentLoaded', function() {
           var fileBtn = document.getElementById('aiFileBtn');
           var fileInput = document.getElementById('aiFileInput');
@@ -1667,6 +1684,33 @@ if (typeof switchTab !== 'function') {
           var fileName = document.getElementById('aiFileName');
           var removeFileBtn = document.getElementById('aiRemoveFileBtn');
           var chatInput = document.getElementById('aiChatInput');
+          var aiChatForm = document.getElementById('aiChatForm');
+          var aiChatMessages = document.getElementById('aiChatMessages');
+
+          // Custom Tone Dropdown
+          var aiToneDropdownBtn = document.getElementById('aiToneDropdownBtn');
+          var aiToneDropdownMenu = document.getElementById('aiToneDropdownMenu');
+          var aiToneDropdownLabel = document.getElementById('aiToneDropdownLabel');
+          var selectedTone = 'Direct';
+
+          if (aiToneDropdownBtn && aiToneDropdownMenu) {
+            aiToneDropdownBtn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              aiToneDropdownMenu.style.display = aiToneDropdownMenu.style.display === 'block' ? 'none' : 'block';
+            });
+            document.querySelectorAll('.tone-option').forEach(function(opt) {
+              opt.addEventListener('click', function(e) {
+                selectedTone = opt.getAttribute('data-tone') || 'Direct';
+                aiToneDropdownLabel.textContent = selectedTone;
+                aiToneDropdownMenu.style.display = 'none';
+              });
+            });
+            // Close dropdown on outside click
+            document.addEventListener('click', function(e) {
+              aiToneDropdownMenu.style.display = 'none';
+            });
+          }
+
           if (fileBtn && fileInput && fileInfo && fileName && removeFileBtn) {
             fileBtn.addEventListener('click', function(e) {
               e.preventDefault();
@@ -1691,6 +1735,65 @@ if (typeof switchTab !== 'function') {
           if (window.innerWidth > 400) {
             var label = fileBtn.querySelector('.file-btn-label');
             if (label) label.style.display = 'inline';
+          }
+
+          // Handle form submit
+          if (aiChatForm) {
+            aiChatForm.addEventListener('submit', async function(e) {
+              e.preventDefault();
+              var message = chatInput.value.trim();
+              var file = fileInput.files[0];
+              var tone = selectedTone || 'Direct';
+              if (!message && !file) {
+                alert('Please enter a message or attach a file.');
+                return;
+              }
+              // Show user message in chat
+              var userMsgDiv = document.createElement('div');
+              userMsgDiv.className = 'ai-chat-message user';
+              userMsgDiv.style = 'align-self:flex-end;background:#5D5FEF;color:#fff;padding:10px 14px;border-radius:16px 16px 4px 16px;max-width:80%;word-break:break-word;';
+              userMsgDiv.innerHTML = message ? message : (file ? '<i class="fas fa-paperclip"></i> ' + file.name : '');
+              aiChatMessages.appendChild(userMsgDiv);
+              aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+
+              // Prepare form data
+              var formData = new FormData();
+              formData.append('user_email', localStorage.getItem('userEmail') || 'user@example.com');
+              formData.append('tone', tone);
+              formData.append('message', message);
+              if (file) formData.append('file', file);
+
+              // Show loading/AI typing
+              var aiMsgDiv = document.createElement('div');
+              aiMsgDiv.className = 'ai-chat-message ai';
+              aiMsgDiv.style = 'align-self:flex-start;background:#232347;color:#34D399;padding:10px 14px;border-radius:16px 16px 16px 4px;max-width:80%;word-break:break-word;opacity:0.8;';
+              aiMsgDiv.innerHTML = '<i class="fas fa-robot"></i> <span style="color:#b3b3cc;">Thinking...</span>';
+              aiChatMessages.appendChild(aiMsgDiv);
+              aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+
+              try {
+                const resp = await fetch('https://your-backend-url/conversation-helper', {
+                  method: 'POST',
+                  body: formData
+                });
+                const data = await resp.json();
+                aiMsgDiv.innerHTML = data.reply || data.response || JSON.stringify(data, null, 2);
+                aiMsgDiv.style.opacity = 1;
+              } catch (err) {
+                aiMsgDiv.innerHTML = '<span style="color:#e53e3e;">Error: ' + (err.message || 'Failed to get response') + '</span>';
+                aiMsgDiv.style.opacity = 1;
+              }
+              chatInput.value = '';
+              fileInput.value = '';
+              fileName.textContent = '';
+              fileInfo.style.display = 'none';
+              // Reset tone to Direct if nothing selected
+              selectedTone = aiToneDropdownLabel.textContent || 'Direct';
+              if (!selectedTone) {
+                selectedTone = 'Direct';
+                aiToneDropdownLabel.textContent = 'Direct';
+              }
+            });
           }
         });
         </script>
