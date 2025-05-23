@@ -8,7 +8,9 @@ Through a seamless voice interface, users can speak their thoughts, which are tr
 ---
 
 ## 🖼️ Live Preview
-<img src="https://github.com/user-attachments/assets/e03b176e-1086-4046-ac52-f221aca60005" width="300" alt="Home"/>
+<img src="https://github.com/user-attachments/assets/ccf23b9f-2533-4d30-82d7-126b6a093909" width="300" alt="Home"/>
+
+
 
 ---
 
