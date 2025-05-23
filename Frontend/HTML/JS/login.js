@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const tooltip = document.getElementById('tooltip');
   const loginTab = document.getElementById('login-tab');
   const signupTab = document.getElementById('signup-tab');
-  const api_server = 'https://hackclubapi.rojansapkota.com.np';
+  const api_server = 'https://mindscribe.rojan.hackclub.app';
   
   let darkMode = localStorage.getItem('darkMode') === 'true';
   

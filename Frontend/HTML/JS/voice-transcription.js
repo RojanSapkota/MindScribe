@@ -8,7 +8,7 @@ let interimTranscript = '';
 let currentUser = null;
 
 // Set API base URL for backend
-const API_BASE_URL = 'https://hackclubapi.rojansapkota.com.np/';
+const API_BASE_URL = 'https://mindscribe.rojan.hackclub.app';
 
 // DOM elements 
 document.addEventListener('DOMContentLoaded', () => {

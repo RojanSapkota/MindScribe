@@ -136,7 +136,7 @@ async function saveTranscript() {
     formData.append('transcript', finalTranscript.trim());
     formData.append('timestamp', new Date().toISOString());
 
-    const response = await fetch('https://hackclubapi.rojansapkota.com.np/transcribe', {
+    const response = await fetch('https://mindscribe.rojan.hackclub.app/transcribe', {
       method: 'POST',
       body: formData
     });

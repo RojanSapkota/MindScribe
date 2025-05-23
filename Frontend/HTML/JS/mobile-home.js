@@ -1,5 +1,5 @@
 // Set up API base URL - defined at top level so it's accessible to all scripts
-const API_BASE_URL = 'https://hackclubapi.rojansapkota.com.np/';
+const API_BASE_URL = 'https://mindscribe.rojan.hackclub.app/';
 
 // Variables and DOM elements
 const thoughts = [

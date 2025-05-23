@@ -4,7 +4,7 @@ let filteredData = [];
 let currentPage = 1;
 const itemsPerPage = 5;
 let darkMode = localStorage.getItem('darkMode') === 'true';
-const api_server = 'https://hackclubapi.rojansapkota.com.np/';
+const api_server = 'https://mindscribe.rojan.hackclub.app';
 
 // DOM Elements (defined globally to be accessible to all functions)
 let historyContainer;
