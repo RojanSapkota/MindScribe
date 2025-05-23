@@ -205,12 +205,6 @@
             <i class="fas fa-comments"></i>
             <span>Live Chat</span>
           </button>
-          <div class="action-buttons">
-          <button class="action-btn" onclick="switchTab('convoai')">
-            <i class="fas fa-fist-raised"></i>
-            <span>Convo AI</span>
-          </button>
-        </div>
         </div>
         </div>
         
@@ -702,7 +696,7 @@ document.addEventListener('DOMContentLoaded', function() {
       email_deliver: 'Yes'
     };
     try {
-      const response = await fetch('https://mindscribe.rojan.hackclub.app/diet-plan', {
+      const response = await fetch('https://hackclubapi.rojansapkota.com.np/diet-plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams(data)
@@ -742,8 +736,8 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script>
 // --- Activity Tracking Logic ---
-const ACTIVITY_API_URL = "https://mindscribe.rojan.hackclub.app/log-activity";
-const ACTIVITY_HISTORY_API_URL = "https://mindscribe.rojan.hackclub.app/activity-history"; // You need to implement this endpoint in backend
+const ACTIVITY_API_URL = "https://hackclubapi.rojansapkota.com.np/log-activity";
+const ACTIVITY_HISTORY_API_URL = "https://hackclubapi.rojansapkota.com.np/activity-history"; // You need to implement this endpoint in backend
 const activityTypes = [
   { key: 'sleep', label: 'Sleep', form: 'sleepForm', input: 'sleepHours', unit: 'hours' },
   { key: 'hydration', label: 'Hydration', form: 'hydrationForm', input: 'hydrationLiters', unit: 'liters' },
@@ -901,7 +895,7 @@ function showExportOtpModal(userEmail) {
   modal.querySelector('#closeExportOtpModal').onclick = () => modal.remove();
   modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
   // Send OTP immediately
-  fetch('https://mindscribe.rojan.hackclub.app/request-export-otp', {
+  fetch('https://hackclubapi.rojansapkota.com.np/request-export-otp', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ user_email: userEmail })
@@ -911,7 +905,7 @@ function showExportOtpModal(userEmail) {
     this.disabled = true;
     this.textContent = 'Sending...';
     try {
-      const resp = await fetch('https://mindscribe.rojan.hackclub.app/request-export-otp', {
+      const resp = await fetch('https://hackclubapi.rojansapkota.com.np/request-export-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ user_email: userEmail })
@@ -941,7 +935,7 @@ function showExportOtpModal(userEmail) {
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
     try {
       // Step 2: Request PDF from backend
-      const pdfResp = await fetch('https://mindscribe.rojan.hackclub.app/export-profile-pdf', {
+      const pdfResp = await fetch('https://hackclubapi.rojansapkota.com.np/export-profile-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ user_email: userEmail, otp })
@@ -1620,186 +1614,6 @@ if (typeof switchTab !== 'function') {
       </div>
     </div>
     
-    <div class="mobile-view hidden" id="convoai">
-      <div class="mobile-header ai-chat-header" style="background:linear-gradient(90deg,#232347 70%,#34D399 100%);color:#fff;height:52px;padding:0 12px 0 8px;border-radius:0 0 16px 16px;box-shadow:0 2px 8px 0 rgba(93,95,239,0.08);display:flex;align-items:center;justify-content:space-between;">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <i class="fas fa-robot" style="font-size:1.3em;"></i>
-          <span style="font-size:1.05em;font-weight:600;letter-spacing:0.5px;">Convo AI</span>
-        </div>
-        <button id="closeAIChatBtn" class="close-header-btn" onclick="switchTab('homeView')" style="background:none;border:none;color:#fff;font-size:1.1em;padding:4px 8px;">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <div class="mobile-content" style="background:linear-gradient(180deg,#232347 80%,#232347 100%);padding:0;display:flex;flex-direction:column;height:calc(100dvh - 52px);">
-        <div class="welcome-card" style="margin:18px 12px 10px 12px;background:rgba(52,211,153,0.08);color:#fff;">
-          <div class="welcome-avatar" style="background:rgba(93,95,239,0.13);color:#34D399;">
-            <i class="fas fa-robot"></i>
-          </div>
-          <h2 style="font-size:1.1em;">Convo AI</h2>
-          <p style="font-size:0.98em;color:#b3b3cc;">Attach Screenshot or Send Message for Replies Suggestion!</p>
-        </div>
-        <div class="ai-chat-messages" id="aiChatMessages" style="flex:1 1 0;overflow-y:auto;padding:0 12px 0 12px;display:flex;flex-direction:column;gap:10px;min-height:0;">
-          <!-- Messages will be rendered here -->
-        </div>
-        <form id="aiChatForm" class="ai-chat-form" style="display:flex;flex-direction:column;gap:6px;padding:0 8px 18px 8px;position:fixed;left:0;right:0;bottom:0;width:100vw;max-width:480px;margin:auto;background:linear-gradient(180deg,#232347 90%,#232347 100%);z-index:100;">
-          <!-- Modern Tone Selector -->
-          <div id="aiToneDropdownWrapper" style="display:flex;justify-content:flex-end;width:100%;margin-bottom:2px;">
-            <div class="custom-tone-dropdown" style="position:relative;">
-              <button type="button" id="aiToneDropdownBtn" style="background:#232347;border:1.2px solid #34D399;color:#34D399;padding:8px 18px 8px 14px;border-radius:16px;font-size:1em;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px 0 rgba(52,211,153,0.10);min-width:110px;cursor:pointer;">
-                <i class="fas fa-sliders-h"></i>
-                <span id="aiToneDropdownLabel">Direct</span>
-                <i class="fas fa-chevron-down" style="font-size:0.95em;"></i>
-              </button>
-              <div id="aiToneDropdownMenu" style="display:none;position:absolute;right:0;bottom:110%;background:#232347;border:1.2px solid #34D399;border-radius:14px;box-shadow:0 4px 16px 0 rgba(52,211,153,0.13);z-index:10;min-width:140px;">
-                <div class="tone-option" data-tone="Friendly" style="padding:10px 16px;cursor:pointer;color:#34D399;">Friendly</div>
-                <div class="tone-option" data-tone="Formal" style="padding:10px 16px;cursor:pointer;color:#34D399;">Formal</div>
-                <div class="tone-option" data-tone="Empathetic" style="padding:10px 16px;cursor:pointer;color:#34D399;">Empathetic</div>
-                <div class="tone-option" data-tone="Flirty" style="padding:10px 16px;cursor:pointer;color:#34D399;">Flirty</div>
-                <div class="tone-option" data-tone="Direct" style="padding:10px 16px;cursor:pointer;color:#34D399;">Direct</div>
-              </div>
-            </div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;width:100%;">
-            <input type="file" id="aiFileInput" style="display:none;" accept="image/*,.pdf,.doc,.docx,.txt" />
-            <button type="button" id="aiFileBtn" class="btn btn-secondary" style="display:flex;align-items:center;gap:6px;padding:0 12px;border-radius:14px;background:#5D5FEF;border:none;min-width:40px;min-height:40px;">
-              <i class="fas fa-paperclip" style="color:#fff;font-size:1.1em;"></i>
-              <span style="color:#fff;font-size:0.98em;display:none;" class="file-btn-label">Attach</span>
-            </button>
-            <input type="text" id="aiChatInput" class="ai-chat-input" placeholder="Type your message..." autocomplete="off" style="flex:1;padding:13px 14px;border-radius:18px;border:1.5px solid #34D399;font-size:1em;outline:none;background:#232347;color:#fff;box-shadow:0 1px 4px 0 rgba(93,95,239,0.04);margin-bottom:0;">
-            <button type="submit" class="btn btn-primary" style="padding:0 16px;border-radius:50%;background:#5D5FEF;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px 0 rgba(93,95,239,0.10);min-width:40px;min-height:40px;">
-              <i class="fas fa-paper-plane" style="color:#fff;font-size:1.1em;"></i>
-            </button>
-          </div>
-          <div id="aiFileInfo" style="display:none;margin-left:4px;margin-top:2px;font-size:0.97em;color:#b3b3cc;align-items:center;gap:8px;">
-            <span id="aiFileName"></span>
-            <button type="button" id="aiRemoveFileBtn" style="background:none;border:none;color:#e53e3e;font-size:1.1em;cursor:pointer;vertical-align:middle;" title="Remove file"><i class="fas fa-times-circle"></i></button>
-          </div>
-        </form>
-        <script>
-        // Enhanced file upload UI for Convo AI + Tone + API integration
-        document.addEventListener('DOMContentLoaded', function() {
-          var fileBtn = document.getElementById('aiFileBtn');
-          var fileInput = document.getElementById('aiFileInput');
-          var fileInfo = document.getElementById('aiFileInfo');
-          var fileName = document.getElementById('aiFileName');
-          var removeFileBtn = document.getElementById('aiRemoveFileBtn');
-          var chatInput = document.getElementById('aiChatInput');
-          var aiChatForm = document.getElementById('aiChatForm');
-          var aiChatMessages = document.getElementById('aiChatMessages');
-
-          // Custom Tone Dropdown
-          var aiToneDropdownBtn = document.getElementById('aiToneDropdownBtn');
-          var aiToneDropdownMenu = document.getElementById('aiToneDropdownMenu');
-          var aiToneDropdownLabel = document.getElementById('aiToneDropdownLabel');
-          var selectedTone = 'Direct';
-
-          if (aiToneDropdownBtn && aiToneDropdownMenu) {
-            aiToneDropdownBtn.addEventListener('click', function(e) {
-              e.stopPropagation();
-              aiToneDropdownMenu.style.display = aiToneDropdownMenu.style.display === 'block' ? 'none' : 'block';
-            });
-            document.querySelectorAll('.tone-option').forEach(function(opt) {
-              opt.addEventListener('click', function(e) {
-                selectedTone = opt.getAttribute('data-tone') || 'Direct';
-                aiToneDropdownLabel.textContent = selectedTone;
-                aiToneDropdownMenu.style.display = 'none';
-              });
-            });
-            // Close dropdown on outside click
-            document.addEventListener('click', function(e) {
-              aiToneDropdownMenu.style.display = 'none';
-            });
-          }
-
-          if (fileBtn && fileInput && fileInfo && fileName && removeFileBtn) {
-            fileBtn.addEventListener('click', function(e) {
-              e.preventDefault();
-              fileInput.click();
-            });
-            fileInput.addEventListener('change', function() {
-              if (fileInput.files && fileInput.files[0]) {
-                fileName.textContent = fileInput.files[0].name;
-                fileInfo.style.display = 'flex';
-              } else {
-                fileName.textContent = '';
-                fileInfo.style.display = 'none';
-              }
-            });
-            removeFileBtn.addEventListener('click', function() {
-              fileInput.value = '';
-              fileName.textContent = '';
-              fileInfo.style.display = 'none';
-            });
-          }
-          // Show label on larger screens
-          if (window.innerWidth > 400) {
-            var label = fileBtn.querySelector('.file-btn-label');
-            if (label) label.style.display = 'inline';
-          }
-
-          // Handle form submit
-          if (aiChatForm) {
-            aiChatForm.addEventListener('submit', async function(e) {
-              e.preventDefault();
-              var message = chatInput.value.trim();
-              var file = fileInput.files[0];
-              var tone = selectedTone || 'Direct';
-              if ((!message || message.length === 0) && !file) {
-                alert('Please enter a message or attach a file.');
-                return;
-              }
-              // Show user message in chat
-              var userMsgDiv = document.createElement('div');
-              userMsgDiv.className = 'ai-chat-message user';
-              userMsgDiv.style = 'align-self:flex-end;background:#5D5FEF;color:#fff;padding:10px 14px;border-radius:16px 16px 4px 16px;max-width:80%;word-break:break-word;';
-              userMsgDiv.innerHTML = message ? message : (file ? '<i class="fas fa-paperclip"></i> ' + file.name : '');
-              aiChatMessages.appendChild(userMsgDiv);
-              aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-
-              // Prepare form data
-              var formData = new FormData();
-              formData.append('user_email', localStorage.getItem('userEmail') || 'user@example.com');
-              formData.append('tone', tone);
-              formData.append('message', message);
-              if (file) formData.append('file', file);
-
-              // Show loading/AI typing
-              var aiMsgDiv = document.createElement('div');
-              aiMsgDiv.className = 'ai-chat-message ai';
-              aiMsgDiv.style = 'align-self:flex-start;background:#232347;color:#34D399;padding:10px 14px;border-radius:16px 16px 16px 4px;max-width:80%;word-break:break-word;opacity:0.8;';
-              aiMsgDiv.innerHTML = '<i class="fas fa-robot"></i> <span style="color:#b3b3cc;">Thinking...</span>';
-              aiChatMessages.appendChild(aiMsgDiv);
-              aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-
-              try {
-                const resp = await fetch('https://hackclub.rojansapkota.com.np/conversation-helper', {
-                  method: 'POST',
-                  body: formData
-                });
-                const data = await resp.json();
-                aiMsgDiv.innerHTML = data.reply || data.response || JSON.stringify(data, null, 2);
-                aiMsgDiv.style.opacity = 1;
-              } catch (err) {
-                aiMsgDiv.innerHTML = '<span style="color:#e53e3e;">Error: ' + (err.message || 'Failed to get response') + '</span>';
-                aiMsgDiv.style.opacity = 1;
-              }
-              chatInput.value = '';
-              fileInput.value = '';
-              fileName.textContent = '';
-              fileInfo.style.display = 'none';
-              // Reset tone to Direct if nothing selected
-              selectedTone = aiToneDropdownLabel.textContent || 'Direct';
-              if (!selectedTone) {
-                selectedTone = 'Direct';
-                aiToneDropdownLabel.textContent = 'Direct';
-              }
-            });
-          }
-        });
-        </script>
-      </div>
-    </div>
-
     <!-- AI Chat Section -->
     <div class="mobile-view hidden" id="aiView">
       <div class="mobile-header ai-chat-header" style="background:linear-gradient(90deg,#232347 70%,#34D399 100%);color:#fff;height:52px;padding:0 12px 0 8px;border-radius:0 0 16px 16px;box-shadow:0 2px 8px 0 rgba(93,95,239,0.08);display:flex;align-items:center;justify-content:space-between;">
