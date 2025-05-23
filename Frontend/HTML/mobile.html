@@ -696,7 +696,7 @@ document.addEventListener('DOMContentLoaded', function() {
       email_deliver: 'Yes'
     };
     try {
-      const response = await fetch('https://hackclubapi.rojansapkota.com.np/diet-plan', {
+      const response = await fetch('https://mindscribe.rojan.hackclub.app/diet-plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams(data)
@@ -736,8 +736,8 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script>
 // --- Activity Tracking Logic ---
-const ACTIVITY_API_URL = "https://hackclubapi.rojansapkota.com.np/log-activity";
-const ACTIVITY_HISTORY_API_URL = "https://hackclubapi.rojansapkota.com.np/activity-history"; // You need to implement this endpoint in backend
+const ACTIVITY_API_URL = "https://mindscribe.rojan.hackclub.app/log-activity";
+const ACTIVITY_HISTORY_API_URL = "https://mindscribe.rojan.hackclub.app/activity-history"; // You need to implement this endpoint in backend
 const activityTypes = [
   { key: 'sleep', label: 'Sleep', form: 'sleepForm', input: 'sleepHours', unit: 'hours' },
   { key: 'hydration', label: 'Hydration', form: 'hydrationForm', input: 'hydrationLiters', unit: 'liters' },
@@ -895,7 +895,7 @@ function showExportOtpModal(userEmail) {
   modal.querySelector('#closeExportOtpModal').onclick = () => modal.remove();
   modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
   // Send OTP immediately
-  fetch('https://hackclubapi.rojansapkota.com.np/request-export-otp', {
+  fetch('https://mindscribe.rojan.hackclub.app/request-export-otp', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ user_email: userEmail })
@@ -905,7 +905,7 @@ function showExportOtpModal(userEmail) {
     this.disabled = true;
     this.textContent = 'Sending...';
     try {
-      const resp = await fetch('https://hackclubapi.rojansapkota.com.np/request-export-otp', {
+      const resp = await fetch('https://mindscribe.rojan.hackclub.app/request-export-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ user_email: userEmail })
@@ -935,7 +935,7 @@ function showExportOtpModal(userEmail) {
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
     try {
       // Step 2: Request PDF from backend
-      const pdfResp = await fetch('https://hackclubapi.rojansapkota.com.np/export-profile-pdf', {
+      const pdfResp = await fetch('https://mindscribe.rojan.hackclub.app/export-profile-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ user_email: userEmail, otp })
