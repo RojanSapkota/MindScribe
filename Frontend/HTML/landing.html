@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindScribe</title>
+  <meta name="description" content="MindScribe is a mobile-only application.">
+  <link rel="icon" type="image/png" href="Assets/icon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="CSS/styles.css">
+  <link rel="stylesheet" href="CSS/desktop-styles.css">
+</head>
+<body>
+  <button class="theme-switch" id="themeSwitch">
+    <i class="fas fa-moon"></i>
+  </button>
+  
+  <div class="desktop-container">
+    <div class="logo-container">
+      <img src="Assets/icon.png" alt="MindScribe Logo" class="logo">
+    </div>
+    
+    <div class="message-container">
+      <div class="device-icon">
+        <i class="fas fa-mobile-alt"></i>
+      </div>
+      <h1>This App is Mobile Only</h1>
+      <p>MindScribe is designed exclusively for mobile devices to provide the best experience. Please access our app using your smartphone or tablet.</p>
+      
+      <div class="qr-container">
+        <div class="qr-code" id="qrCode">
+          <!-- Dynamic QR Code will be inserted here -->
+          <div class="qr-loading" id="qrLoading">
+            <i class="fas fa-circle-notch"></i>
+            <p>Generating QR code...</p>
+          </div>
+          <div class="qr-error" id="qrError">
+            <i class="fas fa-exclamation-circle"></i>
+            <p>Could not load QR code. Please refresh or visit the site on your mobile device directly.</p>
+          </div>
+        </div>
+        <p class="scan-text">Scan to open on your mobile device</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check if user is on a mobile device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    // If on mobile, redirect to the main mobile app
+    if (isMobile) {
+      window.location.href = 'mobile.html'; // Redirect to mobile.html
+    }
+    
+    // Theme switcher functionality
+    const themeSwitch = document.getElementById('themeSwitch');
+    let darkMode = localStorage.getItem('darkMode') === 'true';
+    
+    // Initialize dark mode from localStorage
+    if (darkMode) {
+      document.body.classList.add('dark-theme');
+      themeSwitch.innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+      themeSwitch.innerHTML = '<i class="fas fa-moon"></i>';
+    }
+    
+    themeSwitch.addEventListener('click', () => {
+      darkMode = !darkMode;
+      document.body.classList.toggle('dark-theme', darkMode);
+      themeSwitch.innerHTML = darkMode ? 
+        '<i class="fas fa-sun"></i>' : 
+        '<i class="fas fa-moon"></i>';
+      localStorage.setItem('darkMode', darkMode);
+      
+      // Update QR code based on theme
+      updateQRCode();
+    });
+    
+    // Generate dynamic QR code
+    function generateQRCode(url, darkMode = false) {
+      const qrCodeContainer = document.getElementById('qrCode');
+      const qrLoading = document.getElementById('qrLoading');
+      const qrError = document.getElementById('qrError');
+      
+      // Show loading state
+      qrLoading.style.display = 'flex';
+      qrError.style.display = 'none';
+      
+      // Check if there's already an image and remove it
+      const existingImg = qrCodeContainer.querySelector('img');
+      if (existingImg) {
+        existingImg.remove();
+      }
+      
+      // Generate QR code using an API
+      const qrImage = new Image();
+      const bgColor = darkMode ? '2d3748' : 'ffffff';
+      const fgColor = darkMode ? 'ffffff' : '000000';
+      
+      // Use qrserver.com API to generate QR code
+      qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(url)}&size=200x200&bgcolor=${bgColor}&color=${fgColor}&margin=10`;
+      
+      qrImage.onload = function() {
+        qrLoading.style.display = 'none';
+        qrCodeContainer.appendChild(qrImage);
+      };
+      
+      qrImage.onerror = function() {
+        qrLoading.style.display = 'none';
+        qrError.style.display = 'flex';
+      };
+    }
+    
+    // Function to update QR code based on current theme
+    function updateQRCode() {
+      // Get current URL
+      const currentURL = window.location.origin + window.location.pathname.replace('desktop.html', '');
+      generateQRCode(currentURL, darkMode);
+    }
+    
+    // Generate QR code on page load
+    document.addEventListener('DOMContentLoaded', updateQRCode);
+  </script>
+</body>
+</html>

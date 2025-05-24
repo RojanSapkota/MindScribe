@@ -3,123 +3,166 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MindScribe - Mobile Only</title>
-  <meta name="description" content="MindScribe is a mobile-only application.">
+  <title>MindScribe | Desktop</title>
+  <meta name="description" content="AI-powered voice journaling app for desktop">
   <link rel="icon" type="image/png" href="Assets/icon.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="CSS/styles.css">
+  <link rel="stylesheet" href="CSS/desktop-styles.css">
 </head>
 <body>
-  <button class="theme-switch" id="themeSwitch">
-    <i class="fas fa-moon"></i>
-  </button>
-  
-  <div class="desktop-container">
-    <div class="logo-container">
-      <img src="Assets/icon.png" alt="MindScribe Logo" class="logo">
-    </div>
-    
-    <div class="message-container">
-      <div class="device-icon">
-        <i class="fas fa-mobile-alt"></i>
+  <div class="desktop-main-container">
+    <header class="desktop-header">
+      <div class="logo-container">
+        <img src="Assets/icon.png" alt="MindScribe Logo" class="logo">
+        <h1>MindScribe</h1>
       </div>
-      <h1>This App is Mobile Only</h1>
-      <p>MindScribe is designed exclusively for mobile devices to provide the best experience. Please access our app using your smartphone or tablet.</p>
-      
-      <div class="qr-container">
-        <div class="qr-code" id="qrCode">
-          <!-- Dynamic QR Code will be inserted here -->
-          <div class="qr-loading" id="qrLoading">
-            <i class="fas fa-circle-notch"></i>
-            <p>Generating QR code...</p>
+      <nav class="desktop-nav">
+        <button class="nav-btn" data-view="homeView"><i class="fas fa-home"></i> Home</button>
+        <button class="nav-btn" data-view="activityView"><i class="fas fa-bolt"></i> Activity</button>
+        <button class="nav-btn" data-view="journalView"><i class="fas fa-book"></i> Journal</button>
+        <button class="nav-btn" data-view="historyView"><i class="fas fa-history"></i> History</button>
+        <button class="nav-btn" data-view="profileView"><i class="fas fa-user"></i> Profile</button>
+      </nav>
+      <button class="theme-switch" id="themeSwitch"><i class="fas fa-moon"></i></button>
+    </header>
+    <main class="desktop-content" id="desktopContent">
+      <!-- Views will be dynamically loaded here -->
+    </main>
+    <!-- Desktop Views Templates -->
+    <template id="homeViewTemplate">
+      <div class="desktop-home-view">
+        <div class="welcome-card-desktop">
+          <div class="welcome-avatar-desktop"><i class="fas fa-user-circle"></i></div>
+          <h2>Welcome to MindScribe Desktop</h2>
+          <p>Track your nutrition, wellness, and journaling with AI-powered features.</p>
+        </div>
+        <div class="stats-cards-desktop">
+          <div class="stat-card-desktop">
+            <div class="stat-icon-desktop" style="background-color: rgba(93, 95, 239, 0.1); color: var(--primary);">
+              <i class="fas fa-utensils"></i>
+            </div>
+            <div class="stat-content-desktop">
+              <h3>Recent Meals</h3>
+              <p><span id="mealCountDesktop">0</span> analyzed</p>
+            </div>
           </div>
-          <div class="qr-error" id="qrError">
-            <i class="fas fa-exclamation-circle"></i>
-            <p>Could not load QR code. Please refresh or visit the site on your mobile device directly.</p>
+          <div class="stat-card-desktop">
+            <div class="stat-icon-desktop" style="background-color: rgba(52, 211, 153, 0.1); color: var(--accent);">
+              <i class="fas fa-smile"></i>
+            </div>
+            <div class="stat-content-desktop">
+              <h3>Avg. Health Score</h3>
+              <p><span id="avgHealthScoreDesktop">--</span></p>
+            </div>
           </div>
         </div>
-        <p class="scan-text">Scan to open on your mobile device</p>
+        <div class="quick-actions-desktop">
+          <button class="action-btn-desktop" data-action="aiView"><i class="fas fa-robot"></i> Ask AI</button>
+          <button class="action-btn-desktop" data-action="scanView"><i class="fas fa-camera"></i> Scan Food</button>
+          <button class="action-btn-desktop" data-action="aitalk"><i class="fas fa-comments"></i> Live Chat</button>
+        </div>
+        <div class="nutrition-style-card-desktop">
+          <h3>Your Nutrition Style <button id="refreshNutritionStyleDesktop" class="refresh-btn"><i class="fas fa-sync-alt"></i></button></h3>
+          <div class="nutrition-meter-desktop">
+            <div class="meter-bar-desktop">
+              <div class="meter-fill-desktop" id="nutritionStyleMeterDesktop"></div>
+            </div>
+            <div class="meter-label-desktop" id="nutritionStyleLabelDesktop">Click to analyze your style</div>
+          </div>
+        </div>
+        <div class="tips-carousel-desktop" id="tipsCarouselDesktop">
+          <div class="tip-card-desktop" id="tipCardDesktop">
+            <div class="tip-icon-desktop" id="tipIconDesktop"><i class="fas fa-leaf"></i></div>
+            <h4 id="tipTitleDesktop">Balanced Diet</h4>
+            <p id="tipTextDesktop">Include a variety of fruits, vegetables, lean proteins, and whole grains in your meals.</p>
+          </div>
+          <div class="tip-controls-desktop">
+            <div class="tip-indicator-desktop" id="tipIndicatorDesktop"></div>
+          </div>
+        </div>
       </div>
-    </div>
+    </template>
+    <template id="activityViewTemplate">
+      <div class="desktop-activity-view">
+        <h2>Activity Tracking</h2>
+        <div class="activity-icons-row-desktop">
+          <button class="activity-icon-btn-desktop" id="sleepIconBtnDesktop"><i class="fas fa-bed"></i><div>Sleep</div></button>
+          <button class="activity-icon-btn-desktop" id="hydrationIconBtnDesktop"><i class="fas fa-tint"></i><div>Hydration</div></button>
+          <button class="activity-icon-btn-desktop" id="screenTimeIconBtnDesktop"><i class="fas fa-mobile-alt"></i><div>Screen</div></button>
+          <button class="activity-icon-btn-desktop" id="walkIconBtnDesktop"><i class="fas fa-walking"></i><div>Walk</div></button>
+        </div>
+        <div id="activityTotalsRowDesktop"></div>
+        <!-- Modals for each activity will be handled by JS -->
+      </div>
+    </template>
+    <template id="journalViewTemplate">
+      <div class="desktop-journal-view">
+        <h2>Journal</h2>
+        <div class="journal-section-desktop">
+          <button id="recordJournalBtnDesktop" class="btn btn-primary"><i class="fas fa-microphone"></i> Record a Journal</button>
+          <button id="logJournalBtnDesktop" class="btn btn-secondary"><i class="fas fa-keyboard"></i> Log Journal Manually</button>
+          <button id="viewJournalHistoryBtnDesktop" class="btn btn-outline"><i class="fas fa-history"></i> View Journal History</button>
+        </div>
+        <div class="free-writing-card-desktop">
+          <div><i class="fas fa-pen-nib"></i> Free Writing</div>
+          <textarea id="freeWritingBoxDesktop" placeholder="Write anything on your mind..."></textarea>
+          <div style="text-align:right;">
+            <button id="saveFreeWritingBtnDesktop" class="btn btn-primary"><i class="fas fa-save"></i> Save</button>
+            <span id="freeWritingSavedMsgDesktop" style="color:#34D399;display:none;">Saved!</span>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template id="historyViewTemplate">
+      <div class="desktop-history-view">
+        <h2>Food History</h2>
+        <div class="filter-container-desktop">
+          <input type="text" id="searchInputDesktop" placeholder="Search food items...">
+          <select id="sortByDesktop">
+            <option value="date-desc">Newest First</option>
+            <option value="date-asc">Oldest First</option>
+            <option value="calories-desc">Calories (High-Low)</option>
+            <option value="calories-asc">Calories (Low-High)</option>
+            <option value="health-desc">Health (High-Low)</option>
+            <option value="health-asc">Health (Low-High)</option>
+          </select>
+          <select id="filterHealthScoreDesktop">
+            <option value="all">All Health Scores</option>
+            <option value="8">Very Healthy</option>
+            <option value="5">Moderately Healthy</option>
+            <option value="1">Less Healthy</option>
+          </select>
+        </div>
+        <div id="historyContainerDesktop"></div>
+        <div class="empty-history-desktop" id="emptyHistoryDesktop" style="display: none;">
+          <div class="empty-history-content-desktop">
+            <i class="fas fa-utensils"></i>
+            <h3>No food history yet</h3>
+            <p>Take a picture of your meal to start tracking your nutrition!</p>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template id="profileViewTemplate">
+      <div class="desktop-profile-view">
+        <h2>Profile</h2>
+        <div class="profile-card-desktop">
+          <div class="profile-avatar-desktop"><i class="fas fa-user-circle"></i></div>
+          <h3 id="profileUserEmailDesktop">user@example.com</h3>
+          <p>Member since <span id="memberSinceDesktop">2025</span></p>
+        </div>
+        <div class="profile-menu-desktop">
+          <button class="profile-menu-item-desktop" id="viewGoalsDesktop"><i class="fas fa-chart-line"></i> Goals</button>
+          <button class="profile-menu-item-desktop" id="viewBucketListDesktop"><i class="fas fa-list-ul"></i> Bucket List</button>
+          <button class="profile-menu-item-desktop" id="viewSettingsDesktop"><i class="fas fa-cog"></i> Settings</button>
+          <button class="profile-menu-item-desktop" id="exportToPDFBtnDesktop"><i class="fas fa-file-pdf"></i> Export to PDF</button>
+        </div>
+        <button id="logoutBtnDesktop" class="logout-btn-desktop"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </template>
   </div>
-
-  <script>
-    // Check if user is on a mobile device
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-    // If on mobile, redirect to the main mobile app
-    if (isMobile) {
-      window.location.href = 'mobile.html'; // Redirect to mobile.html
-    }
-    
-    // Theme switcher functionality
-    const themeSwitch = document.getElementById('themeSwitch');
-    let darkMode = localStorage.getItem('darkMode') === 'true';
-    
-    // Initialize dark mode from localStorage
-    if (darkMode) {
-      document.body.classList.add('dark-theme');
-      themeSwitch.innerHTML = '<i class="fas fa-sun"></i>';
-    } else {
-      themeSwitch.innerHTML = '<i class="fas fa-moon"></i>';
-    }
-    
-    themeSwitch.addEventListener('click', () => {
-      darkMode = !darkMode;
-      document.body.classList.toggle('dark-theme', darkMode);
-      themeSwitch.innerHTML = darkMode ? 
-        '<i class="fas fa-sun"></i>' : 
-        '<i class="fas fa-moon"></i>';
-      localStorage.setItem('darkMode', darkMode);
-      
-      // Update QR code based on theme
-      updateQRCode();
-    });
-    
-    // Generate dynamic QR code
-    function generateQRCode(url, darkMode = false) {
-      const qrCodeContainer = document.getElementById('qrCode');
-      const qrLoading = document.getElementById('qrLoading');
-      const qrError = document.getElementById('qrError');
-      
-      // Show loading state
-      qrLoading.style.display = 'flex';
-      qrError.style.display = 'none';
-      
-      // Check if there's already an image and remove it
-      const existingImg = qrCodeContainer.querySelector('img');
-      if (existingImg) {
-        existingImg.remove();
-      }
-      
-      // Generate QR code using an API
-      const qrImage = new Image();
-      const bgColor = darkMode ? '2d3748' : 'ffffff';
-      const fgColor = darkMode ? 'ffffff' : '000000';
-      
-      // Use qrserver.com API to generate QR code
-      qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(url)}&size=200x200&bgcolor=${bgColor}&color=${fgColor}&margin=10`;
-      
-      qrImage.onload = function() {
-        qrLoading.style.display = 'none';
-        qrCodeContainer.appendChild(qrImage);
-      };
-      
-      qrImage.onerror = function() {
-        qrLoading.style.display = 'none';
-        qrError.style.display = 'flex';
-      };
-    }
-    
-    // Function to update QR code based on current theme
-    function updateQRCode() {
-      // Get current URL
-      const currentURL = window.location.origin + window.location.pathname.replace('desktop.html', '');
-      generateQRCode(currentURL, darkMode);
-    }
-    
-    // Generate QR code on page load
-    document.addEventListener('DOMContentLoaded', updateQRCode);
-  </script>
+  <div class="tooltip" id="tooltip"></div>
+  <script src="JS/desktop.js"></script>
 </body>
 </html>
