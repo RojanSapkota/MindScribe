@@ -140,14 +140,27 @@ function afterViewLoad(view) {
         fill.style.width = ((idx+1) / steps.length * 100) + '%';
       }
     }
+    function renderStepDots(idx) {
+      const dots = document.getElementById('wizardStepDotsDesktop');
+      if (dots) {
+        dots.innerHTML = steps.map((_, i) => `<div class="wizard-step-dot-desktop${i===idx?' active':''}"></div>`).join('');
+      }
+    }
     function showStep(idx) {
       steps.forEach((id, i) => {
         const el = document.getElementById(id);
         if (el) {
-          el.style.display = i === idx ? 'block' : 'none';
+          el.classList.remove('active');
+          el.style.display = 'none';
         }
       });
+      const el = document.getElementById(steps[idx]);
+      if (el) {
+        el.classList.add('active');
+        el.style.display = 'block';
+      }
       updateProgressBar(idx);
+      renderStepDots(idx);
     }
     function validateStep(idx) {
       switch (steps[idx]) {

@@ -615,6 +615,58 @@ body.dark-theme #wizardProgressFillDesktop {
   background: linear-gradient(90deg,#34D399 70%,#5D5FEF 100%);
 }
 
+/* Wizard Step Dots/Indicators */
+#wizardStepDotsDesktop {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.wizard-step-dot-desktop {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #e0eafc;
+  transition: background 0.3s, transform 0.2s;
+  box-shadow: 0 1px 4px 0 rgba(93,95,239,0.10);
+}
+.wizard-step-dot-desktop.active {
+  background: linear-gradient(90deg,#5D5FEF 70%,#34D399 100%);
+  transform: scale(1.2);
+}
+body.dark-theme .wizard-step-dot-desktop {
+  background: #35355a;
+}
+body.dark-theme .wizard-step-dot-desktop.active {
+  background: linear-gradient(90deg,#34D399 70%,#5D5FEF 100%);
+}
+
+/* Animated step transitions */
+.wizard-step-desktop {
+  opacity: 0;
+  transform: translateY(30px) scale(0.98);
+  pointer-events: none;
+  position: absolute;
+  left: 0; right: 0;
+  z-index: 1;
+  transition: opacity 0.4s cubic-bezier(.4,0,.2,1), transform 0.4s cubic-bezier(.4,0,.2,1);
+}
+.wizard-step-desktop.active {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  position: static;
+  z-index: 2;
+}
+
+/* More vibrant card shadows */
+.welcome-card-desktop, .stat-card-desktop, .nutrition-style-card-desktop, .free-writing-card-desktop, .profile-card-desktop, .goal-card-desktop, .settings-item, .bucket-list-item-desktop, .wizard-step-desktop {
+  box-shadow: 0 8px 32px 0 rgba(93,95,239,0.18), 0 1.5px 8px 0 rgba(52,211,153,0.08);
+}
+body.dark-theme .welcome-card-desktop, body.dark-theme .stat-card-desktop, body.dark-theme .nutrition-style-card-desktop, body.dark-theme .free-writing-card-desktop, body.dark-theme .profile-card-desktop, body.dark-theme .goal-card-desktop, body.dark-theme .settings-item, body.dark-theme .bucket-list-item-desktop, body.dark-theme .wizard-step-desktop {
+  box-shadow: 0 8px 32px 0 rgba(52,211,153,0.13), 0 1.5px 8px 0 rgba(93,95,239,0.08);
+}
+
 /* Animate button presses */
 button:active, .btn:active, .wizard-btn-desktop:active, .action-btn-desktop:active {
   box-shadow: 0 1px 2px 0 rgba(93,95,239,0.10);
