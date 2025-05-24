@@ -161,6 +161,268 @@
         <button id="logoutBtnDesktop" class="logout-btn-desktop"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
     </template>
+    <template id="goalsViewTemplate">
+      <div class="desktop-goals-view">
+        <h2>Goals</h2>
+        <div class="settings-section">
+          <h3>Set Your Goals</h3>
+          <p>Choose your fitness goals to get personalized recommendations.</p>
+          <div class="settings-item goal-card-desktop" id="loseWeightGoalDesktop">
+            <div class="settings-item-info">
+              <i class="fas fa-weight settings-icon"></i>
+              <div>
+                <h4>Lose Weight</h4>
+                <p>Focus on fat loss and a leaner physique</p>
+              </div>
+            </div>
+          </div>
+          <div class="settings-item goal-card-desktop" id="gainMuscleGoalDesktop">
+            <div class="settings-item-info">
+              <i class="fas fa-dumbbell settings-icon"></i>
+              <div>
+                <h4>Gain Muscle</h4>
+                <p>Build muscle mass and strength</p>
+              </div>
+            </div>
+          </div>
+          <div class="settings-item goal-card-desktop" id="maintainWeightGoalDesktop">
+            <div class="settings-item-info">
+              <i class="fas fa-balance-scale settings-icon"></i>
+              <div>
+                <h4>Maintain Weight</h4>
+                <p>Stay healthy and keep your current weight</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="back-button-desktop" id="backToProfileBtnDesktop">
+          <i class="fas fa-arrow-left"></i> Back to Profile
+        </button>
+      </div>
+    </template>
+    <template id="bucketListViewTemplate">
+      <div class="desktop-bucketlist-view">
+        <h2>Bucket List</h2>
+        <div class="settings-section">
+          <h3>Your Bucket List</h3>
+          <p>Add and track your life goals or dreams!</p>
+          <div id="bucketListItemsDesktop" class="bucket-list-items-desktop" style="margin-bottom:18px;"></div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" id="newBucketListItemDesktop" placeholder="Add new item..." style="flex:1;padding:10px;border-radius:8px;border:1.2px solid #e0e3f3;">
+            <button id="addBucketListItemBtnDesktop" class="btn btn-primary"><i class="fas fa-plus"></i></button>
+          </div>
+        </div>
+        <button class="back-button-desktop" id="backToProfileBtnBucketDesktop">
+          <i class="fas fa-arrow-left"></i> Back to Profile
+        </button>
+      </div>
+    </template>
+    <template id="settingsViewTemplate">
+      <div class="desktop-settings-view">
+        <h2>Settings</h2>
+        <div class="settings-section">
+          <h3>App Settings</h3>
+          <div class="settings-item">
+            <div class="settings-item-info">
+              <i class="fas fa-moon settings-icon"></i>
+              <div>
+                <h4>Dark Mode</h4>
+                <p>Toggle dark theme for the app</p>
+              </div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="darkModeToggleDesktop">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="settings-item">
+            <div class="settings-item-info">
+              <i class="fas fa-expand settings-icon"></i>
+              <div>
+                <h4>Fullscreen Mode</h4>
+                <p>Make app use entire screen</p>
+              </div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="fullscreenToggleDesktop">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="settings-item">
+            <div class="settings-item-info">
+              <i class="fas fa-bell settings-icon"></i>
+              <div>
+                <h4>Notifications</h4>
+                <p>Enable push notifications</p>
+              </div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="settings-section">
+          <h3>Account</h3>
+          <div class="settings-item" id="editProfileSettingDesktop">
+            <div class="settings-item-info">
+              <i class="fas fa-user settings-icon"></i>
+              <div>
+                <h4>Edit Profile</h4>
+                <p>Update your personal information</p>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right settings-arrow"></i>
+          </div>
+          <div class="settings-item" id="changePasswordSettingDesktop">
+            <div class="settings-item-info">
+              <i class="fas fa-lock settings-icon"></i>
+              <div>
+                <h4>Change Password</h4>
+                <p>Update your security settings</p>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right settings-arrow"></i>
+          </div>
+        </div>
+        <div class="settings-section">
+          <h3>About</h3>
+          <div class="settings-item" id="viewTermsAndPrivacySettingsDesktop">
+            <div class="settings-item-info">
+              <i class="fas fa-file-alt settings-icon"></i>
+              <div>
+                <h4>Terms & Privacy</h4>
+                <p>View our terms and privacy policy</p>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right settings-arrow"></i>
+          </div>
+          <div class="settings-item" id="addToHomeScreenDesktop">
+            <div class="settings-item-info">
+              <i class="fas fa-download settings-icon"></i>
+              <div>
+                <h4>Add to Home Screen</h4>
+                <p>Get app-like experience</p>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right settings-arrow"></i>
+          </div>
+          <div class="settings-item">
+            <div class="settings-item-info">
+              <i class="fas fa-info-circle settings-icon"></i>
+              <div>
+                <h4>App Version</h4>
+                <p>1.0.0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="back-button-desktop" id="backToProfileBtnSettingsDesktop">
+          <i class="fas fa-arrow-left"></i> Back to Profile
+        </button>
+      </div>
+    </template>
+    <template id="termsViewTemplate">
+      <div class="desktop-terms-view">
+        <h2>Terms & Privacy</h2>
+        <div class="tabs-desktop">
+          <button class="tab-btn-desktop active" data-tab="terms" id="termsTabDesktop">Terms of Service</button>
+          <button class="tab-btn-desktop" data-tab="privacy" id="privacyTabDesktop">Privacy Policy</button>
+        </div>
+        <div class="tab-content-desktop" id="terms-tab-desktop" style="display: block;">
+          <div class="content-section-desktop">
+            <h3>Terms of Service</h3>
+            <p class="last-updated">Last Updated: May 12, 2025</p>
+            <div class="terms-section-desktop">
+              <h4>1. Acceptance of Terms</h4>
+              <p>By accessing or using the MindScribe Health & Wellness App (“the App”), you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, you should not use the App.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>2. Description of Service</h4>
+              <p>The App provides tools to support mental and physical well-being, including voice journaling, mood and sentiment analysis, and optional fitness and calorie tracking. We reserve the right to modify, suspend, or discontinue any part of the service at any time without prior notice.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>3. User Accounts</h4>
+              <p>Certain features require you to create an account. You are responsible for maintaining the confidentiality of your login information and for all activity under your account. You must notify us immediately of any unauthorized use or suspected breach.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>4. User Content</h4>
+              <p>You retain ownership of any content you submit through the App (e.g., journal entries, logs), but grant us a non-exclusive, worldwide license to use, store, and process your content solely to provide and improve the service.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>5. Prohibited Conduct</h4>
+              <p>You agree not to misuse the App. This includes, but is not limited to, uploading harmful code, attempting unauthorized access to other accounts, interfering with the service’s operation, or using it for unlawful or abusive purposes.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>6. Data & Privacy</h4>
+              <p>We respect your privacy and process your data in accordance with our Privacy Policy. Your personal and journal data will not be shared or sold without your consent. You may request data deletion at any time.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>7. Limitation of Liability</h4>
+              <p>The App is provided on an “as is” basis. We do not guarantee specific outcomes from using the service. We are not liable for any indirect, incidental, or consequential damages arising from your use or inability to use the App.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>8. Modifications to Terms</h4>
+              <p>We may update these Terms from time to time. We will notify users of significant changes via email or through an in-app notification. Continued use of the App after changes take effect constitutes acceptance of the new terms.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>9. Termination</h4>
+              <p>We reserve the right to suspend or terminate your account at any time if you violate these Terms, disrupt the service, or pose a security or legal risk. Upon termination, your access will be revoked and your data may be deleted.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>10. Governing Law</h4>
+              <p>These Terms shall be governed by the laws of the jurisdiction in which the App operates. Any disputes arising from the Terms will be resolved in the applicable local courts.</p>
+            </div>
+          </div>
+        </div>
+        <div class="tab-content-desktop" id="privacy-tab-desktop" style="display: none;">
+          <div class="content-section-desktop">
+            <h3>Privacy Policy</h3>
+            <p class="last-updated">Last Updated: May 12, 2025</p>
+            <div class="terms-section-desktop">
+              <h4>1. Information We Collect</h4>
+              <p>We collect information you provide directly, including your name, email address, journal entries, food images, and any other data you submit. We also automatically collect usage data such as device type, IP address, and interaction patterns within the app.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>2. How We Use Your Information</h4>
+              <p>We use your information to operate, maintain, and improve our services, including AI-based journaling, calorie analysis, and user insights. Food images may be used to train machine learning models to improve our AI’s accuracy. We do not use your data for advertising purposes.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>3. Data Storage</h4>
+              <p>Your data is stored securely on cloud-based servers. Journal entries, voice transcripts, food logs, and analysis results are retained as part of your account history unless you choose to delete them.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>4. Sharing of Information</h4>
+              <p>We do not sell or rent your personal information. We may share limited data with trusted service providers who help us deliver key app functionality (such as hosting or AI analysis), and only to the extent necessary to provide those services securely and reliably.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>5. Data Security</h4>
+              <p>We take your privacy seriously and use encryption, access controls, and other industry-standard measures to protect your data. However, no method of data transmission over the Internet or storage is completely secure, and we cannot guarantee absolute security.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>6. Your Rights</h4>
+              <p>You have the right to access, update, or delete your personal data at any time. You can do this via your account settings or by contacting us directly. We will process such requests promptly, in accordance with applicable privacy laws.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>7. Cookies & Tracking Technologies</h4>
+              <p>We may use cookies, local storage, or similar technologies to improve functionality, personalize your experience, and analyze usage. You may control these preferences through your browser or device settings.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>8. Children's Privacy</h4>
+              <p>Our services are not intended for children under the age of 13. We do not knowingly collect or store personal information from anyone under 13. If we become aware that such information has been collected, we will take steps to delete it.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>9. Updates to This Policy</h4>
+              <p>We may update this privacy policy periodically. When we do, we will revise the "Last Updated" date and notify users of any significant changes through the app or email.</p>
+            </div>
+            <div class="terms-section-desktop">
+              <h4>10. Contact Us</h4>
+              <p>If you have questions or concerns about this Privacy Policy or your data, please contact us at <a href="mailto:mindscribe@rojansapkota.com.np">mindscribe@rojansapkota.com.np</a>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
   <div class="tooltip" id="tooltip"></div>
   <script src="JS/desktop.js"></script>
