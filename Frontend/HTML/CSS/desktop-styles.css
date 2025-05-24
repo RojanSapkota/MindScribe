@@ -72,6 +72,229 @@ body {
   width: 100%;
 }
 
+/* --- MODERN UI ENHANCEMENTS --- */
+:root {
+  --primary: #5D5FEF;
+  --accent: #34D399;
+  --background: #f3f4fa;
+  --card-bg: #fff;
+  --input-bg: #f3f4fa;
+  --input-border: #e0e3f3;
+  --shadow: 0 2px 16px 0 rgba(93,95,239,0.10);
+  --radius: 18px;
+  --transition: 0.25s cubic-bezier(.4,0,.2,1);
+  --text-main: #232347;
+  --text-muted: #888;
+}
+
+body, .desktop-main-container, .desktop-content {
+  transition: background 0.3s, color 0.3s;
+}
+
+.desktop-header {
+  box-shadow: var(--shadow);
+  border-bottom: 1.5px solid #e0e3f3;
+  transition: background 0.3s, color 0.3s;
+}
+
+.desktop-content {
+  background: var(--background);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-top: 32px;
+  padding: 40px 32px 32px 32px;
+}
+
+/* Card & Container Modernization */
+.welcome-card-desktop, .stat-card-desktop, .nutrition-style-card-desktop, .free-writing-card-desktop, .profile-card-desktop, .wizard-step-desktop, .desktop-settings-view, .desktop-goals-view, .desktop-bucketlist-view, .desktop-terms-view, .desktop-ai-view, .desktop-aitalk-view, .desktop-scan-view, .desktop-history-view {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  background: var(--card-bg);
+  transition: background 0.3s, color 0.3s;
+}
+
+input, select, textarea {
+  background: var(--input-bg);
+  border: 1.5px solid var(--input-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 1em;
+  transition: border 0.2s, background 0.3s, color 0.3s;
+  outline: none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary);
+  background: #eef0fb;
+}
+
+button, .btn, .wizard-btn-desktop {
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1.08em;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px 0 rgba(93,95,239,0.08);
+}
+button:active, .btn:active, .wizard-btn-desktop:active {
+  transform: scale(0.97);
+}
+
+/* Wizard Step Modernization */
+.wizard-step-desktop {
+  margin-bottom: 24px;
+  padding: 32px 24px 24px 24px;
+  border: 1.5px solid #e0e3f3;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+  animation: fadeInStep 0.4s;
+}
+@keyframes fadeInStep {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
+}
+.wizard-nav-desktop {
+  display: flex;
+  gap: 14px;
+  margin-top: 18px;
+  justify-content: flex-end;
+}
+.wizard-btn-desktop {
+  background: linear-gradient(90deg,#5D5FEF 70%,#34D399 100%);
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  cursor: pointer;
+}
+.wizard-btn-desktop.back {
+  background: #e9eafc;
+  color: var(--primary);
+}
+.wizard-btn-desktop.back:hover {
+  background: #d1d5fa;
+}
+.wizard-btn-desktop.next:hover, .wizard-btn-desktop.submit:hover {
+  background: linear-gradient(90deg,#232347 70%,#34D399 100%);
+}
+
+/* Add subtle hover/active for all major cards */
+.stat-card-desktop:hover, .profile-card-desktop:hover, .goal-card-desktop:hover, .settings-item:hover, .bucket-list-item-desktop:hover {
+  box-shadow: 0 4px 18px 0 rgba(93,95,239,0.13);
+  background: #f7f8fd;
+}
+
+/* --- DARK MODE --- */
+body.dark-theme {
+  --background: #18192a;
+  --card-bg: #232347;
+  --input-bg: #232347;
+  --input-border: #35355a;
+  --shadow: 0 2px 16px 0 rgba(34,35,71,0.18);
+  --text-main: #f3f4fa;
+  --text-muted: #b3b6d1;
+}
+body.dark-theme, body.dark-theme .desktop-main-container, body.dark-theme .desktop-content {
+  background: var(--background) !important;
+  color: var(--text-main) !important;
+}
+body.dark-theme .desktop-header {
+  background: #232347 !important;
+  color: #fff !important;
+  border-bottom: 1.5px solid #35355a;
+}
+body.dark-theme .desktop-content {
+  background: var(--background);
+  box-shadow: 0 2px 16px 0 rgba(34,35,71,0.18);
+}
+body.dark-theme .welcome-card-desktop, 
+body.dark-theme .stat-card-desktop, 
+body.dark-theme .nutrition-style-card-desktop, 
+body.dark-theme .free-writing-card-desktop, 
+body.dark-theme .profile-card-desktop, 
+body.dark-theme .wizard-step-desktop, 
+body.dark-theme .desktop-settings-view, 
+body.dark-theme .desktop-goals-view, 
+body.dark-theme .desktop-bucketlist-view, 
+body.dark-theme .desktop-terms-view, 
+body.dark-theme .desktop-ai-view, 
+body.dark-theme .desktop-aitalk-view, 
+body.dark-theme .desktop-scan-view, 
+body.dark-theme .desktop-history-view {
+  background: var(--card-bg) !important;
+  color: var(--text-main) !important;
+  box-shadow: 0 2px 16px 0 rgba(34,35,71,0.18);
+}
+body.dark-theme input, 
+body.dark-theme select, 
+body.dark-theme textarea {
+  background: var(--input-bg) !important;
+  color: var(--text-main) !important;
+  border: 1.5px solid var(--input-border) !important;
+}
+body.dark-theme input:focus, 
+body.dark-theme select:focus, 
+body.dark-theme textarea:focus {
+  background: #232347 !important;
+  border-color: var(--accent) !important;
+}
+body.dark-theme .meter-bar-desktop {
+  background: #35355a;
+}
+body.dark-theme .meter-label-desktop {
+  color: var(--accent);
+}
+body.dark-theme .tip-card-desktop {
+  background: #232347;
+  color: var(--text-main);
+}
+body.dark-theme .profile-menu-item-desktop {
+  background: #232347;
+  color: #b3b6d1;
+}
+body.dark-theme .profile-menu-item-desktop:hover {
+  background: #5D5FEF;
+  color: #fff;
+}
+body.dark-theme .logout-btn-desktop {
+  background: linear-gradient(90deg,#232347 70%,#34D399 100%);
+  color: #fff;
+}
+body.dark-theme .logout-btn-desktop:hover {
+  background: linear-gradient(90deg,#5D5FEF 70%,#34D399 100%);
+}
+body.dark-theme .stat-card-desktop:hover, 
+body.dark-theme .profile-card-desktop:hover, 
+body.dark-theme .goal-card-desktop:hover, 
+body.dark-theme .settings-item:hover, 
+body.dark-theme .bucket-list-item-desktop:hover {
+  background: #232347;
+  box-shadow: 0 4px 18px 0 rgba(52,211,153,0.10);
+}
+body.dark-theme .wizard-btn-desktop.back {
+  background: #35355a;
+  color: #b3b6d1;
+}
+body.dark-theme .wizard-btn-desktop.back:hover {
+  background: #35355a;
+  color: #fff;
+}
+body.dark-theme .wizard-btn-desktop.next, 
+body.dark-theme .wizard-btn-desktop.submit {
+  background: linear-gradient(90deg,#5D5FEF 70%,#34D399 100%);
+  color: #fff;
+}
+body.dark-theme .wizard-btn-desktop.next:hover, 
+body.dark-theme .wizard-btn-desktop.submit:hover {
+  background: linear-gradient(90deg,#34D399 70%,#5D5FEF 100%);
+}
+
+/* Smooth transitions for theme switch */
+* {
+  transition: background 0.3s, color 0.3s, border 0.2s;
+}
+
 /* Desktop Home View */
 .desktop-home-view {
   padding: 32px 0 0 0;
@@ -353,6 +576,161 @@ body {
 }
 .logout-btn-desktop:hover {
   background: linear-gradient(90deg,#232347 70%,#34D399 100%);
+}
+
+/* --- MOBILE-INSPIRED POLISH FOR DESKTOP --- */
+
+/* Card and Step Elevation & Rounding */
+.wizard-step-desktop {
+  background: linear-gradient(120deg, #f3f4fa 60%, #e9eafc 100%);
+  border-radius: 22px;
+  box-shadow: 0 4px 24px 0 rgba(93,95,239,0.13);
+  border: none;
+  padding: 38px 28px 28px 28px;
+  margin-bottom: 32px;
+  position: relative;
+}
+body.dark-theme .wizard-step-desktop {
+  background: linear-gradient(120deg, #232347 60%, #18192a 100%);
+  border-radius: 22px;
+  box-shadow: 0 4px 24px 0 rgba(52,211,153,0.10);
+}
+
+.wizard-step-desktop label {
+  font-size: 1.13em;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 10px;
+  display: block;
+}
+body.dark-theme .wizard-step-desktop label {
+  color: var(--accent);
+}
+
+.wizard-step-desktop input,
+.wizard-step-desktop select {
+  font-size: 1.08em;
+  border-radius: 12px;
+  border: 1.8px solid var(--input-border);
+  background: #fff;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 6px 0 rgba(93,95,239,0.06);
+  transition: border 0.2s, box-shadow 0.2s;
+}
+body.dark-theme .wizard-step-desktop input,
+body.dark-theme .wizard-step-desktop select {
+  background: #232347;
+  color: #f3f4fa;
+  border: 1.8px solid #35355a;
+}
+.wizard-step-desktop input:focus,
+.wizard-step-desktop select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px #34D39933;
+}
+
+.wizard-nav-desktop {
+  margin-top: 24px;
+  gap: 18px;
+}
+.wizard-btn-desktop {
+  border-radius: 12px;
+  font-size: 1.08em;
+  font-weight: 700;
+  padding: 12px 28px;
+  box-shadow: 0 2px 8px 0 rgba(93,95,239,0.10);
+  border: none;
+  background: linear-gradient(90deg,#5D5FEF 70%,#34D399 100%);
+  color: #fff;
+  letter-spacing: 0.01em;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+.wizard-btn-desktop.back {
+  background: #e9eafc;
+  color: var(--primary);
+  font-weight: 600;
+}
+body.dark-theme .wizard-btn-desktop.back {
+  background: #35355a;
+  color: #b3b6d1;
+}
+.wizard-btn-desktop:active {
+  transform: scale(0.97);
+}
+.wizard-btn-desktop.next:hover, .wizard-btn-desktop.submit:hover {
+  background: linear-gradient(90deg,#232347 70%,#34D399 100%);
+}
+
+/* Mobile-style focus ring for all inputs/buttons */
+input:focus, select:focus, textarea:focus, button:focus {
+  outline: 2.5px solid #34D399;
+  outline-offset: 1.5px;
+}
+body.dark-theme input:focus, body.dark-theme select:focus, body.dark-theme textarea:focus, body.dark-theme button:focus {
+  outline: 2.5px solid #5D5FEF;
+}
+
+/* Make cards and containers more mobile-like */
+.welcome-card-desktop, .stat-card-desktop, .nutrition-style-card-desktop, .free-writing-card-desktop, .profile-card-desktop, .goal-card-desktop, .settings-item, .bucket-list-item-desktop {
+  border-radius: 22px;
+  box-shadow: 0 4px 24px 0 rgba(93,95,239,0.13);
+  background: #fff;
+  padding: 28px 22px;
+  margin-bottom: 18px;
+}
+body.dark-theme .welcome-card-desktop, body.dark-theme .stat-card-desktop, body.dark-theme .nutrition-style-card-desktop, body.dark-theme .free-writing-card-desktop, body.dark-theme .profile-card-desktop, body.dark-theme .goal-card-desktop, body.dark-theme .settings-item, body.dark-theme .bucket-list-item-desktop {
+  background: #232347;
+  box-shadow: 0 4px 24px 0 rgba(52,211,153,0.10);
+}
+
+/* Buttons and quick actions */
+.action-btn-desktop, .btn, .profile-menu-item-desktop, .logout-btn-desktop {
+  border-radius: 14px;
+  font-size: 1.08em;
+  font-weight: 700;
+  padding: 14px 30px;
+  box-shadow: 0 2px 8px 0 rgba(93,95,239,0.10);
+  border: none;
+  background: linear-gradient(90deg,#5D5FEF 70%,#34D399 100%);
+  color: #fff;
+  letter-spacing: 0.01em;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+.action-btn-desktop:hover, .btn:hover, .profile-menu-item-desktop:hover, .logout-btn-desktop:hover {
+  background: linear-gradient(90deg,#232347 70%,#34D399 100%);
+  color: #fff;
+}
+body.dark-theme .action-btn-desktop, body.dark-theme .btn, body.dark-theme .profile-menu-item-desktop, body.dark-theme .logout-btn-desktop {
+  background: linear-gradient(90deg,#232347 70%,#34D399 100%);
+  color: #fff;
+}
+body.dark-theme .action-btn-desktop:hover, body.dark-theme .btn:hover, body.dark-theme .profile-menu-item-desktop:hover, body.dark-theme .logout-btn-desktop:hover {
+  background: linear-gradient(90deg,#5D5FEF 70%,#34D399 100%);
+}
+
+/* Inputs and selects mobile style */
+input, select, textarea {
+  border-radius: 12px;
+  font-size: 1.08em;
+  padding: 14px 16px;
+  border: 1.8px solid var(--input-border);
+  background: #fff;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 6px 0 rgba(93,95,239,0.06);
+}
+body.dark-theme input, body.dark-theme select, body.dark-theme textarea {
+  background: #232347;
+  color: #f3f4fa;
+  border: 1.8px solid #35355a;
+}
+
+/* Subtle animation for wizard step transitions */
+.wizard-step-desktop {
+  animation: fadeInStepMobile 0.5s cubic-bezier(.4,0,.2,1);
+}
+@keyframes fadeInStepMobile {
+  from { opacity: 0; transform: translateY(30px) scale(0.98); }
+  to { opacity: 1; transform: none; }
 }
 
 /* Responsive */
