@@ -134,6 +134,12 @@ function afterViewLoad(view) {
       'step-email-deliver-desktop'
     ];
     let currentStep = 0;
+    function updateProgressBar(idx) {
+      const fill = document.getElementById('wizardProgressFillDesktop');
+      if (fill) {
+        fill.style.width = ((idx+1) / steps.length * 100) + '%';
+      }
+    }
     function showStep(idx) {
       steps.forEach((id, i) => {
         const el = document.getElementById(id);
@@ -141,6 +147,7 @@ function afterViewLoad(view) {
           el.style.display = i === idx ? 'block' : 'none';
         }
       });
+      updateProgressBar(idx);
     }
     function validateStep(idx) {
       switch (steps[idx]) {
