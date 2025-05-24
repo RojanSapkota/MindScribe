@@ -578,6 +578,85 @@ body.dark-theme .wizard-btn-desktop.submit:hover {
   background: linear-gradient(90deg,#232347 70%,#34D399 100%);
 }
 
+/* --- ENHANCED MOBILE-INSPIRED POLISH --- */
+
+/* Glassmorphism for cards */
+.welcome-card-desktop, .stat-card-desktop, .nutrition-style-card-desktop, .free-writing-card-desktop, .profile-card-desktop, .goal-card-desktop, .settings-item, .bucket-list-item-desktop, .wizard-step-desktop {
+  background: rgba(255,255,255,0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid #e0e3f3;
+}
+body.dark-theme .welcome-card-desktop, body.dark-theme .stat-card-desktop, body.dark-theme .nutrition-style-card-desktop, body.dark-theme .free-writing-card-desktop, body.dark-theme .profile-card-desktop, body.dark-theme .goal-card-desktop, body.dark-theme .settings-item, body.dark-theme .bucket-list-item-desktop, body.dark-theme .wizard-step-desktop {
+  background: rgba(35,35,71,0.92);
+  border: 1.5px solid #35355a;
+}
+
+/* Floating wizard progress bar */
+#wizardProgressBarDesktop {
+  width: 100%;
+  height: 6px;
+  background: #e9eafc;
+  border-radius: 4px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  position: relative;
+}
+#wizardProgressFillDesktop {
+  height: 100%;
+  background: linear-gradient(90deg,#5D5FEF 70%,#34D399 100%);
+  border-radius: 4px;
+  transition: width 0.4s cubic-bezier(.4,0,.2,1);
+}
+body.dark-theme #wizardProgressBarDesktop {
+  background: #35355a;
+}
+body.dark-theme #wizardProgressFillDesktop {
+  background: linear-gradient(90deg,#34D399 70%,#5D5FEF 100%);
+}
+
+/* Animate button presses */
+button:active, .btn:active, .wizard-btn-desktop:active, .action-btn-desktop:active {
+  box-shadow: 0 1px 2px 0 rgba(93,95,239,0.10);
+  transform: scale(0.96);
+}
+
+/* Select and input polish */
+select, input[type="number"], input[type="text"] {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' fill='none' stroke='%235D5FEF' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1.2em center;
+  background-size: 1.1em;
+  padding-right: 2.5em;
+}
+body.dark-theme select, body.dark-theme input[type="number"], body.dark-theme input[type="text"] {
+  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' fill='none' stroke='%2334D399' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* Subtle floating effect for quick actions */
+.quick-actions-desktop {
+  box-shadow: 0 6px 24px 0 rgba(93,95,239,0.10);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(6px);
+  padding: 18px 0 18px 0;
+  margin-bottom: 32px;
+}
+body.dark-theme .quick-actions-desktop {
+  background: rgba(35,35,71,0.92);
+}
+
+/* Tactile hover for wizard steps */
+.wizard-step-desktop:hover {
+  box-shadow: 0 8px 32px 0 rgba(93,95,239,0.18);
+  background: rgba(255,255,255,0.93);
+}
+body.dark-theme .wizard-step-desktop:hover {
+  background: rgba(35,35,71,0.98);
+}
+
 /* --- MOBILE-INSPIRED POLISH FOR DESKTOP --- */
 
 /* Card and Step Elevation & Rounding */
