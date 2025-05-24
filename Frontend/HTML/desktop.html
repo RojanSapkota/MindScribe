@@ -423,6 +423,155 @@
         </div>
       </div>
     </template>
+    <template id="aiViewTemplate">
+      <div class="desktop-ai-view">
+        <div class="ai-header-desktop">
+          <i class="fas fa-robot"></i>
+          <span>Ask AI</span>
+        </div>
+        <div class="ai-chat-messages-desktop" id="aiChatMessagesDesktop"></div>
+        <form id="aiChatFormDesktop" class="ai-chat-form-desktop">
+          <input type="text" id="aiChatInputDesktop" class="ai-chat-input-desktop" placeholder="Type your question..." autocomplete="off">
+          <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+        </form>
+      </div>
+    </template>
+    <template id="aitalkViewTemplate">
+      <div class="desktop-aitalk-view">
+        <div class="ai-header-desktop">
+          <i class="fas fa-robot"></i>
+          <span>Live AI Chat</span>
+        </div>
+        <div class="aitalk-widget-desktop">
+          <elevenlabs-convai agent-id="a81xOemgC3Jq0iHJc9OT" style="width:100%;min-width:220px;min-height:300px;"></elevenlabs-convai>
+        </div>
+        <script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
+      </div>
+    </template>
+    <template id="scanViewTemplate">
+      <div class="desktop-scan-view">
+        <h2>Scan Food</h2>
+        <div class="scan-section-desktop">
+          <button id="startCameraButtonDesktop" class="btn btn-primary"><i class="fas fa-camera"></i> Take a Photo</button>
+          <button id="logFoodButtonDesktop" class="btn btn-secondary"><i class="fas fa-keyboard"></i> Log Food Manually</button>
+          <div class="upload-container-desktop">
+            <input type="file" id="fileUploadDesktop" accept="image/*">
+            <label for="fileUploadDesktop" class="upload-label-desktop">
+              <i class="fas fa-cloud-upload-alt"></i> <span>Upload a Photo</span>
+            </label>
+          </div>
+        </div>
+        <div id="logFoodContainerDesktop" class="log-food-container-desktop" style="display:none;">
+          <textarea id="foodDescriptionDesktop" class="food-description-desktop" placeholder="Describe your meal here..."></textarea>
+          <button id="submitFoodLogDesktop" class="btn btn-primary"><i class="fas fa-check"></i> Analyze Food</button>
+          <button id="cancelFoodLogDesktop" class="btn btn-secondary"><i class="fas fa-times"></i> Cancel</button>
+        </div>
+        <div id="resultsDesktop" class="results-container-desktop" style="display:none;"></div>
+      </div>
+    </template>
+    <template id="dietPlanViewTemplate">
+      <div class="desktop-dietplan-view">
+        <h2>Personal Diet Plan</h2>
+        <form id="dietWizardFormDesktop">
+          <div class="wizard-step-desktop" id="step-age-desktop">
+            <label for="wizardAgeDesktop">How old are you?</label>
+            <input type="number" id="wizardAgeDesktop" name="age" min="10" max="120" placeholder="E.g. 25" required>
+            <div class="wizard-nav-desktop">
+              <button type="button" class="wizard-btn-desktop next">Next</button>
+            </div>
+          </div>
+          <div class="wizard-step-desktop" id="step-weight-desktop" style="display:none;">
+            <label for="wizardWeightDesktop">Your weight (kg)</label>
+            <input type="number" id="wizardWeightDesktop" name="weight" min="20" max="300" placeholder="E.g. 68" required>
+            <div class="wizard-nav-desktop">
+              <button type="button" class="wizard-btn-desktop back">Back</button>
+              <button type="button" class="wizard-btn-desktop next">Next</button>
+            </div>
+          </div>
+          <div class="wizard-step-desktop" id="step-height-desktop" style="display:none;">
+            <label for="wizardHeightDesktop">Your height (cm)</label>
+            <input type="number" id="wizardHeightDesktop" name="height" min="80" max="250" placeholder="E.g. 172" required>
+            <div class="wizard-nav-desktop">
+              <button type="button" class="wizard-btn-desktop back">Back</button>
+              <button type="button" class="wizard-btn-desktop next">Next</button>
+            </div>
+          </div>
+          <div class="wizard-step-desktop" id="step-gender-desktop" style="display:none;">
+            <label for="wizardGenderDesktop">Gender</label>
+            <select id="wizardGenderDesktop" name="gender" required>
+              <option value="">Select gender...</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+            <div class="wizard-nav-desktop">
+              <button type="button" class="wizard-btn-desktop back">Back</button>
+              <button type="button" class="wizard-btn-desktop next">Next</button>
+            </div>
+          </div>
+          <div class="wizard-step-desktop" id="step-activity-desktop" style="display:none;">
+            <label for="wizardActivityDesktop">Activity level</label>
+            <select id="wizardActivityDesktop" name="activity_level" required>
+              <option value="">Select activity...</option>
+              <option value="sedentary">Not very active</option>
+              <option value="light">Lightly active</option>
+              <option value="moderate">Moderately active</option>
+              <option value="active">Active</option>
+              <option value="very_active">Very active</option>
+            </select>
+            <div class="wizard-nav-desktop">
+              <button type="button" class="wizard-btn-desktop back">Back</button>
+              <button type="button" class="wizard-btn-desktop next">Next</button>
+            </div>
+          </div>
+          <div class="wizard-step-desktop" id="step-goal-desktop" style="display:none;">
+            <label for="wizardGoalDesktop">Your main goal</label>
+            <select id="wizardGoalDesktop" name="goal" required>
+              <option value="">Select goal...</option>
+              <option value="lose_weight">Lose weight</option>
+              <option value="maintain">Maintain weight</option>
+              <option value="gain_muscle">Gain muscle</option>
+              <option value="other">Other</option>
+            </select>
+            <div class="wizard-nav-desktop">
+              <button type="button" class="wizard-btn-desktop back">Back</button>
+              <button type="button" class="wizard-btn-desktop next">Next</button>
+            </div>
+          </div>
+          <div class="wizard-step-desktop" id="step-allergies-desktop" style="display:none;">
+            <label for="wizardAllergiesSelectDesktop">Any allergies?</label>
+            <select id="wizardAllergiesSelectDesktop" name="allergies_select">
+              <option value="NA">None</option>
+              <option value="custom">Other (type below)</option>
+            </select>
+            <input type="text" id="wizardAllergiesDesktop" name="allergies" placeholder="E.g. peanuts, gluten" style="display:none; margin-top:6px;">
+            <div class="wizard-nav-desktop">
+              <button type="button" class="wizard-btn-desktop back">Back</button>
+              <button type="button" class="wizard-btn-desktop next">Next</button>
+            </div>
+          </div>
+          <div class="wizard-step-desktop" id="step-dislikes-desktop" style="display:none;">
+            <label for="wizardDislikesSelectDesktop">Foods you dislike?</label>
+            <select id="wizardDislikesSelectDesktop" name="dislikes_select">
+              <option value="NA">None</option>
+              <option value="custom">Other (type below)</option>
+            </select>
+            <input type="text" id="wizardDislikesDesktop" name="dislikes" placeholder="E.g. broccoli, fish" style="display:none; margin-top:6px;">
+            <div class="wizard-nav-desktop">
+              <button type="button" class="wizard-btn-desktop back">Back</button>
+              <button type="button" class="wizard-btn-desktop next">Next</button>
+            </div>
+          </div>
+          <div class="wizard-step-desktop" id="step-email-deliver-desktop" style="display:none;">
+            <label>Get your personalized diet plan</label>
+            <div class="wizard-nav-desktop">
+              <button type="button" class="wizard-btn-desktop back">Back</button>
+              <button type="submit" class="wizard-btn-desktop submit" id="getPlanBtnDesktop">Get My Plan</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </template>
   </div>
   <div class="tooltip" id="tooltip"></div>
   <script src="JS/desktop.js"></script>
