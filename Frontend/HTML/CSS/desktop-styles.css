@@ -885,3 +885,23 @@ body.dark-theme input, body.dark-theme select, body.dark-theme textarea {
     gap: 10px;
   }
 }
+
+/* Mobile-style quick action cards and row */
+.quick-action-card-desktop {
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(93,95,239,0.08);
+  box-shadow: 0 2px 8px 0 rgba(93,95,239,0.09);
+  transition: box-shadow .16s, transform .16s;
+  will-change: box-shadow, transform;
+}
+.quick-action-card-desktop:hover {
+  box-shadow: 0 6px 18px 0 rgba(93,95,239,0.18);
+  transform: translateY(-2px) scale(1.04);
+}
+#quickActionsRowDesktop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: center;
+  margin: 18px 0 24px 0;
+}

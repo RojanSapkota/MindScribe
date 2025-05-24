@@ -17,6 +17,102 @@ const viewTemplates = {
   dietPlanView: document.getElementById('dietPlanViewTemplate'),
 };
 
+// --- API SERVER ---
+const api_server = 'https://mindscribe.rojan.hackclub.app';
+
+// --- Helper: Get user email ---
+function getUserEmail() {
+  return localStorage.getItem('userEmail') || '';
+}
+
+// --- ACTIVITY API ---
+async function logActivityDesktop(type, value) {
+  const user_email = getUserEmail();
+  if (!user_email) throw new Error('Not logged in');
+  const resp = await fetch(`${api_server}/log-activity`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ user_email, type, value })
+  });
+  if (!resp.ok) throw new Error('Failed to log activity');
+  return await resp.json();
+}
+async function fetchActivityHistoryDesktop() {
+  const user_email = getUserEmail();
+  if (!user_email) throw new Error('Not logged in');
+  const resp = await fetch(`${api_server}/activity-history?user_email=${encodeURIComponent(user_email)}`);
+  if (!resp.ok) throw new Error('Failed to fetch activity history');
+  return await resp.json();
+}
+
+// --- FOOD SCAN API ---
+async function analyzeFoodByTextDesktop(foodText) {
+  const user_email = getUserEmail();
+  if (!user_email) throw new Error('Not logged in');
+  const formData = new FormData();
+  formData.append('user_email', user_email);
+  formData.append('food_text', foodText);
+  const resp = await fetch(`${api_server}/log-food`, { method: 'POST', body: formData });
+  if (!resp.ok) throw new Error('Failed to analyze food');
+  return await resp.json();
+}
+async function analyzeFoodImageDesktop(file) {
+  const user_email = getUserEmail();
+  if (!user_email) throw new Error('Not logged in');
+  const formData = new FormData();
+  formData.append('user_email', user_email);
+  formData.append('timestamp', new Date().toISOString());
+  formData.append('file', file);
+  const resp = await fetch(`${api_server}/analyze-food`, { method: 'POST', body: formData });
+  if (!resp.ok) throw new Error('Failed to analyze food image');
+  return await resp.json();
+}
+
+// --- FOOD HISTORY API ---
+async function fetchFoodHistoryDesktop() {
+  const user_email = getUserEmail();
+  if (!user_email) throw new Error('Not logged in');
+  const formData = new FormData();
+  formData.append('user_email', user_email);
+  const resp = await fetch(`${api_server}/food-history`, { method: 'POST', body: formData });
+  if (!resp.ok) throw new Error('Failed to fetch food history');
+  return await resp.json();
+}
+
+// --- JOURNAL API (stub: implement as needed) ---
+async function saveJournalEntryDesktop(text) {
+  // TODO: Implement backend endpoint
+  // Example: POST to /save-journal
+  return { success: true };
+}
+async function fetchJournalHistoryDesktop() {
+  // TODO: Implement backend endpoint
+  // Example: GET /journal-history?user_email=...
+  return [];
+}
+
+// --- AI CHAT API ---
+async function sendAIMessageDesktop(question) {
+  const resp = await fetch(`${api_server}/ask`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question })
+  });
+  if (!resp.ok) throw new Error('AI failed to respond');
+  return await resp.json();
+}
+
+// --- DIET PLAN WIZARD API ---
+async function requestDietPlanDesktop(data) {
+  const resp = await fetch(`${api_server}/diet-plan`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams(data)
+  });
+  if (!resp.ok) throw new Error('Failed to request diet plan');
+  return await resp.json();
+}
+
 function loadView(view) {
   const content = document.getElementById('desktopContent');
   if (viewTemplates[view] && viewTemplates[view].content) {
@@ -31,9 +127,57 @@ function loadView(view) {
 function afterViewLoad(view) {
   // Home quick actions
   if (view === 'homeView') {
-    document.querySelectorAll('.action-btn-desktop').forEach(btn => {
-      btn.onclick = () => loadView(btn.getAttribute('data-action'));
-    });
+    // Add mobile-style quick action icons and layout
+    const quickActions = [
+      { icon: 'fa-bolt', label: 'Activity', action: 'activityView', color: '#5D5FEF', bg: 'rgba(93,95,239,0.13)' },
+      { icon: 'fa-utensils', label: 'Food Scan', action: 'scanView', color: '#ff7e3f', bg: 'rgba(255,126,63,0.13)' },
+      { icon: 'fa-book', label: 'Journal', action: 'journalView', color: '#34D399', bg: 'rgba(52,211,153,0.13)' },
+      { icon: 'fa-history', label: 'History', action: 'historyView', color: '#e53e3e', bg: 'rgba(229,62,62,0.13)' },
+      { icon: 'fa-robot', label: 'AI Chat', action: 'aiView', color: '#f59e42', bg: 'rgba(245,158,66,0.13)' },
+      { icon: 'fa-seedling', label: 'Diet Plan', action: 'dietPlanView', color: '#10b981', bg: 'rgba(16,185,129,0.13)' }
+    ];
+    const quickActionsRow = document.getElementById('quickActionsRowDesktop');
+    if (quickActionsRow) {
+      quickActionsRow.innerHTML = quickActions.map(q => `
+        <div class="quick-action-card-desktop" data-action="${q.action}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:${q.bg};border-radius:16px;padding:18px 10px;box-shadow:0 2px 8px 0 ${q.bg};cursor:pointer;transition:box-shadow .16s,transform .16s;min-width:90px;min-height:90px;">
+          <span style="font-size:2em;color:${q.color};"><i class="fas ${q.icon}"></i></span>
+          <span style="font-size:1.04em;font-weight:600;color:#232347;">${q.label}</span>
+        </div>
+      `).join('');
+      quickActionsRow.querySelectorAll('.quick-action-card-desktop').forEach(card => {
+        card.onmouseover = () => { card.style.boxShadow = '0 6px 18px 0 rgba(93,95,239,0.18)'; card.style.transform = 'translateY(-2px) scale(1.04)'; };
+        card.onmouseleave = () => { card.style.boxShadow = `0 2px 8px 0 ${quickActions.find(q => q.action === card.getAttribute('data-action')).bg}`; card.style.transform = 'none'; };
+        card.onclick = () => loadView(card.getAttribute('data-action'));
+      });
+    }
+    // Nutrition style meter and tips carousel logic
+    const meter = document.getElementById('nutritionStyleMeterDesktop');
+    const label = document.getElementById('nutritionStyleLabelDesktop');
+    const refreshBtn = document.getElementById('refreshNutritionStyleDesktop');
+    if (refreshBtn && meter && label) {
+      refreshBtn.onclick = () => {
+        meter.style.width = (30 + Math.random() * 60) + '%';
+        label.textContent = 'Analyzed!';
+        setTimeout(() => { label.textContent = 'Click to analyze your style'; }, 2000);
+      };
+    }
+    const tips = [
+      { icon: 'fa-leaf', title: 'Balanced Diet', text: 'Include a variety of fruits, vegetables, lean proteins, and whole grains in your meals.' },
+      { icon: 'fa-water', title: 'Stay Hydrated', text: 'Drink at least 8 glasses of water daily.' },
+      { icon: 'fa-bed', title: 'Sleep Well', text: 'Aim for 7-9 hours of sleep each night.' }
+    ];
+    let idx = 0;
+    const tipIcon = document.getElementById('tipIconDesktop');
+    const tipTitle = document.getElementById('tipTitleDesktop');
+    const tipText = document.getElementById('tipTextDesktop');
+    setInterval(() => {
+      idx = (idx + 1) % tips.length;
+      if (tipIcon && tipTitle && tipText) {
+        tipIcon.innerHTML = `<i class="fas ${tips[idx].icon}"></i>`;
+        tipTitle.textContent = tips[idx].title;
+        tipText.textContent = tips[idx].text;
+      }
+    }, 5000);
   }
   // Profile menu
   if (view === 'profileView') {
@@ -436,10 +580,54 @@ function afterViewLoad(view) {
     const sortBy = document.getElementById('sortByDesktop');
     const filterHealth = document.getElementById('filterHealthScoreDesktop');
     const historyContainer = document.getElementById('historyContainerDesktop');
-    if (searchInput && sortBy && filterHealth && historyContainer) {
-      // Demo: show empty or fake data
-      historyContainer.innerHTML = '<div style="color:#888;text-align:center;padding:18px 0;">No food history yet.</div>';
+    async function renderHistory() {
+      if (!historyContainer) return;
+      historyContainer.innerHTML = '<div style="color:#888;text-align:center;padding:18px 0;">Loading...</div>';
+      try {
+        const data = await fetchFoodHistoryDesktop();
+        const history = data.food_history || [];
+        if (!history.length) {
+          historyContainer.innerHTML = '<div style="color:#888;text-align:center;padding:18px 0;">No food history yet.</div>';
+          return;
+        }
+        historyContainer.innerHTML = '';
+        history.forEach(entry => {
+          const date = new Date(entry.timestamp);
+          // Food emojis: fallback to 🍽️ if not present
+          const foods = (entry.foods || []).map(f => {
+            const emoji = f.emoji || '🍽️';
+            return `<li style="display:flex;align-items:center;gap:7px;font-size:1.04em;margin-bottom:2px;"><span style='font-size:1.18em;'>${emoji}</span> <span>${f.name}</span> <span style='color:#888;font-size:0.97em;'>(${f.estimated_calories || '?'} cal)</span></li>`;
+          }).join('');
+          const health = entry.overall_health_score || '--';
+          const calories = entry.overall_calories || '--';
+          const card = document.createElement('div');
+          card.className = 'history-card-desktop';
+          card.style = `backdrop-filter: blur(12px); background: rgba(255,255,255,0.55); border-radius:18px; box-shadow:0 4px 24px 0 rgba(93,95,239,0.13),0 1.5px 8px 0 rgba(93,95,239,0.09); margin-bottom:18px; padding:18px 18px 12px 18px; transition:box-shadow .18s,transform .18s; cursor:pointer; border:1.5px solid rgba(93,95,239,0.08);`;
+          card.onmouseover = () => { card.style.boxShadow = '0 8px 32px 0 rgba(93,95,239,0.18),0 2px 12px 0 rgba(93,95,239,0.13)'; card.style.transform = 'translateY(-2px) scale(1.012)'; };
+          card.onmouseleave = () => { card.style.boxShadow = '0 4px 24px 0 rgba(93,95,239,0.13),0 1.5px 8px 0 rgba(93,95,239,0.09)'; card.style.transform = 'none'; };
+          card.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span style='font-size:1.45em;color:#ff7e3f;'><i class="fas fa-fire"></i></span>
+                <div>
+                  <div style="font-weight:600;font-size:1.08em;">${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>
+                  <div style="color:#888;font-size:0.97em;">${entry.foods && entry.foods.length ? entry.foods.length + ' items' : ''}</div>
+                </div>
+              </div>
+              <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+                <div style="color:#5D5FEF;font-weight:600;display:flex;align-items:center;gap:6px;"><i class="fas fa-fire" style="color:#ff7e3f;font-size:1.13em;"></i> ${calories} cal</div>
+                <div style="color:#34D399;font-weight:600;display:flex;align-items:center;gap:6px;"><i class="fas fa-heart" style="color:#e53e3e;font-size:1.13em;"></i> ${health}/10</div>
+              </div>
+            </div>
+            <ul style="margin:12px 0 0 0;padding-left:0;list-style:none;color:#232347;">${foods}</ul>
+          `;
+          historyContainer.appendChild(card);
+        });
+      } catch (e) {
+        historyContainer.innerHTML = '<div style="color:#e53e3e;text-align:center;padding:18px 0;">Failed to load history.</div>';
+      }
     }
+    renderHistory();
   }
 }
 
