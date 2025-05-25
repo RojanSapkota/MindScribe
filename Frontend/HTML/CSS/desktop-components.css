@@ -10,6 +10,17 @@
   box-shadow: var(--shadow);
   transition: var(--transition);
   grid-column: span 2;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (max-width: 1024px) {
+  .welcome-card {
+    grid-column: span 1;
+    padding: 24px;
+  }
 }
 
 .welcome-card:hover {
@@ -175,6 +186,16 @@
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
   grid-column: span 2;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1024px) {
+  .free-writing-card {
+    grid-column: span 1;
+    min-height: 200px;
+  }
 }
 
 .free-writing-card:hover {
@@ -1867,5 +1888,298 @@
     width: 70px;
     height: 70px;
     font-size: 20px;
+  }
+}
+
+/* ===== DESKTOP-SPECIFIC RESPONSIVE FIXES ===== */
+
+/* Ensure all cards fit properly */
+@media (max-width: 1400px) {
+  .content-grid {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
+  
+  .welcome-card,
+  .free-writing-card {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 1200px) {
+  .content-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  
+  .welcome-card,
+  .free-writing-card,
+  .activity-card,
+  .food-card,
+  .exercise-card {
+    grid-column: span 1;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 1024px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  /* All cards span full width on smaller screens */
+  .welcome-card,
+  .free-writing-card,
+  .signin-tracker-card,
+  .quick-actions-card,
+  .activity-card,
+  .food-card,
+  .exercise-card {
+    grid-column: span 1;
+    margin-bottom: 0;
+  }
+  
+  /* Adjust padding for smaller screens */
+  .welcome-card,
+  .free-writing-card,
+  .activity-card,
+  .food-card,
+  .exercise-card {
+    padding: 20px;
+  }
+  
+  /* Make text areas more compact */
+  .free-writing-card textarea {
+    min-height: 100px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Further reduce spacing on very small screens */
+  .content-grid {
+    gap: 12px;
+  }
+  
+  .welcome-card,
+  .free-writing-card,
+  .activity-card,
+  .food-card,
+  .exercise-card {
+    padding: 16px;
+  }
+  
+  .welcome-avatar {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .welcome-avatar i {
+    font-size: 30px;
+  }
+  
+  .welcome-card h2 {
+    font-size: 20px;
+  }
+  
+  .welcome-card p {
+    font-size: 14px;
+  }
+}
+
+/* Prevent any horizontal overflow */
+.desktop-container * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure proper card heights */
+.activity-card,
+.food-card,
+.exercise-card,
+.signin-tracker-card,
+.quick-actions-card {
+  min-height: 200px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Make sure action buttons are properly contained */
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.action-btn {
+  flex: 1;
+  min-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+  .action-btn {
+    flex: 1 1 100%;
+    min-width: auto;
+  }
+}
+
+/* ===== UTILITY CLASSES AND FINAL FIXES ===== */
+
+/* Ensure proper box-sizing for all elements */
+.desktop-container *,
+.desktop-container *::before,
+.desktop-container *::after {
+  box-sizing: border-box;
+}
+
+/* Clear floats and prevent layout issues */
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Prevent text overflow in cards */
+.card-header span,
+.activity-title,
+.exercise-name,
+.food-analysis .analysis-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Ensure proper spacing in content areas */
+.desktop-view > .content-grid:last-child {
+  margin-bottom: 0;
+}
+
+/* Fix any potential z-index issues */
+.desktop-sidebar {
+  z-index: 1000;
+}
+
+.ai-chat-overlay {
+  z-index: 9999;
+}
+
+.notification {
+  z-index: 10000;
+}
+
+/* Smooth scrolling for better UX */
+.desktop-main {
+  scroll-behavior: smooth;
+}
+
+/* Ensure buttons are always clickable */
+button, .action-btn, .menu-item {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Add focus styles for accessibility */
+button:focus,
+.action-btn:focus,
+.menu-item:focus,
+input:focus,
+textarea:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Prevent layout shift during loading */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix any flexbox issues */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+@media (min-width: 600px) {
+  .action-buttons {
+    flex-direction: row;
+  }
+}
+
+/* Ensure proper card heights on all screens */
+.activity-card,
+.food-card,
+.exercise-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Loading states */
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--light-gray);
+  border-top: 2px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Print styles */
+@media print {
+  .desktop-sidebar,
+  .refresh-btn,
+  .action-btn,
+  .notification {
+    display: none !important;
+  }
+  
+  .desktop-main {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .welcome-card,
+  .activity-card,
+  .food-card,
+  .exercise-card {
+    border: 2px solid var(--dark);
+  }
+  
+  .action-btn {
+    border: 1px solid var(--dark);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

@@ -5,27 +5,20 @@
   --header-height: 70px;
   --content-padding: 24px;
   --border-radius: 16px;
-  --card-spacing: 20px;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--light);
-  min-height: 100vh;
-  overflow-x: hidden;
+  --card-spacing: 24px;
 }
 
 /* Desktop Container */
 .desktop-container {
   display: flex;
   height: 100vh;
+  width: 100vw;
   background-color: var(--light);
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 /* Sidebar Navigation */
@@ -148,18 +141,22 @@ body {
 /* Main Content Area */
 .desktop-main {
   margin-left: var(--sidebar-width);
-  flex: 1;
+  width: calc(100vw - var(--sidebar-width));
   height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
   background-color: var(--light);
+  position: relative;
 }
 
 /* View Container */
 .desktop-view {
   padding: var(--content-padding);
-  max-width: 1200px;
+  max-width: 1400px;
+  width: 100%;
   margin: 0 auto;
   display: none;
+  min-height: calc(100vh - calc(var(--content-padding) * 2));
 }
 
 .desktop-view.active {
@@ -173,18 +170,22 @@ body {
   margin-bottom: var(--content-padding);
   padding-bottom: 16px;
   border-bottom: 1px solid var(--light-gray);
+  position: sticky;
+  top: 0;
+  background: var(--light);
+  z-index: 5;
 }
 
 .view-header h1 {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
   color: var(--dark);
   margin: 0;
 }
 
 .refresh-btn {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 12px;
   border: none;
   background: white;
@@ -201,6 +202,7 @@ body {
   background-color: var(--primary);
   color: white;
   transform: translateY(-2px);
+  box-shadow: var(--shadow);
 }
 
 .refresh-btn:active {
@@ -210,9 +212,17 @@ body {
 /* Content Grid Layout */
 .content-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: var(--card-spacing);
   margin-bottom: var(--card-spacing);
+  width: 100%;
+  align-items: start;
+}
+
+/* Ensure cards don't overflow */
+.content-grid > * {
+  min-width: 0; /* Allow cards to shrink */
+  width: 100%;
 }
 
 .content-area {
@@ -226,4 +236,125 @@ body {
   justify-content: center;
   color: var(--gray);
   font-size: 16px;
+}
+
+/* Responsive Design for Desktop */
+@media (max-width: 1400px) {
+  .content-grid {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
+  
+  .view-header h1 {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --sidebar-width: 260px;
+    --content-padding: 20px;
+  }
+  
+  .content-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  
+  .desktop-main {
+    width: calc(100vw - var(--sidebar-width));
+  }
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 240px;
+    --content-padding: 16px;
+  }
+  
+  .content-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .view-header h1 {
+    font-size: 24px;
+  }
+  
+  .refresh-btn {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .desktop-main {
+    width: calc(100vw - var(--sidebar-width));
+  }
+}
+
+@media (max-width: 768px) {
+  /* For very small desktop screens, make sidebar collapsible */
+  :root {
+    --sidebar-width: 60px;
+  }
+  
+  .desktop-sidebar {
+    width: var(--sidebar-width);
+  }
+  
+  .sidebar-header,
+  .sidebar-footer {
+    padding: 12px 8px;
+  }
+  
+  .logo-wrapper h2,
+  .menu-item span,
+  .settings-btn span {
+    display: none;
+  }
+  
+  .menu-item,
+  .settings-btn {
+    justify-content: center;
+    padding: 12px 8px;
+  }
+  
+  .desktop-main {
+    width: calc(100vw - var(--sidebar-width));
+  }
+  
+  .content-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .view-header {
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .view-header h1 {
+    font-size: 20px;
+  }
+}
+
+/* Prevent horizontal overflow */
+* {
+  max-width: 100%;
+}
+
+/* Scrollbar styling for desktop */
+.desktop-main::-webkit-scrollbar {
+  width: 6px;
+}
+
+.desktop-main::-webkit-scrollbar-track {
+  background: var(--light-gray);
+}
+
+.desktop-main::-webkit-scrollbar-thumb {
+  background: var(--gray);
+  border-radius: 3px;
+}
+
+.desktop-main::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
 }
