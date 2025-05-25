@@ -165,10 +165,13 @@
   --dark: #2D3748;
   --light: #F7FAFC;
   --gray: #A0AEC0;
-  --light-gray: #EDF2F7;
-  --border-color: #E2E8F0;
+  --light-gray: #EDF2F7;  --border-color: #E2E8F0;
+  --border: #E2E8F0;
+  --text: #2D3748;
+  --text-secondary: #718096;
   --text-light: #718096;
   --bg-light: #F8FAFC;
+  --background-light: #F8FAFC;
   --success: #22C55E;
   --success-light: #DCFCE7;
   --success-dark: #15803D;
