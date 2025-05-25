@@ -3,124 +3,179 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MindScribe</title>
-  <meta name="description" content="MindScribe is a mobile-only application.">
+  <title>MindScribe | Desktop</title>
+  <meta name="description" content="AI-powered voice journaling app">
+  
   <link rel="icon" type="image/png" href="Assets/icon.png">
+  <link rel="apple-touch-icon" href="Assets/icon.png">
+  
+  <meta name="theme-color" content="#5D5FEF">
+  
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="CSS/styles.css">
   <link rel="stylesheet" href="CSS/desktop-styles.css">
-  
+  <link rel="stylesheet" href="CSS/desktop-components.css">
 </head>
 <body>
-  <button class="theme-switch" id="themeSwitch">
-    <i class="fas fa-moon"></i>
-  </button>
   <div class="desktop-container">
-    <div class="logo-container">
-      <img src="Assets/icon.png" alt="MindScribe Logo" class="logo">
-    </div>
-    
-    <div class="message-container">
-      <div class="device-icon">
-        <i class="fas fa-mobile-alt"></i>
+    <!-- Navigation Sidebar -->
+    <nav class="desktop-sidebar">
+      <div class="sidebar-header">
+        <div class="logo-wrapper">
+          <img src="Assets/icon.png" alt="MindScribe" class="logo">
+          <h2>MindScribe</h2>
+        </div>
       </div>
-      <h1>This App is Mobile Only</h1>
-      <p>MindScribe is designed exclusively for mobile devices to provide the best experience. Please access our app using your smartphone or tablet.</p>
       
-      <div class="qr-container">
-        <div class="qr-code" id="qrCode">
-          <!-- Dynamic QR Code will be inserted here -->
-          <div class="qr-loading" id="qrLoading">
-            <i class="fas fa-circle-notch"></i>
-            <p>Generating QR code...</p>
+      <div class="sidebar-menu">
+        <button class="menu-item active" data-view="homeView">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </button>
+        <button class="menu-item" data-view="activityView">
+          <i class="fas fa-bolt"></i>
+          <span>Activity</span>
+        </button>
+        <button class="menu-item journal-btn" data-view="recordView">
+          <i class="fas fa-book"></i>
+          <span>Journal</span>
+        </button>
+        <button class="menu-item" data-view="historyView">
+          <i class="fas fa-history"></i>
+          <span>History</span>
+        </button>
+        <button class="menu-item" data-view="profileView">
+          <i class="fas fa-user"></i>
+          <span>Profile</span>
+        </button>
+      </div>
+      
+      <div class="sidebar-footer">
+        <button class="settings-btn">
+          <i class="fas fa-cog"></i>
+          <span>Settings</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="desktop-main">
+      <!-- Home View -->
+      <div class="desktop-view active" id="homeView">
+        <div class="view-header">
+          <h1>Welcome back</h1>
+          <button class="refresh-btn">
+            <i class="fas fa-sync-alt"></i>
+          </button>
+        </div>
+        
+        <div class="content-grid">
+          <!-- Welcome Card -->
+          <div class="welcome-card">
+            <div class="welcome-avatar">
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <h2>Hello there!</h2>
+            <p id="welcomeUserEmail">Ready to track your mental wellness journey?</p>
           </div>
-          <div class="qr-error" id="qrError">
-            <i class="fas fa-exclamation-circle"></i>
-            <p>Could not load QR code. Please refresh or visit the site on your mobile device directly.</p>
+
+          <!-- Sign-in Tracker -->
+          <div class="signin-tracker-card" id="signinTrackerCard">
+            <div class="card-header">
+              <i class="fas fa-calendar-check"></i>
+              <span>Sign-in Streak</span>
+            </div>
+            <div id="signinTrackerDays" class="tracker-days"></div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="quick-actions-card">
+            <h3>Quick Actions</h3>
+            <div class="action-buttons">
+              <button class="action-btn primary" data-view="recordView">
+                <i class="fas fa-microphone"></i>
+                <span>Start Journal</span>
+              </button>
+              <button class="action-btn secondary" data-view="historyView">
+                <i class="fas fa-book-open"></i>
+                <span>View History</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Free Writing Box -->
+          <div class="free-writing-card">
+            <div class="card-header">
+              <i class="fas fa-pen"></i>
+              <span>Quick Notes</span>
+            </div>
+            <textarea id="freeWritingBox" placeholder="Jot down your thoughts..."></textarea>
+            <div class="card-actions">
+              <button id="saveFreeWritingBtn" class="save-btn">
+                <i class="fas fa-save"></i>
+                Save
+              </button>
+              <span id="freeWritingSavedMsg" class="saved-msg">Saved!</span>
+            </div>
           </div>
         </div>
-        <p class="scan-text">Scan to open on your mobile device</p>
       </div>
-    </div>
+
+      <!-- Activity View -->
+      <div class="desktop-view" id="activityView">
+        <div class="view-header">
+          <h1>Activity</h1>
+        </div>
+        <div class="content-area">
+          <p>Activity tracking features coming soon...</p>
+        </div>
+      </div>
+
+      <!-- Journal View -->
+      <div class="desktop-view" id="recordView">
+        <div class="view-header">
+          <h1>Voice Journal</h1>
+        </div>
+        <div class="content-area">
+          <p>Voice recording features coming soon...</p>
+        </div>
+      </div>
+
+      <!-- History View -->
+      <div class="desktop-view" id="historyView">
+        <div class="view-header">
+          <h1>Journal History</h1>
+        </div>
+        <div class="content-area">
+          <p>Journal history will appear here...</p>
+        </div>
+      </div>
+
+      <!-- Profile View -->
+      <div class="desktop-view" id="profileView">
+        <div class="view-header">
+          <h1>Profile</h1>
+        </div>
+        <div class="content-area">
+          <p>Profile settings coming soon...</p>
+        </div>
+      </div>
+    </main>
   </div>
 
+  <!-- Sign-in Tracker Modal (will be dynamically created) -->
+  
   <script>
-    // Check if user is on a mobile device
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-    // If on mobile, redirect to the main mobile app
-    if (isMobile) {
-      window.location.href = 'mobile.html'; // Redirect to mobile.html
-    }
-    
-    // Theme switcher functionality
-    const themeSwitch = document.getElementById('themeSwitch');
-    let darkMode = localStorage.getItem('darkMode') === 'true';
-    
-    // Initialize dark mode from localStorage
-    if (darkMode) {
-      document.body.classList.add('dark-theme');
-      themeSwitch.innerHTML = '<i class="fas fa-sun"></i>';
-    } else {
-      themeSwitch.innerHTML = '<i class="fas fa-moon"></i>';
-    }
-    
-    themeSwitch.addEventListener('click', () => {
-      darkMode = !darkMode;
-      document.body.classList.toggle('dark-theme', darkMode);
-      themeSwitch.innerHTML = darkMode ? 
-        '<i class="fas fa-sun"></i>' : 
-        '<i class="fas fa-moon"></i>';
-      localStorage.setItem('darkMode', darkMode);
-      
-      // Update QR code based on theme
-      updateQRCode();
-    });
-    
-    // Generate dynamic QR code
-    function generateQRCode(url, darkMode = false) {
-      const qrCodeContainer = document.getElementById('qrCode');
-      const qrLoading = document.getElementById('qrLoading');
-      const qrError = document.getElementById('qrError');
-      
-      // Show loading state
-      qrLoading.style.display = 'flex';
-      qrError.style.display = 'none';
-      
-      // Check if there's already an image and remove it
-      const existingImg = qrCodeContainer.querySelector('img');
-      if (existingImg) {
-        existingImg.remove();
+    document.addEventListener('DOMContentLoaded', () => {
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        window.location.href = 'landing.html';
       }
-      
-      // Generate QR code using an API
-      const qrImage = new Image();
-      const bgColor = darkMode ? '2d3748' : 'ffffff';
-      const fgColor = darkMode ? 'ffffff' : '000000';
-      
-      // Use qrserver.com API to generate QR code
-      qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(url)}&size=200x200&bgcolor=${bgColor}&color=${fgColor}&margin=10`;
-      
-      qrImage.onload = function() {
-        qrLoading.style.display = 'none';
-        qrCodeContainer.appendChild(qrImage);
-      };
-      
-      qrImage.onerror = function() {
-        qrLoading.style.display = 'none';
-        qrError.style.display = 'flex';
-      };
-    }
-    
-    // Function to update QR code based on current theme
-    function updateQRCode() {
-      // Get current URL
-      const currentURL = window.location.origin + window.location.pathname.replace('desktop.html', '');
-      generateQRCode(currentURL, darkMode);
-    }
-    
-    // Generate QR code on page load
-    document.addEventListener('DOMContentLoaded', updateQRCode);
+    });
   </script>
+  <script src="JS/desktop.js"></script>
 </body>
 </html>

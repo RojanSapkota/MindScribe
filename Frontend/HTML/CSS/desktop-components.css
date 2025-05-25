@@ -1,0 +1,288 @@
+/* Desktop Components - Cards and Interactive Elements */
+
+/* Welcome Card */
+.welcome-card {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  border-radius: var(--border-radius);
+  padding: 32px;
+  color: white;
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  grid-column: span 2;
+}
+
+.welcome-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.welcome-avatar {
+  width: 80px;
+  height: 80px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 20px;
+  backdrop-filter: blur(10px);
+}
+
+.welcome-avatar i {
+  font-size: 40px;
+}
+
+.welcome-card h2 {
+  font-size: 24px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.welcome-card p {
+  font-size: 16px;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* Sign-in Tracker Card */
+.signin-tracker-card {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  border: 2px solid transparent;
+}
+
+.signin-tracker-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  border-color: var(--primary);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.card-header i {
+  color: var(--accent);
+  font-size: 20px;
+}
+
+.card-header span {
+  color: var(--dark);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.tracker-days {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tracker-days > div {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+/* Quick Actions Card */
+.quick-actions-card {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.quick-actions-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.quick-actions-card h3 {
+  color: var(--dark);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  width: 100%;
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white;
+}
+
+.action-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(93, 95, 239, 0.3);
+}
+
+.action-btn.secondary {
+  background-color: var(--light-gray);
+  color: var(--dark);
+}
+
+.action-btn.secondary:hover {
+  background-color: var(--gray);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.action-btn i {
+  font-size: 18px;
+}
+
+/* Free Writing Card */
+.free-writing-card {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  grid-column: span 2;
+}
+
+.free-writing-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.free-writing-card textarea {
+  width: 100%;
+  min-height: 120px;
+  border: 2px solid var(--light-gray);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: inherit;
+  font-size: 15px;
+  resize: vertical;
+  transition: var(--transition);
+  margin: 16px 0;
+  background-color: var(--light);
+}
+
+.free-writing-card textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background-color: white;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.save-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.save-btn:hover {
+  background-color: var(--success);
+  transform: translateY(-2px);
+}
+
+.saved-msg {
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  display: none;
+  animation: fadeInOut 1.2s ease-in-out;
+}
+
+/* Animations */
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.refresh-btn.loading i {
+  animation: spin 1s linear infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .welcome-card,
+  .free-writing-card {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 240px;
+    --content-padding: 16px;
+  }
+  
+  .view-header h1 {
+    font-size: 24px;
+  }
+  
+  .welcome-card {
+    padding: 24px;
+  }
+  
+  .welcome-avatar {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .welcome-avatar i {
+    font-size: 30px;
+  }
+}

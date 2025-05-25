@@ -1,0 +1,229 @@
+/* Desktop Styles for MindScribe */
+
+:root {
+  --sidebar-width: 280px;
+  --header-height: 70px;
+  --content-padding: 24px;
+  --border-radius: 16px;
+  --card-spacing: 20px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--light);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Desktop Container */
+.desktop-container {
+  display: flex;
+  height: 100vh;
+  background-color: var(--light);
+}
+
+/* Sidebar Navigation */
+.desktop-sidebar {
+  width: var(--sidebar-width);
+  background: white;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 10;
+}
+
+.sidebar-header {
+  padding: var(--content-padding);
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.logo-wrapper h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0;
+}
+
+.sidebar-menu {
+  flex: 1;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: none;
+  background: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--gray);
+  font-size: 15px;
+  font-weight: 500;
+  text-align: left;
+  width: 100%;
+}
+
+.menu-item:hover {
+  background-color: var(--light-gray);
+  color: var(--dark);
+}
+
+.menu-item.active {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white;
+  transform: translateX(4px);
+}
+
+.menu-item.journal-btn {
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+  color: white;
+  margin: 8px 0;
+}
+
+.menu-item.journal-btn:hover {
+  transform: translateX(4px) scale(1.02);
+}
+
+.menu-item i {
+  font-size: 18px;
+  width: 20px;
+  text-align: center;
+}
+
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid var(--light-gray);
+}
+
+.settings-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--gray);
+  font-size: 15px;
+  width: 100%;
+  text-align: left;
+}
+
+.settings-btn:hover {
+  background-color: var(--light-gray);
+  color: var(--dark);
+}
+
+/* Main Content Area */
+.desktop-main {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  background-color: var(--light);
+}
+
+/* View Container */
+.desktop-view {
+  padding: var(--content-padding);
+  max-width: 1200px;
+  margin: 0 auto;
+  display: none;
+}
+
+.desktop-view.active {
+  display: block;
+}
+
+.view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--content-padding);
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.view-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0;
+}
+
+.refresh-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: none;
+  background: white;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  color: var(--gray);
+}
+
+.refresh-btn:hover {
+  background-color: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.refresh-btn:active {
+  transform: translateY(0);
+}
+
+/* Content Grid Layout */
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: var(--card-spacing);
+  margin-bottom: var(--card-spacing);
+}
+
+.content-area {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: var(--content-padding);
+  box-shadow: var(--shadow-sm);
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray);
+  font-size: 16px;
+}
