@@ -407,8 +407,9 @@
 }
 
 .filter-controls select:focus {
-  border-color: var(--primary);
   outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(94, 114, 228, 0.1);
 }
 
 .journal-entries-container {
@@ -2181,5 +2182,175 @@ img {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Activity Tracker Specific Styles */
+.activity-totals {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 20px 0;
+  padding: 16px;
+  background: var(--bg-light);
+  border-radius: var(--border-radius);
+}
+
+.activity-item {
+  flex: 1;
+  text-align: center;
+  padding: 12px 8px;
+  background: white;
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.activity-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.activity-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 4px;
+  display: block;
+}
+
+.activity-value span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.activity-label {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.activity-forms {
+  margin-top: 20px;
+}
+
+.activity-form-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.activity-form-row:last-child {
+  margin-bottom: 0;
+}
+
+.quick-form {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.quick-form input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.quick-form input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.1);
+}
+
+.quick-form input::placeholder {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.quick-submit {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+
+.quick-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(93, 95, 239, 0.3);
+}
+
+.quick-submit:active {
+  transform: translateY(0);
+}
+
+.quick-submit i {
+  font-size: 14px;
+}
+
+/* Activity Tracker Responsive Design */
+@media (max-width: 768px) {
+  .activity-totals {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .activity-item {
+    padding: 16px 12px;
+  }
+  
+  .activity-value {
+    font-size: 18px;
+  }
+  
+  .activity-form-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .quick-form {
+    gap: 6px;
+  }
+  
+  .quick-form input {
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  .quick-submit {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .activity-totals {
+    padding: 12px;
+  }
+  
+  .activity-item {
+    padding: 12px 8px;
+  }
+  
+  .activity-value {
+    font-size: 16px;
+  }
+  
+  .activity-label {
+    font-size: 13px;
   }
 }
