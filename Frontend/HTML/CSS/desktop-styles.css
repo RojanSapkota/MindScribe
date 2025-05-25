@@ -955,3 +955,35 @@ body.dark-theme input, body.dark-theme select, body.dark-theme textarea {
   font-size: 2em;
   opacity: 0.92;
 }
+.activity-foodscan-quickcard-desktop {
+  background: linear-gradient(90deg, #f8fafc 60%, #e0e7ff 100%);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px 0 rgba(93,95,239,0.10);
+  padding: 14px 22px;
+  margin: 18px 0 10px 0;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: box-shadow .18s, transform .18s;
+  border: 1.2px solid #e0e3f3;
+}
+.activity-foodscan-quickcard-desktop:hover {
+  box-shadow: 0 6px 24px 0 rgba(93,95,239,0.13);
+  transform: translateY(-2px) scale(1.012);
+}
+.activity-foodscan-quickcard-desktop button {
+  background: #5D5FEF;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 4px 0 rgba(93,95,239,0.10);
+  transition: background .15s;
+  font-size: 1em;
+}
+.activity-foodscan-quickcard-desktop button:hover {
+  background: #232347;
+}

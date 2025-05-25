@@ -103,6 +103,17 @@
             <div class="tip-indicator-desktop" id="tipIndicatorDesktop"></div>
           </div>
         </div>
+        <!-- Mood & Insights Section (parity with mobile, improved layout) -->
+        <div class="mood-insights-row-desktop" style="display:flex;gap:32px;margin-bottom:18px;align-items:stretch;flex-wrap:wrap;">
+          <div class="mood-chart-card-desktop" style="flex:1 1 220px;min-width:220px;max-width:340px;background:#fff;border-radius:14px;box-shadow:0 2px 8px 0 rgba(93,95,239,0.09);padding:18px 14px;display:flex;flex-direction:column;justify-content:flex-start;">
+            <h4 style="margin:0 0 10px 0;font-size:1.08em;color:#5D5FEF;display:flex;align-items:center;gap:7px;"><i class="fas fa-chart-line"></i> Mood Chart</h4>
+            <div id="moodChartDesktop" style="min-height:70px;text-align:center;color:#888;display:flex;align-items:center;justify-content:center;"><i class='fas fa-spinner fa-spin'></i> Loading...</div>
+          </div>
+          <div class="recent-insights-card-desktop" style="flex:1 1 220px;min-width:220px;max-width:340px;background:#fff;border-radius:14px;box-shadow:0 2px 8px 0 rgba(93,95,239,0.09);padding:18px 14px;display:flex;flex-direction:column;justify-content:flex-start;">
+            <h4 style="margin:0 0 10px 0;font-size:1.08em;color:#34D399;display:flex;align-items:center;gap:7px;"><i class="fas fa-lightbulb"></i> Recent Insights</h4>
+            <div id="recentInsightsDesktop" style="min-height:70px;text-align:center;color:#888;display:flex;align-items:center;justify-content:center;"><i class='fas fa-spinner fa-spin'></i> Loading...</div>
+          </div>
+        </div>
       </div>
     </template>
     <template id="activityViewTemplate">
@@ -115,6 +126,11 @@
           <button class="activity-icon-btn-desktop" id="walkIconBtnDesktop"><i class="fas fa-walking"></i><div>Walk</div></button>
         </div>
         <div id="activityTotalsRowDesktop"></div>
+        <div class="activity-foodscan-quickcard-desktop" style="background:rgba(255,255,255,0.7);border-radius:14px;padding:12px 18px;margin:18px 0 10px 0;box-shadow:0 2px 8px 0 rgba(93,95,239,0.09);font-size:1em;display:flex;align-items:center;gap:12px;">
+          <span style="font-size:1.3em;color:#ff7e3f;"><i class="fas fa-camera"></i></span>
+          <span>Want to log your meal? <b>Scan food</b> or <b>describe it</b> for instant nutrition analysis!</span>
+          <button id="scanNowBtnDesktop" style="margin-left:auto;background:#5D5FEF;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-weight:600;cursor:pointer;box-shadow:0 1px 4px 0 rgba(93,95,239,0.10);transition:background .15s;">Scan Now <i class='fas fa-arrow-right'></i></button>
+        </div>
         <!-- Modals for each activity will be handled by JS -->
       </div>
     </template>

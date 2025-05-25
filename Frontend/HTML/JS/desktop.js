@@ -178,6 +178,34 @@ function afterViewLoad(view) {
         tipText.textContent = tips[idx].text;
       }
     }, 5000);
+    // Fetch and update stat cards with real data
+    (async () => {
+      try {
+        // Fetch food history for meal count, avg health, calories today, best meal
+        const foodData = await fetchFoodHistoryDesktop();
+        const history = foodData.food_history || [];
+        document.getElementById('mealCountDesktop').textContent = history.length;
+        // Avg health score
+        let avgHealth = '--';
+        if (history.length) {
+          const sum = history.reduce((a, b) => a + (b.overall_health_score || 0), 0);
+          avgHealth = (sum / history.length).toFixed(1);
+        }
+        document.getElementById('avgHealthScoreDesktop').textContent = avgHealth;
+        // Calories today
+        const today = new Date().toISOString().slice(0, 10);
+        const todayMeals = history.filter(h => h.timestamp && h.timestamp.startsWith(today));
+        const caloriesToday = todayMeals.reduce((a, b) => a + (b.overall_calories || 0), 0);
+        document.getElementById('caloriesTodayDesktop').textContent = caloriesToday || '--';
+        // Best meal (highest health score)
+        let bestMeal = '--';
+        if (history.length) {
+          const best = history.reduce((a, b) => (b.overall_health_score > (a.overall_health_score||0) ? b : a), {});
+          bestMeal = (best.foods && best.foods.length) ? best.foods.map(f => f.emoji || '🍽️').join(' ') + ' ' + best.foods.map(f => f.name).join(', ') : '--';
+        }
+        document.getElementById('bestMealDesktop').textContent = bestMeal;
+      } catch {}
+    })();
   }
   // Profile menu
   if (view === 'profileView') {
@@ -441,7 +469,7 @@ function afterViewLoad(view) {
     const input = document.getElementById('aiChatInputDesktop');
     const messages = document.getElementById('aiChatMessagesDesktop');
     if (form && input && messages) {
-      form.onsubmit = function(e) {
+      form.onsubmit = async function(e) {
         e.preventDefault();
         const val = input.value.trim();
         if (!val) return;
@@ -450,14 +478,19 @@ function afterViewLoad(view) {
         userMsg.textContent = val;
         messages.appendChild(userMsg);
         input.value = '';
-        // Simulate AI response
-        setTimeout(() => {
+        try {
+          const resp = await sendAIMessageDesktop(val);
           const aiMsg = document.createElement('div');
           aiMsg.className = 'ai-msg-bot';
-          aiMsg.textContent = 'AI: This is a demo response.';
+          aiMsg.textContent = resp.answer || 'AI: ...';
           messages.appendChild(aiMsg);
           messages.scrollTop = messages.scrollHeight;
-        }, 700);
+        } catch {
+          const aiMsg = document.createElement('div');
+          aiMsg.className = 'ai-msg-bot';
+          aiMsg.textContent = 'AI: Failed to respond.';
+          messages.appendChild(aiMsg);
+        }
       };
     }
   }
@@ -529,105 +562,208 @@ function afterViewLoad(view) {
     if (cancelBtn && logFoodContainer) {
       cancelBtn.onclick = () => { logFoodContainer.style.display = 'none'; };
     }
-    // You can add more logic for file upload, camera, and food analysis API here
+    // Text log
+    const submitBtn = document.getElementById('submitFoodLogDesktop');
+    const desc = document.getElementById('foodDescriptionDesktop');
+    const results = document.getElementById('resultsDesktop');
+    if (submitBtn && desc && results) {
+      submitBtn.onclick = async () => {
+        if (!desc.value.trim()) return alert('Describe your meal!');
+        results.style.display = 'block';
+        results.innerHTML = '<div style="color:#888;">Analyzing...</div>';
+        try {
+          const data = await analyzeFoodByTextDesktop(desc.value);
+          results.innerHTML = `<div style='color:#34D399;font-weight:600;'>${data.message || 'Logged!'}</div>`;
+        } catch {
+          results.innerHTML = '<div style="color:#e53e3e;">Failed to analyze food.</div>';
+        }
+      };
+    }
+    // Image upload
+    const fileInput = document.getElementById('fileUploadDesktop');
+    if (fileInput && results) {
+      fileInput.onchange = async e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        results.style.display = 'block';
+        results.innerHTML = '<div style="color:#888;">Analyzing image...</div>';
+        try {
+          const data = await analyzeFoodImageDesktop(file);
+          results.innerHTML = `<div style='color:#34D399;font-weight:600;'>${data.message || 'Logged!'}</div>`;
+        } catch {
+          results.innerHTML = '<div style="color:#e53e3e;">Failed to analyze image.</div>';
+        }
+      };
+    }
   }
-  // --- Journal History (Desktop) ---
+  // Journal save/history (desktop)
   if (view === 'journalView') {
+    // Save journal entry
+    const logBtn = document.getElementById('logJournalBtnDesktop');
+    const textarea = document.getElementById('freeWritingBoxDesktop');
+    if (logBtn && textarea) {
+      logBtn.onclick = async () => {
+        if (!textarea.value.trim()) return alert('Write something!');
+        try {
+          await saveJournalEntryDesktop(textarea.value);
+          alert('Journal entry saved!');
+        } catch {
+          alert('Failed to save journal entry.');
+        }
+      };
+    }
+    // View journal history (stub)
     const viewHistoryBtn = document.getElementById('viewJournalHistoryBtnDesktop');
     if (viewHistoryBtn) {
-      viewHistoryBtn.onclick = () => {
+      viewHistoryBtn.onclick = async () => {
         alert('Journal history feature coming soon!');
       };
     }
-    // You can add logic for voice recording, manual log, and saving journal entries here
   }
-  // --- Nutrition Style Meter (Desktop) ---
-  if (view === 'homeView') {
-    const meter = document.getElementById('nutritionStyleMeterDesktop');
-    const label = document.getElementById('nutritionStyleLabelDesktop');
-    const refreshBtn = document.getElementById('refreshNutritionStyleDesktop');
-    if (refreshBtn && meter && label) {
-      refreshBtn.onclick = () => {
-        meter.style.width = (30 + Math.random() * 60) + '%';
-        label.textContent = 'Analyzed!';
-        setTimeout(() => { label.textContent = 'Click to analyze your style'; }, 2000);
+  // AI chat (desktop)
+  if (view === 'aiView') {
+    const form = document.getElementById('aiChatFormDesktop');
+    const input = document.getElementById('aiChatInputDesktop');
+    const messages = document.getElementById('aiChatMessagesDesktop');
+    if (form && input && messages) {
+      form.onsubmit = async function(e) {
+        e.preventDefault();
+        const val = input.value.trim();
+        if (!val) return;
+        const userMsg = document.createElement('div');
+        userMsg.className = 'ai-msg-user';
+        userMsg.textContent = val;
+        messages.appendChild(userMsg);
+        input.value = '';
+        try {
+          const resp = await sendAIMessageDesktop(val);
+          const aiMsg = document.createElement('div');
+          aiMsg.className = 'ai-msg-bot';
+          aiMsg.textContent = resp.answer || 'AI: ...';
+          messages.appendChild(aiMsg);
+          messages.scrollTop = messages.scrollHeight;
+        } catch {
+          const aiMsg = document.createElement('div');
+          aiMsg.className = 'ai-msg-bot';
+          aiMsg.textContent = 'AI: Failed to respond.';
+          messages.appendChild(aiMsg);
+        }
       };
     }
   }
-  // --- Tips Carousel (Desktop) ---
+  // --- Add missing mobile features to desktop ---
+  // 1. Motivational banner dynamic message (like mobile)
   if (view === 'homeView') {
-    const tips = [
-      { icon: 'fa-leaf', title: 'Balanced Diet', text: 'Include a variety of fruits, vegetables, lean proteins, and whole grains in your meals.' },
-      { icon: 'fa-water', title: 'Stay Hydrated', text: 'Drink at least 8 glasses of water daily.' },
-      { icon: 'fa-bed', title: 'Sleep Well', text: 'Aim for 7-9 hours of sleep each night.' }
-    ];
-    let idx = 0;
-    const tipIcon = document.getElementById('tipIconDesktop');
-    const tipTitle = document.getElementById('tipTitleDesktop');
-    const tipText = document.getElementById('tipTextDesktop');
-    setInterval(() => {
-      idx = (idx + 1) % tips.length;
-      if (tipIcon && tipTitle && tipText) {
-        tipIcon.innerHTML = `<i class="fas ${tips[idx].icon}"></i>`;
-        tipTitle.textContent = tips[idx].title;
-        tipText.textContent = tips[idx].text;
-      }
-    }, 5000);
-  }
-  // --- History Filtering (Desktop) ---
-  if (view === 'historyView') {
-    const searchInput = document.getElementById('searchInputDesktop');
-    const sortBy = document.getElementById('sortByDesktop');
-    const filterHealth = document.getElementById('filterHealthScoreDesktop');
-    const historyContainer = document.getElementById('historyContainerDesktop');
-    async function renderHistory() {
-      if (!historyContainer) return;
-      historyContainer.innerHTML = '<div style="color:#888;text-align:center;padding:18px 0;">Loading...</div>';
-      try {
-        const data = await fetchFoodHistoryDesktop();
-        const history = data.food_history || [];
-        if (!history.length) {
-          historyContainer.innerHTML = '<div style="color:#888;text-align:center;padding:18px 0;">No food history yet.</div>';
-          return;
-        }
-        historyContainer.innerHTML = '';
-        history.forEach(entry => {
-          const date = new Date(entry.timestamp);
-          // Food emojis: fallback to 🍽️ if not present
-          const foods = (entry.foods || []).map(f => {
-            const emoji = f.emoji || '🍽️';
-            return `<li style="display:flex;align-items:center;gap:7px;font-size:1.04em;margin-bottom:2px;"><span style='font-size:1.18em;'>${emoji}</span> <span>${f.name}</span> <span style='color:#888;font-size:0.97em;'>(${f.estimated_calories || '?'} cal)</span></li>`;
-          }).join('');
-          const health = entry.overall_health_score || '--';
-          const calories = entry.overall_calories || '--';
-          const card = document.createElement('div');
-          card.className = 'history-card-desktop';
-          card.style = `backdrop-filter: blur(12px); background: rgba(255,255,255,0.55); border-radius:18px; box-shadow:0 4px 24px 0 rgba(93,95,239,0.13),0 1.5px 8px 0 rgba(93,95,239,0.09); margin-bottom:18px; padding:18px 18px 12px 18px; transition:box-shadow .18s,transform .18s; cursor:pointer; border:1.5px solid rgba(93,95,239,0.08);`;
-          card.onmouseover = () => { card.style.boxShadow = '0 8px 32px 0 rgba(93,95,239,0.18),0 2px 12px 0 rgba(93,95,239,0.13)'; card.style.transform = 'translateY(-2px) scale(1.012)'; };
-          card.onmouseleave = () => { card.style.boxShadow = '0 4px 24px 0 rgba(93,95,239,0.13),0 1.5px 8px 0 rgba(93,95,239,0.09)'; card.style.transform = 'none'; };
-          card.innerHTML = `
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-              <div style="display:flex;align-items:center;gap:12px;">
-                <span style='font-size:1.45em;color:#ff7e3f;'><i class="fas fa-fire"></i></span>
-                <div>
-                  <div style="font-weight:600;font-size:1.08em;">${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>
-                  <div style="color:#888;font-size:0.97em;">${entry.foods && entry.foods.length ? entry.foods.length + ' items' : ''}</div>
-                </div>
-              </div>
-              <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
-                <div style="color:#5D5FEF;font-weight:600;display:flex;align-items:center;gap:6px;"><i class="fas fa-fire" style="color:#ff7e3f;font-size:1.13em;"></i> ${calories} cal</div>
-                <div style="color:#34D399;font-weight:600;display:flex;align-items:center;gap:6px;"><i class="fas fa-heart" style="color:#e53e3e;font-size:1.13em;"></i> ${health}/10</div>
-              </div>
-            </div>
-            <ul style="margin:12px 0 0 0;padding-left:0;list-style:none;color:#232347;">${foods}</ul>
-          `;
-          historyContainer.appendChild(card);
-        });
-      } catch (e) {
-        historyContainer.innerHTML = '<div style="color:#e53e3e;text-align:center;padding:18px 0;">Failed to load history.</div>';
-      }
+    const banner = document.querySelector('.motivational-banner-desktop');
+    if (banner) {
+      const messages = [
+        'Small healthy choices add up to big results. You got this 💪',
+        'Consistency beats intensity. Keep going!',
+        'Celebrate every win, no matter how small.',
+        'Your health journey is unique. Own it!',
+        'Progress, not perfection. One step at a time.'
+      ];
+      let msgIdx = 0;
+      const msgDiv = banner.querySelector('div[style*="font-size:0.98em"]');
+      setInterval(() => {
+        msgIdx = (msgIdx + 1) % messages.length;
+        if (msgDiv) msgDiv.textContent = messages[msgIdx];
+      }, 6000);
     }
-    renderHistory();
+  }
+  // 2. Welcome avatar personalization (show user initial if available)
+  if (view === 'homeView') {
+    const avatar = document.querySelector('.welcome-avatar-desktop i');
+    const userEmail = getUserEmail();
+    if (avatar && userEmail) {
+      const initial = userEmail[0]?.toUpperCase() || 'U';
+      avatar.outerHTML = `<span style="font-size:2.1em;font-weight:700;">${initial}</span>`;
+    }
+  }
+  // 3. Show last meal summary (like mobile)
+  if (view === 'homeView') {
+    (async () => {
+      try {
+        const foodData = await fetchFoodHistoryDesktop();
+        const history = foodData.food_history || [];
+        if (history.length) {
+          const last = history[0];
+          const lastMealDiv = document.createElement('div');
+          lastMealDiv.className = 'last-meal-summary-desktop';
+          lastMealDiv.style = 'background:rgba(255,255,255,0.7);border-radius:14px;padding:12px 18px;margin-bottom:14px;box-shadow:0 2px 8px 0 rgba(93,95,239,0.09);font-size:1em;display:flex;align-items:center;gap:10px;';
+          lastMealDiv.innerHTML = `<span style='font-size:1.3em;'>🍽️</span> <span>Last meal: <b>${last.foods && last.foods.length ? last.foods.map(f => f.name).join(', ') : 'Unknown'}</b> (${last.overall_calories || '--'} cal, Health: ${last.overall_health_score || '--'}/10)</span>`;
+          const stats = document.querySelector('.stats-cards-desktop');
+          if (stats) stats.parentNode.insertBefore(lastMealDiv, stats.nextSibling);
+        }
+      } catch {}
+    })();
+  }
+  // 4. Add motivational tip to nutrition style card (like mobile)
+  if (view === 'homeView') {
+    const nutritionCard = document.querySelector('.nutrition-style-card-desktop');
+    if (nutritionCard) {
+      let tip = document.createElement('div');
+      tip.className = 'nutrition-tip-desktop';
+      tip.style = 'margin-top:8px;font-size:0.98em;color:#5D5FEF;';
+      tip.innerHTML = '<i class="fas fa-lightbulb"></i> Tip: Try to include more greens in your meals!';
+      nutritionCard.appendChild(tip);
+    }
+  }
+  // 5. Add animated step dots to wizard (already present, but add mobile-style bounce)
+  if (view === 'dietPlanView') {
+    const dots = document.querySelectorAll('.wizard-step-dot-desktop');
+    dots.forEach(dot => {
+      dot.style.transition = 'transform .18s';
+      dot.addEventListener('animationend', () => dot.style.transform = '');
+    });
+    const observer = new MutationObserver(() => {
+      dots.forEach(dot => {
+        if (dot.classList.contains('active')) {
+          dot.style.transform = 'scale(1.18)';
+          setTimeout(() => { dot.style.transform = ''; }, 180);
+        }
+      });
+    });
+    const stepDots = document.getElementById('wizardStepDotsDesktop');
+    if (stepDots) observer.observe(stepDots, { childList: true, subtree: true, attributes: true });
+  }
+  // --- Add mood chart and insights to home/profile view (feature parity with mobile) ---
+  if (view === 'homeView' || view === 'profileView') {
+    const moodChart = document.getElementById('moodChartDesktop');
+    const recentInsights = document.getElementById('recentInsightsDesktop');
+    if (moodChart && recentInsights) {
+      // Show loading state
+      moodChart.innerHTML = `<i class='fas fa-spinner fa-spin'></i> Loading...`;
+      recentInsights.innerHTML = `<i class='fas fa-spinner fa-spin'></i> Loading...`;
+      // Fetch analytics from backend (stub: mimic mobile)
+      (async () => {
+        try {
+          // TODO: Replace with real API call to /mood-breakdown and /insights
+          const userEmail = getUserEmail();
+          if (!userEmail) {
+            moodChart.innerHTML = `<div style='color:#888;'>Please log in to see your mood chart</div>`;
+            recentInsights.innerHTML = `<div style='color:#888;'>Please log in to see insights</div>`;
+            return;
+          }
+          // Placeholder chart and insights (match mobile demo)
+          moodChart.innerHTML = `
+            <div class="chart-placeholder">
+              <i class="fas fa-chart-line"></i>
+              <p>Connected as ${userEmail}</p>
+            </div>
+          `;
+          recentInsights.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-lightbulb"></i>
+              <p>Record journal entries to get AI insights</p>
+            </div>
+          `;
+        } catch (error) {
+          moodChart.innerHTML = `<div style='color:#e53e3e;'>Error loading mood chart</div>`;
+          recentInsights.innerHTML = `<div style='color:#e53e3e;'>Error loading insights</div>`;
+        }
+      })();
+    }
   }
 }
 
