@@ -939,3 +939,19 @@ body.dark-theme input, body.dark-theme select, body.dark-theme textarea {
   justify-content: center;
   margin: 18px 0 24px 0;
 }
+.motivational-banner-desktop {
+  background: linear-gradient(90deg,#5D5FEF 60%,#34D399 100%);
+  color: #fff;
+  border-radius: 16px;
+  padding: 18px 22px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 12px 0 rgba(93,95,239,0.13);
+  font-family: inherit;
+}
+.motivational-banner-desktop i {
+  font-size: 2em;
+  opacity: 0.92;
+}
