@@ -39,28 +39,9 @@ body::before {
   66% { transform: translateY(10px) rotate(-1deg); }
 }
 
-/* Theme Switch */
+/* Theme Switch - Hidden (Dark theme only) */
 .theme-switch {
-  position: fixed;
-  top: 2rem;
-  right: 2rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  color: white;
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  z-index: 100;
-}
-
-.theme-switch:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
-  box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1);
+  display: none; /* Remove theme switching, dark theme only */
 }
 
 /* Main Container */
