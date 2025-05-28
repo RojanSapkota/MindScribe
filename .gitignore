@@ -2,8 +2,6 @@
 __pycache__/
 /LLM Trainer
 todo.txt
-**/config.js
-Frontend/HTML/JS/config.js
 .DS_Store
 Thumbs.db
 .vscode/
