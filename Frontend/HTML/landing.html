@@ -19,10 +19,7 @@
   
   <meta name="theme-color" content="#5D5FEF">
 </head>
-<body>
-  <button class="theme-switch" id="themeSwitch" aria-label="Toggle dark mode">
-    <i class="fas fa-moon"></i>
-  </button>
+<body class="dark-theme">
   <div class="desktop-container">
     <div class="logo-container">
       <img src="Assets/icon.png" alt="MindScribe Logo" class="logo">
@@ -66,8 +63,7 @@
         </div>
       </div>
     </div>
-  </div>
-  <script>
+  </div>  <script>
     // Check if user is on a mobile device
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
@@ -76,37 +72,8 @@
       window.location.href = 'mobile.html';
     }
     
-    // Theme switcher functionality
-    const themeSwitch = document.getElementById('themeSwitch');
-    let darkMode = localStorage.getItem('darkMode') === 'true';
-    
-    // Initialize dark mode from localStorage
-    function initializeTheme() {
-      if (darkMode) {
-        document.body.classList.add('dark-theme');
-        themeSwitch.innerHTML = '<i class="fas fa-sun"></i>';
-      } else {
-        themeSwitch.innerHTML = '<i class="fas fa-moon"></i>';
-      }
-    }
-    
-    // Initialize theme on page load
-    initializeTheme();
-    
-    themeSwitch.addEventListener('click', () => {
-      darkMode = !darkMode;
-      document.body.classList.toggle('dark-theme', darkMode);
-      themeSwitch.innerHTML = darkMode ? 
-        '<i class="fas fa-sun"></i>' : 
-        '<i class="fas fa-moon"></i>';
-      localStorage.setItem('darkMode', darkMode);
-      
-      // Update QR code based on theme
-      setTimeout(updateQRCode, 300); // Small delay for smooth transition
-    });
-    
-    // Generate dynamic QR code
-    function generateQRCode(url, isDarkMode = false) {
+    // Generate dynamic QR code (always dark theme)
+    function generateQRCode(url) {
       const qrCodeContainer = document.getElementById('qrCode');
       const qrLoading = document.getElementById('qrLoading');
       const qrError = document.getElementById('qrError');
@@ -120,10 +87,11 @@
       if (existingImg) {
         existingImg.remove();
       }
-        // Generate QR code using qrserver.com API
+      
+      // Generate QR code using qrserver.com API (dark theme)
       const qrImage = new Image();
-      const bgColor = isDarkMode ? '1a202c' : 'f7fafc';
-      const fgColor = isDarkMode ? 'ffffff' : '2d3748';
+      const bgColor = '1a202c'; // Dark background
+      const fgColor = 'ffffff'; // White foreground
       
       // Enhanced QR code with better error correction and margin
       qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(url)}&size=240x240&bgcolor=${bgColor}&color=${fgColor}&margin=15&ecc=M`;
@@ -146,12 +114,11 @@
         
         // Retry once after 2 seconds
         setTimeout(() => {
-          generateQRCode(url, isDarkMode);
+          generateQRCode(url);
         }, 2000);
-      };
-    }
+      };    }
     
-    // Function to update QR code based on current theme
+    // Function to update QR code
     function updateQRCode() {
       // Get current URL for mobile access
       let currentURL = window.location.href;
@@ -166,7 +133,7 @@
         currentURL = currentURL.endsWith('/') ? currentURL + 'mobile.html' : currentURL + '/mobile.html';
       }
       
-      generateQRCode(currentURL, darkMode);
+      generateQRCode(currentURL);
     }
     
     // Generate QR code on page load
