@@ -3,14 +3,13 @@
 document.addEventListener('DOMContentLoaded', function() {
   console.log('Desktop app initializing...');
   
-  // Ensure homeView is visible immediately
-  const homeView = document.getElementById('homeView');
-  if (homeView && !homeView.classList.contains('active')) {
-    homeView.classList.add('active');
-    console.log('HomeView activated');
+  // Check authentication first
+  if (!checkAuthenticationStatus()) {
+    return;
   }
   
   // Initialize desktop functionality
+  initAuthentication();
   initNavigation();
   initSigninTracker();
   initFreeWriting();
@@ -18,14 +17,69 @@ document.addEventListener('DOMContentLoaded', function() {
   initUserEmail();
   initHistoryView();
   initProfileView();
-  initAIChat();
-  initVoiceTranscription();
+  initAIChat();  initVoiceTranscription();
   initActivityTracking();
   initFoodScanning();
-  initExerciseSearch();
+  initExerciseSearch();  initDarkMode();
+  initKeyboardShortcuts();
+  
+  // Ensure homeView is visible and initialize it
+  switchView('homeView');
   
   console.log('Desktop app initialization complete');
 });
+
+// Authentication check
+function checkAuthenticationStatus() {
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  const userEmail = localStorage.getItem('userEmail');
+  
+  if (!isLoggedIn) {
+    alert('Please log in to access this app.');
+    window.location.href = 'login.html';
+    return false;
+  }
+  
+  console.log('User authenticated:', userEmail);
+  return true;
+}
+
+// Authentication functionality
+function initAuthentication() {
+  const userEmail = localStorage.getItem('userEmail');
+  const userName = localStorage.getItem('userName') || userEmail;
+  
+  // Set user info in UI
+  const welcomeEmailElement = document.getElementById('welcomeUserEmail');
+  const profileEmailElement = document.getElementById('profileUserEmail');
+  
+  if (welcomeEmailElement) {
+    welcomeEmailElement.textContent = userName || 'Ready to track your mental wellness journey?';
+  }
+  
+  if (profileEmailElement) {
+    profileEmailElement.textContent = userEmail || 'user@example.com';
+  }
+  
+  // Set member since date
+  const memberSinceElement = document.getElementById('memberSince');
+  if (memberSinceElement) {
+    memberSinceElement.textContent = new Date().getFullYear();
+  }
+  
+  // Logout functionality
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function() {
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('darkMode');
+      localStorage.removeItem('notifications');
+      window.location.href = 'login.html';
+    });
+  }
+}
 
 // Navigation functionality
 function initNavigation() {
@@ -67,7 +121,8 @@ function initNavigation() {
     });
   });
 
-  function switchView(viewId) {
+  // Global view switching function
+  window.switchView = function(viewId) {
     console.log('Switching to view:', viewId);
     views.forEach(view => {
       view.classList.remove('active');
@@ -83,11 +138,19 @@ function initNavigation() {
         loadJournalHistory();
       } else if (viewId === 'profileView') {
         loadProfileData();
+      } else if (viewId === 'activityView') {
+        loadActivityData();
+        fetchAndDisplayActivityTotals();
+      } else if (viewId === 'recordView') {
+        initializeRecordingView();
       }
     } else {
       console.error('Target view not found:', viewId);
     }
-  }
+  };
+  
+  // Initialize with home view
+  switchView('homeView');
 }
 
 // Sign-in Tracker functionality
@@ -358,26 +421,82 @@ function initUserEmail() {
   }
 }
 
+// Dark mode functionality
+function initDarkMode() {
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  let darkMode = localStorage.getItem('darkMode') === 'true';
+  
+  // Initialize dark mode from localStorage
+  if (darkMode) {
+    document.body.classList.add('dark-theme');
+  }
+  
+  // Initialize dark mode toggle
+  if (darkModeToggle) {
+    darkModeToggle.checked = darkMode;
+    
+    darkModeToggle.addEventListener('change', function() {
+      darkMode = this.checked;
+      document.body.classList.toggle('dark-theme', darkMode);
+      localStorage.setItem('darkMode', darkMode);
+      showNotification(darkMode ? 'Dark mode enabled' : 'Light mode enabled', 'info');
+    });
+  }
+}
+
+// Keyboard shortcuts
+function initKeyboardShortcuts() {
+  document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + Number keys for navigation
+    if ((e.ctrlKey || e.metaKey) && e.key >= '1' && e.key <= '5') {
+      e.preventDefault();
+      const views = ['homeView', 'activityView', 'recordView', 'historyView', 'profileView'];
+      const viewIndex = parseInt(e.key) - 1;
+      if (views[viewIndex]) {
+        switchView(views[viewIndex]);
+        
+        // Update active menu item
+        const menuItems = document.querySelectorAll('.menu-item');
+        menuItems.forEach(mi => mi.classList.remove('active'));
+        const targetMenuItem = document.querySelector(`.menu-item[data-view="${views[viewIndex]}"]`);
+        if (targetMenuItem) {
+          targetMenuItem.classList.add('active');
+        }
+      }
+    }
+    
+    // Ctrl/Cmd + S to save (for free writing)
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      const saveFreeWritingBtn = document.getElementById('saveFreeWritingBtn');
+      if (saveFreeWritingBtn && document.getElementById('recordView').classList.contains('active')) {
+        saveFreeWritingBtn.click();
+      }
+    }
+    
+    // Escape key to close modals
+    if (e.key === 'Escape') {
+      const modals = document.querySelectorAll('[id*="Modal"]');
+      modals.forEach(modal => {
+        if (modal.style.display !== 'none') {
+          modal.remove();
+        }
+      });
+    }
+  });
+}
+
 // Settings button functionality
 document.addEventListener('click', function(e) {
   if (e.target.closest('.settings-btn')) {
-    // Settings functionality to be implemented
-    console.log('Settings clicked');
-  }
-});
-
-// Keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-  // Ctrl/Cmd + Number keys for navigation
-  if ((e.ctrlKey || e.metaKey) && e.key >= '1' && e.key <= '5') {
-    e.preventDefault();
-    const views = ['homeView', 'activityView', 'recordView', 'historyView', 'profileView'];
-    const viewIndex = parseInt(e.key) - 1;
-    if (views[viewIndex]) {
-      const menuItem = document.querySelector(`.menu-item[data-view="${views[viewIndex]}"]`);
-      if (menuItem) {
-        menuItem.click();
-      }
+    switchView('profileView');
+    
+    // Update active menu item
+    const menuItems = document.querySelectorAll('.menu-item');
+    menuItems.forEach(mi => mi.classList.remove('active'));
+    const profileMenuItem = document.querySelector('.menu-item[data-view="profileView"]');
+    if (profileMenuItem) {
+      profileMenuItem.classList.add('active');
     }
   }
 });
@@ -1282,8 +1401,7 @@ function initVoiceTranscription() {
     }
     resetVoiceRecordingUI();
   }
-  
-  function startVoiceRecording() {
+    function startVoiceRecording() {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       showNotification('Speech recognition is not supported in your browser. Please use manual entry instead.', 'error');
       return;
@@ -1300,6 +1418,7 @@ function initVoiceTranscription() {
       isRecording = true;
       updateVoiceRecordingUI(true);
       transcriptionText = '';
+      showNotification('Voice recording started. Speak now...', 'success');
     };
     
     recognition.onresult = function(event) {
@@ -1315,20 +1434,52 @@ function initVoiceTranscription() {
         }
       }
       
-      transcriptionText = finalTranscript;
-      updateTranscriptionDisplay(finalTranscript + interimTranscript);
+      // Update global transcription text with final results
+      if (finalTranscript) {
+        transcriptionText += finalTranscript;
+      }
+      
+      // Display both final and interim results
+      updateTranscriptionDisplay(transcriptionText + interimTranscript);
     };
     
     recognition.onerror = function(event) {
       console.error('Speech recognition error:', event.error);
-      showNotification('Speech recognition failed. Please try again.', 'error');
+      let errorMessage = 'Speech recognition failed. Please try again.';
+      
+      switch (event.error) {
+        case 'no-speech':
+          errorMessage = 'No speech detected. Please try speaking again.';
+          break;
+        case 'audio-capture':
+          errorMessage = 'Microphone access denied. Please check your permissions.';
+          break;
+        case 'not-allowed':
+          errorMessage = 'Microphone permission denied. Please allow microphone access.';
+          break;
+        case 'network':
+          errorMessage = 'Network error. Please check your internet connection.';
+          break;
+      }
+      
+      showNotification(errorMessage, 'error');
       stopVoiceRecording();
     };
     
     recognition.onend = function() {
       if (isRecording) {
-        // Restart recognition if user is still recording
-        recognition.start();
+        // Only show result if we have content, otherwise restart
+        if (transcriptionText.trim()) {
+          showTranscriptionResult();
+        } else {
+          // Auto-restart for continuous recording
+          try {
+            recognition.start();
+          } catch (error) {
+            console.error('Failed to restart recognition:', error);
+            stopVoiceRecording();
+          }
+        }
       }
     };
     
@@ -1339,15 +1490,20 @@ function initVoiceTranscription() {
       showNotification('Failed to start voice recording. Please try again.', 'error');
     }
   }
-  
-  function stopVoiceRecording() {
+    function stopVoiceRecording() {
     if (recognition && isRecording) {
       isRecording = false;
-      recognition.stop();
+      try {
+        recognition.stop();
+      } catch (error) {
+        console.error('Error stopping recognition:', error);
+      }
+      
       updateVoiceRecordingUI(false);
       
       if (transcriptionText.trim()) {
         showTranscriptionResult();
+        showNotification('Voice recording stopped. Review your transcript below.', 'success');
       } else {
         showNotification('No speech detected. Please try recording again.', 'warning');
         resetVoiceRecordingUI();
@@ -1629,13 +1785,22 @@ function initActivityTracking() {
   
   // Sleep tracking
   if (sleepForm) {
-    sleepForm.addEventListener('submit', function(e) {
+    sleepForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       const hours = parseFloat(document.getElementById('sleepHours').value);
       if (hours && hours > 0 && hours <= 24) {
+        // Save to localStorage first (for immediate feedback)
         saveActivityData('sleep', hours, 'hours');
         updateActivityDisplay('sleep', hours, 'hours');
-        showNotification('Sleep hours logged successfully!', 'success');
+        
+        // Save to API
+        const success = await saveActivityDataToAPI('sleep', hours, 'hours');
+        if (success) {
+          showNotification('Sleep hours logged successfully!', 'success');
+        } else {
+          showNotification('Sleep hours saved locally. Will sync when online.', 'warning');
+        }
+        
         sleepForm.reset();
       } else {
         showNotification('Please enter valid sleep hours (0-24)', 'warning');
@@ -1645,13 +1810,22 @@ function initActivityTracking() {
   
   // Hydration tracking
   if (hydrationForm) {
-    hydrationForm.addEventListener('submit', function(e) {
+    hydrationForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       const liters = parseFloat(document.getElementById('hydrationLiters').value);
       if (liters && liters > 0) {
+        // Save to localStorage first
         saveActivityData('water', liters, 'liters');
         updateActivityDisplay('water', liters, 'liters');
-        showNotification('Water intake logged successfully!', 'success');
+        
+        // Save to API
+        const success = await saveActivityDataToAPI('water', liters, 'liters');
+        if (success) {
+          showNotification('Water intake logged successfully!', 'success');
+        } else {
+          showNotification('Water intake saved locally. Will sync when online.', 'warning');
+        }
+        
         hydrationForm.reset();
       } else {
         showNotification('Please enter valid water amount', 'warning');
@@ -1661,13 +1835,22 @@ function initActivityTracking() {
   
   // Screen time tracking
   if (screenTimeForm) {
-    screenTimeForm.addEventListener('submit', function(e) {
+    screenTimeForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       const hours = parseFloat(document.getElementById('screenTimeHours').value);
       if (hours && hours >= 0) {
+        // Save to localStorage first
         saveActivityData('screen', hours, 'hours');
         updateActivityDisplay('screen', hours, 'hours');
-        showNotification('Screen time logged successfully!', 'success');
+        
+        // Save to API
+        const success = await saveActivityDataToAPI('screen', hours, 'hours');
+        if (success) {
+          showNotification('Screen time logged successfully!', 'success');
+        } else {
+          showNotification('Screen time saved locally. Will sync when online.', 'warning');
+        }
+        
         screenTimeForm.reset();
       } else {
         showNotification('Please enter valid screen time hours', 'warning');
@@ -1677,13 +1860,22 @@ function initActivityTracking() {
   
   // Walk tracking
   if (walkForm) {
-    walkForm.addEventListener('submit', function(e) {
+    walkForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       const steps = parseInt(document.getElementById('walkSteps').value);
       if (steps && steps > 0) {
+        // Save to localStorage first
         saveActivityData('walk', steps, 'steps');
         updateActivityDisplay('walk', steps, 'steps');
-        showNotification('Steps logged successfully!', 'success');
+        
+        // Save to API
+        const success = await saveActivityDataToAPI('walk', steps, 'steps');
+        if (success) {
+          showNotification('Steps logged successfully!', 'success');
+        } else {
+          showNotification('Steps saved locally. Will sync when online.', 'warning');
+        }
+        
         walkForm.reset();
       } else {
         showNotification('Please enter valid step count', 'warning');
@@ -1713,6 +1905,9 @@ function initActivityTracking() {
       const data = todayData[type];
       updateActivityDisplay(type, data.value, data.unit);
     });
+    
+    // Also fetch from API to get most recent data
+    fetchAndDisplayActivityTotals();
   }
   
   function updateActivityDisplay(type, value, unit) {
@@ -1723,7 +1918,6 @@ function initActivityTracking() {
       if (label && label.textContent.toLowerCase().includes(type.toLowerCase())) {
         const valueElement = item.querySelector('.activity-value');
         if (valueElement) {
-          const span = valueElement.querySelector('span');
           valueElement.innerHTML = `${value} <span>${unit}</span>`;
         }
       }
@@ -1731,580 +1925,819 @@ function initActivityTracking() {
   }
 }
 
+// Activity API endpoints
+const ACTIVITY_API_URL = "https://mindscribe.rojan.hackclub.app/log-activity";
+const ACTIVITY_HISTORY_API_URL = "https://mindscribe.rojan.hackclub.app/activity-history";
+
+// Global function to fetch and display activity totals
+async function fetchAndDisplayActivityTotals() {
+  const userEmail = localStorage.getItem('userEmail');
+  if (!userEmail) {
+    console.log('No user email found for activity tracking');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${ACTIVITY_HISTORY_API_URL}?user_email=${encodeURIComponent(userEmail)}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch activity history');
+    }
+    
+    const data = await response.json();
+    const totals = data.totals || {};
+    
+    // Update activity displays with fetched data
+    updateActivityTotalsDisplay(totals);
+    
+    console.log('Activity totals loaded:', totals);
+  } catch (error) {
+    console.error('Error fetching activity totals:', error);
+    // Load from localStorage as fallback
+    loadActivityDataFromLocalStorage();
+  }
+}
+
+// Update activity totals display
+function updateActivityTotalsDisplay(totals) {
+  const activityMappings = {
+    'sleep': { label: 'Sleep', unit: 'hours' },
+    'hydration': { label: 'Water', unit: 'liters' },
+    'screen_time': { label: 'Screen', unit: 'hours' },
+    'walk': { label: 'Walk', unit: 'steps' }
+  };
+
+  const activityItems = document.querySelectorAll('.activity-item');
+  
+  activityItems.forEach(item => {
+    const label = item.querySelector('.activity-label');
+    if (label) {
+      const labelText = label.textContent.toLowerCase();
+      
+      // Find matching activity type
+      let activityType = null;
+      let activityData = null;
+      
+      for (const [key, mapping] of Object.entries(activityMappings)) {
+        if (labelText.includes(mapping.label.toLowerCase())) {
+          activityType = key;
+          activityData = mapping;
+          break;
+        }
+      }
+      
+      if (activityType && activityData) {
+        const valueElement = item.querySelector('.activity-value');
+        if (valueElement) {
+          const value = totals[activityType] || 0;
+          valueElement.innerHTML = `${value} <span>${activityData.unit}</span>`;
+        }
+      }
+    }
+  });
+}
+
+// Load activity data from localStorage as fallback
+function loadActivityDataFromLocalStorage() {
+  const today = new Date().toISOString().split('T')[0];
+  const activityData = JSON.parse(localStorage.getItem('activityData') || '{}');
+  const todayData = activityData[today] || {};
+  
+  // Convert localStorage format to API format
+  const totals = {
+    sleep: todayData.sleep?.value || 0,
+    hydration: todayData.water?.value || 0,
+    screen_time: todayData.screen?.value || 0,
+    walk: todayData.walk?.value || 0
+  };
+  
+  updateActivityTotalsDisplay(totals);
+}
+
+// Enhanced saveActivityData function with API integration
+async function saveActivityDataToAPI(type, value, unit) {
+  const userEmail = localStorage.getItem('userEmail');
+  if (!userEmail) {
+    console.error('No user email found for activity logging');
+    return false;
+  }
+
+  // Map internal types to API types
+  const typeMapping = {
+    'sleep': 'sleep',
+    'water': 'hydration',
+    'screen': 'screen_time',
+    'walk': 'walk'
+  };
+
+  const apiType = typeMapping[type] || type;
+  const timestamp = new Date().toISOString();
+
+  try {
+    const response = await fetch(ACTIVITY_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        user_email: userEmail,
+        activity: apiType,
+        count: value,
+        timestamp: timestamp
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to log activity to API');
+    }
+
+    console.log(`Activity logged to API: ${apiType} = ${value} ${unit}`);
+    
+    // Refresh the totals display
+    await fetchAndDisplayActivityTotals();
+    
+    return true;
+  } catch (error) {
+    console.error('Error logging activity to API:', error);
+    return false;
+  }
+}
+
 // Food Scanning functionality
 function initFoodScanning() {
-  const startCameraBtn = document.getElementById('startCameraButton');
-  const logFoodBtn = document.getElementById('logFoodButton');
-  const fileUpload = document.getElementById('fileUpload');
-  const closePreviewBtn = document.getElementById('closePreviewButton');
-  const captureBtn = document.getElementById('captureButton');
-  const submitFoodLogBtn = document.getElementById('submitFoodLog');
-  const cancelFoodLogBtn = document.getElementById('cancelFoodLog');
-  const speechToTextBtn = document.getElementById('speechToTextBtn');
+  // Get user email for API calls
+  const userEmail = localStorage.getItem('userEmail');
   
+  // DOM Elements
+  const startCameraButton = document.getElementById('startCameraButton');
+  const captureButton = document.getElementById('captureButton');
+  const closePreviewButton = document.getElementById('closePreviewButton');
   const previewContainer = document.getElementById('previewContainer');
-  const logFoodContainer = document.getElementById('logFoodContainer');
   const video = document.getElementById('video');
-  const canvas = document.getElementById('canvas');
   const photo = document.getElementById('photo');
-  const resultsContainer = document.getElementById('results');
+  const canvas = document.getElementById('canvas');
+  const fileUpload = document.getElementById('fileUpload');
+  const results = document.getElementById('results');
+  const logFoodButton = document.getElementById('logFoodButton');
+  const logFoodContainer = document.getElementById('logFoodContainer');
+  const foodDescription = document.getElementById('foodDescription');
+  const submitFoodLog = document.getElementById('submitFoodLog');
+  const cancelFoodLog = document.getElementById('cancelFoodLog');
+  const speechToTextBtn = document.getElementById('speechToTextBtn');
+  const speechStatus = document.getElementById('speechStatus');
   
-  let currentStream = null;
+  // Speech recognition setup
+  let recognition;
+  let isListening = false;
   
-  // Start camera
-  if (startCameraBtn) {
-    startCameraBtn.addEventListener('click', startCamera);
+  // Initialize speech recognition
+  function initSpeechRecognition() {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+      
+      let previousContent = '';
+      
+      recognition.onresult = function(event) {
+        const transcript = Array.from(event.results)
+          .map(result => result[0])
+          .map(result => result.transcript)
+          .join('');
+        
+        foodDescription.value = previousContent + " " + transcript;
+      };
+      
+      recognition.onstart = function() {
+        isListening = true;
+        speechStatus.style.display = 'block';
+        speechToTextBtn.classList.add('listening');
+        previousContent = foodDescription.value.trim();
+      };
+      
+      recognition.onend = function() {
+        stopSpeechToText();
+      };
+      
+      recognition.onerror = function(event) {
+        console.error('Speech recognition error:', event.error);
+        stopSpeechToText();
+        showNotification(`Speech error: ${event.error}. Try again.`, 'warning');
+      };
+      
+      return true;
+    }
+    return false;
   }
   
-  // Show manual food logging
-  if (logFoodBtn) {
-    logFoodBtn.addEventListener('click', () => {
-      logFoodContainer.style.display = 'block';
+  function startSpeechToText() {
+    if (recognition && !isListening) {
+      recognition.start();
+    }
+  }
+  
+  function stopSpeechToText() {
+    if (recognition && isListening) {
+      recognition.stop();
+    }
+    isListening = false;
+    speechStatus.style.display = 'none';
+    speechToTextBtn.classList.remove('listening');
+  }
+  
+  // Camera functionality
+  if (startCameraButton) {
+    startCameraButton.addEventListener('click', function() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showNotification('Camera access is not supported in this browser. Please use a modern browser.', 'warning');
+        return;
+      }
+      
+      const constraints = { 
+        video: { 
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      };
+
+      navigator.mediaDevices.getUserMedia(constraints)
+        .then(stream => {
+          video.srcObject = stream;
+          video.style.display = 'block';
+          photo.style.display = 'none';
+          previewContainer.style.display = 'block';
+          captureButton.style.display = 'block';
+          
+          video.onloadedmetadata = function() {
+            video.play();
+          };
+        })
+        .catch(err => {
+          console.error("Error accessing camera: ", err);
+          showNotification("Camera access denied. Please check permissions.", 'warning');
+        });
     });
-  }
-  
-  // File upload
-  if (fileUpload) {
-    fileUpload.addEventListener('change', handleFileUpload);
   }
   
   // Close preview
-  if (closePreviewBtn) {
-    closePreviewBtn.addEventListener('click', closeCamera);
-  }
-  
-  // Capture photo
-  if (captureBtn) {
-    captureBtn.addEventListener('click', capturePhoto);
-  }
-  
-  // Submit food log
-  if (submitFoodLogBtn) {
-    submitFoodLogBtn.addEventListener('click', submitFoodLog);
-  }
-  
-  // Cancel food log
-  if (cancelFoodLogBtn) {
-    cancelFoodLogBtn.addEventListener('click', () => {
-      logFoodContainer.style.display = 'none';
-      document.getElementById('foodDescription').value = '';
+  if (closePreviewButton) {
+    closePreviewButton.addEventListener('click', function() {
+      previewContainer.style.display = 'none';
+      
+      if (video.srcObject) {
+        const tracks = video.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+        video.srcObject = null;
+      }
+      
+      if (results) {
+        results.style.display = 'none';
+        results.innerHTML = '';
+      }
+      
+      if (photo) {
+        photo.src = '';
+      }
     });
   }
   
-  // Speech to text for food description
-  if (speechToTextBtn) {
-    speechToTextBtn.addEventListener('click', startFoodSpeechRecognition);
+  // Capture image
+  if (captureButton) {
+    captureButton.addEventListener('click', takePicture);
   }
-  
-  async function startCamera() {
-    try {
-      currentStream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: 'environment' } 
-      });
-      video.srcObject = currentStream;
-      previewContainer.style.display = 'block';
-      captureBtn.style.display = 'block';
-    } catch (error) {
-      console.error('Error accessing camera:', error);
-      showNotification('Camera access denied. Please upload a photo instead.', 'error');
-    }
-  }
-  
-  function closeCamera() {
-    if (currentStream) {
-      currentStream.getTracks().forEach(track => track.stop());
-      currentStream = null;
-    }
-    previewContainer.style.display = 'none';
-    photo.style.display = 'none';
-    video.style.display = 'block';
-    captureBtn.style.display = 'none';
-    resultsContainer.style.display = 'none';
-  }
-  
-  function capturePhoto() {
-    const context = canvas.getContext('2d');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0);
+
+  function takePicture() {
+    const videoWidth = video.videoWidth;
+    const videoHeight = video.videoHeight;
     
-    const imageData = canvas.toDataURL('image/jpeg');
-    photo.src = imageData;
+    if (!videoWidth || !videoHeight) {
+      showNotification("Video stream not ready. Please try again.", 'warning');
+      return;
+    }
+    
+    canvas.width = videoWidth;
+    canvas.height = videoHeight;
+    
+    const context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0, videoWidth, videoHeight);
+    
+    canvas.toBlob(async function(blob) {
+      if (!blob) {
+        showNotification("Failed to capture image. Please try again.", 'warning');
+        return;
+      }
+      
+      const file = new File([blob], "captured_image.png", { type: "image/png" });
+      photo.src = URL.createObjectURL(blob);
+      photo.style.display = 'block';
+      video.style.display = 'none';
+      captureButton.style.display = 'none';
+
+      const stream = video.srcObject;
+      if (stream) {
+        const tracks = stream.getTracks();
+        tracks.forEach(track => track.stop());
+      }
+
+      await analyzeFood(file);
+    }, 'image/png', 0.9);
+  }
+  
+  // Handle file upload
+  if (fileUpload) {
+    fileUpload.addEventListener('change', uploadFile);
+  }
+  
+  function uploadFile() {
+    const file = fileUpload.files[0];
+    if (!file) {
+      showNotification("Please select an image to upload!", 'warning');
+      return;
+    }
+
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (!validTypes.includes(file.type)) {
+      showNotification("Please upload a valid image file (JPEG or PNG).", 'warning');
+      return;
+    }
+
+    if (file.size > maxSize) {
+      showNotification("File size must be less than 5MB.", 'warning');
+      return;
+    }
+
+    photo.src = URL.createObjectURL(file);
     photo.style.display = 'block';
     video.style.display = 'none';
-    captureBtn.style.display = 'none';
+    previewContainer.style.display = 'block';
     
-    // Process the image
-    processFoodImage(imageData);
+    analyzeFood(file);
   }
   
-  function handleFileUpload(event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        processFoodImage(e.target.result);
-      };
-      reader.readAsDataURL(file);
+  // Manual food logging
+  if (logFoodButton) {
+    logFoodButton.addEventListener('click', function() {
+      logFoodContainer.style.display = 'block';
+      document.querySelector('.action-buttons').style.display = 'none';
+    });
+  }
+  
+  if (cancelFoodLog) {
+    cancelFoodLog.addEventListener('click', function() {
+      logFoodContainer.style.display = 'none';
+      foodDescription.value = '';
+      document.querySelector('.action-buttons').style.display = 'flex';
+      stopSpeechToText();
+    });
+  }
+  
+  if (submitFoodLog) {
+    submitFoodLog.addEventListener('click', function() {
+      const foodText = foodDescription.value.trim();
+      
+      if (!foodText) {
+        showNotification("Please enter a food description", 'warning');
+        return;
+      }
+      
+      logFoodContainer.style.display = 'none';
+      analyzeFoodByText(foodText);
+    });
+  }
+  
+  // Speech to text
+  if (speechToTextBtn) {
+    initSpeechRecognition();
+    speechToTextBtn.addEventListener('click', function() {
+      if (isListening) {
+        stopSpeechToText();
+      } else {
+        startSpeechToText();
+      }
+    });
+  }
+  
+  // Analyze food by image
+  async function analyzeFood(file) {
+    results.style.display = 'block';
+    results.innerHTML = `
+      <div class="analysis-loading">
+        <div class="spinner-container">
+          <div class="spinner"></div>
+          <div class="percentage">0%</div>
+        </div>
+        <p>Analyzing your meal...</p>
+        <small>This may take a few moments</small>
+      </div>
+    `;
+
+    const formData = new FormData();
+    formData.append('user_email', userEmail);
+    formData.append('timestamp', new Date().toLocaleString());
+    formData.append('file', file);
+
+    try {
+      let percentage = 0;
+      const percentageEl = document.querySelector('.percentage');
+      const percentageInterval = setInterval(() => {
+        if (percentage < 70) {
+          percentage += 2;
+        } else if (percentage < 90) {
+          percentage += 1;
+        } else if (percentage < 99) {
+          percentage += 0.5;
+        }
+        
+        if (percentage > 99) {
+          percentage = 99;
+          clearInterval(percentageInterval);
+        }
+        
+        percentageEl.textContent = `${Math.floor(percentage)}%`;
+      }, 150);
+
+      const response = await fetch(`${CONFIG.BACKEND_BASE_URL}/analyze-food`, {
+        method: 'POST',
+        body: formData
+      });
+
+      clearInterval(percentageInterval);
+      percentageEl.textContent = '100%';
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server returned ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+      displayResults(data);
+
+    } catch (error) {
+      console.error('Error:', error);
+      results.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fas fa-exclamation-circle"></i>
+          </div>
+          <h3>Analysis Failed</h3>
+          <p>We couldn't analyze your image. Please try again with a clearer photo.</p>
+          <button class="action-btn secondary" style="margin-top: 20px;" onclick="document.getElementById('results').style.display = 'none';">
+            Try Again
+          </button>
+        </div>
+      `;
     }
   }
   
-  function processFoodImage(imageData) {
-    // Show loading state
-    resultsContainer.style.display = 'block';
-    resultsContainer.innerHTML = `
-      <div class="food-analysis-loading">
-        <i class="fas fa-spinner fa-spin"></i>
-        <p>Analyzing your food...</p>
+  // Analyze food by text description
+  async function analyzeFoodByText(foodText) {
+    results.style.display = 'block';
+    results.innerHTML = `
+      <div class="analysis-loading">
+        <div class="spinner-container">
+          <div class="spinner"></div>
+          <div class="percentage">0%</div>
+        </div>
+        <p>Analyzing your meal...</p>
+        <small>This may take a few moments</small>
       </div>
     `;
-    
-    // Simulate food analysis (replace with actual API call)
-    setTimeout(() => {
-      const mockAnalysis = generateMockFoodAnalysis();
-      displayFoodResults(mockAnalysis);
-    }, 2000);
-  }
-  
-  function generateMockFoodAnalysis() {
-    const foods = [
-      { name: 'Grilled Chicken Breast', calories: 250, protein: 25, carbs: 0, fat: 14 },
-      { name: 'Caesar Salad', calories: 180, protein: 8, carbs: 12, fat: 14 },
-      { name: 'Banana', calories: 90, protein: 1, carbs: 23, fat: 0 },
-      { name: 'Sandwich', calories: 320, protein: 15, carbs: 42, fat: 12 },
-      { name: 'Apple', calories: 80, protein: 0, carbs: 22, fat: 0 }
-    ];
-    
-    return foods[Math.floor(Math.random() * foods.length)];
-  }
-  
-  function displayFoodResults(analysis) {
-    resultsContainer.innerHTML = `
-      <div class="food-analysis-result">
-        <h4><i class="fas fa-utensils"></i> Food Analysis</h4>
-        <div class="food-info">
-          <h5>${analysis.name}</h5>
-          <div class="nutrition-grid">
-            <div class="nutrition-item">
-              <span class="nutrition-label">Calories</span>
-              <span class="nutrition-value">${analysis.calories}</span>
-            </div>
-            <div class="nutrition-item">
-              <span class="nutrition-label">Protein</span>
-              <span class="nutrition-value">${analysis.protein}g</span>
-            </div>
-            <div class="nutrition-item">
-              <span class="nutrition-label">Carbs</span>
-              <span class="nutrition-value">${analysis.carbs}g</span>
-            </div>
-            <div class="nutrition-item">
-              <span class="nutrition-label">Fat</span>
-              <span class="nutrition-value">${analysis.fat}g</span>
-            </div>
+
+    const formData = new FormData();
+    formData.append('user_email', userEmail);
+    formData.append('food_text', foodText);
+    formData.append('timestamp', new Date().toLocaleString());
+
+    try {
+      let percentage = 0;
+      const percentageEl = document.querySelector('.percentage');
+      const percentageInterval = setInterval(() => {
+        if (percentage < 70) {
+          percentage += 2;
+        } else if (percentage < 90) {
+          percentage += 1;
+        } else if (percentage < 99) {
+          percentage += 0.5;
+        }
+        
+        if (percentage > 99) {
+          percentage = 99;
+          clearInterval(percentageInterval);
+        }
+        
+        percentageEl.textContent = `${Math.floor(percentage)}%`;
+      }, 150);
+
+      const response = await fetch(`${CONFIG.BACKEND_BASE_URL}/log-food`, {
+        method: 'POST',
+        body: formData
+      });
+
+      clearInterval(percentageInterval);
+      percentageEl.textContent = '100%';
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server returned ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+      displayResults(data);
+      
+      document.querySelector('.action-buttons').style.display = 'flex';
+
+    } catch (error) {
+      console.error('Error:', error);
+      results.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fas fa-exclamation-circle"></i>
           </div>
-          <div class="food-actions">
-            <button class="action-btn primary" onclick="saveFoodLog('${analysis.name}', ${analysis.calories})">
-              <i class="fas fa-save"></i> Save to Log
-            </button>
-            <button class="action-btn secondary" onclick="retakePhoto()">
-              <i class="fas fa-camera"></i> Retake
-            </button>
+          <h3>Analysis Failed</h3>
+          <p>We couldn't analyze your food description. Please try again with more details.</p>
+          <button class="action-btn secondary" style="margin-top: 20px;" onclick="document.querySelector('.action-buttons').style.display = 'flex'; document.getElementById('logFoodContainer').style.display = 'none'; document.getElementById('results').style.display = 'none';">
+            Try Again
+          </button>
+        </div>
+      `;
+    }
+  }
+  
+  // Display analysis results
+  function displayResults(data) {
+    if (!data.foods || data.foods.length === 0) {
+      results.innerHTML = `
+        <div class="results-header">
+          <h2>No Food Detected</h2>
+          <p>We couldn't identify any food items in this image. Please try a clearer photo.</p>
+        </div>
+      `;
+      return;
+    }
+
+    const totalCalories = data.overall_calories;
+    const healthScore = data.overall_health_score;
+
+    let html = `
+      <div class="results-header">
+        <h2>Analysis Results</h2>
+        <div class="health-stats">
+          <div class="stat-item score">
+            <p>HEALTH SCORE</p>
+            <div class="value">${healthScore}/10</div>
+          </div>
+          <div class="stat-item calories">
+            <p>TOTAL CALORIES</p>
+            <div class="value">${totalCalories}</div>
           </div>
         </div>
       </div>
+      <div class="food-list">
     `;
-  }
-  
-  function submitFoodLog() {
-    const description = document.getElementById('foodDescription').value.trim();
-    if (!description) {
-      showNotification('Please describe your food first.', 'warning');
-      return;
-    }
-    
-    // Save food log
-    const foodEntry = {
-      id: generateUniqueId(),
-      description: description,
-      timestamp: new Date().toISOString(),
-      type: 'manual'
-    };
-    
-    saveFoodEntry(foodEntry);
-    showNotification('Food log saved successfully!', 'success');
-    
-    // Reset form
-    document.getElementById('foodDescription').value = '';
-    logFoodContainer.style.display = 'none';
-  }
-  
-  function startFoodSpeechRecognition() {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      showNotification('Speech recognition is not supported in your browser.', 'error');
-      return;
-    }
-    
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = 'en-US';
-    
-    const speechStatus = document.getElementById('speechStatus');
-    speechStatus.style.display = 'block';
-    
-    recognition.onresult = function(event) {
-      const transcript = event.results[0][0].transcript;
-      document.getElementById('foodDescription').value = transcript;
-      speechStatus.style.display = 'none';
-    };
-    
-    recognition.onerror = function(event) {
-      console.error('Speech recognition error:', event.error);
-      showNotification('Speech recognition failed. Please try again.', 'error');
-      speechStatus.style.display = 'none';
-    };
-    
-    recognition.onend = function() {
-      speechStatus.style.display = 'none';
-    };
-    
-    recognition.start();
-  }
-  
-  function saveFoodEntry(entry) {
-    try {
-      const existingEntries = JSON.parse(localStorage.getItem('foodEntries') || '[]');
-      existingEntries.unshift(entry);
-      localStorage.setItem('foodEntries', JSON.stringify(existingEntries));
-    } catch (error) {
-      console.error('Failed to save food entry:', error);
-      showNotification('Failed to save food entry. Please try again.', 'error');
-    }
-  }
-}
 
-// Global functions for food scanning
-function saveFoodLog(foodName, calories) {
-  const foodEntry = {
-    id: generateUniqueId(),
-    description: foodName,
-    calories: calories,
-    timestamp: new Date().toISOString(),
-    type: 'photo'
-  };
-  
-  try {
-    const existingEntries = JSON.parse(localStorage.getItem('foodEntries') || '[]');
-    existingEntries.unshift(foodEntry);
-    localStorage.setItem('foodEntries', JSON.stringify(existingEntries));
-    showNotification('Food logged successfully!', 'success');
-  } catch (error) {
-    console.error('Failed to save food entry:', error);
-    showNotification('Failed to save food entry. Please try again.', 'error');
-  }
-}
+    data.foods.forEach(food => {
+      const healthWidth = `${food.health_score * 10}%`;
+      
+      html += `
+        <div class="food-item">
+          <div class="food-details">
+            <div class="food-name">${food.name}</div>
+            <div class="food-ingredients">${food.ingredients.join(', ')}</div>
+            <div class="food-macros">
+              <div class="macro protein">
+                <div class="macro-icon">P</div>
+                ${food.protein}
+              </div>
+              <div class="macro carbs">
+                <div class="macro-icon">C</div>
+                ${food.carbs}
+              </div>
+              <div class="macro fats">
+                <div class="macro-icon">F</div>
+                ${food.fats}
+              </div>
+            </div>
+            <div class="food-health">
+              <div class="health-bar">
+                <div class="health-fill" style="width: ${healthWidth}"></div>
+              </div>
+              <span class="health-score">${food.health_score}/10</span>
+            </div>
+          </div>
+          <div class="food-calories">
+            <span class="calories-value">${food.estimated_calories}</span>
+            <span class="calories-unit">cal</span>
+          </div>
+        </div>
+      `;
+    });
 
-function retakePhoto() {
-  const video = document.getElementById('video');
-  const photo = document.getElementById('photo');
-  const captureBtn = document.getElementById('captureButton');
-  const resultsContainer = document.getElementById('results');
-  
-  photo.style.display = 'none';
-  video.style.display = 'block';
-  captureBtn.style.display = 'block';
-  resultsContainer.style.display = 'none';
+    html += '</div>';
+    results.innerHTML = html;
+    
+    showNotification('Food analysis complete!', 'success');
+  }
 }
 
 // Exercise Search functionality
 function initExerciseSearch() {
-  const searchInput = document.getElementById('exerciseSearchInput');
-  const searchBtn = document.getElementById('startSearchBtn');
-  const typeOptions = document.querySelectorAll('#typeOptions .option-item');
-  const muscleOptions = document.querySelectorAll('.muscle-option');
+  const exerciseSearchInput = document.getElementById('exerciseSearchInput');
+  const startSearchBtn = document.getElementById('startSearchBtn');
+  const wizardSteps = document.querySelectorAll('.wizard-step');
   const wizardBtns = document.querySelectorAll('.wizard-btn');
+  const optionItems = document.querySelectorAll('.option-item');
   
-  let selectedType = '';
-  let selectedMuscle = '';
-  let searchQuery = '';
+  let searchData = {
+    query: '',
+    type: '',
+    muscle: ''
+  };
   
-  // Search input
-  if (searchInput) {
-    searchInput.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        startExerciseSearch();
-      }
-    });
-  }
-  
-  if (searchBtn) {
-    searchBtn.addEventListener('click', startExerciseSearch);
-  }
-  
-  // Type selection
-  typeOptions.forEach(option => {
-    option.addEventListener('click', function() {
-      typeOptions.forEach(opt => opt.classList.remove('selected'));
-      this.classList.add('selected');
-      selectedType = this.dataset.value;
-    });
-  });
-  
-  // Muscle selection
-  muscleOptions.forEach(option => {
-    option.addEventListener('click', function() {
-      muscleOptions.forEach(opt => opt.classList.remove('selected'));
-      this.classList.add('selected');
-      selectedMuscle = this.dataset.value;
-    });
-  });
-  
-  // Wizard navigation
-  wizardBtns.forEach(btn => {
-    btn.addEventListener('click', function() {
-      const targetStep = this.dataset.step;
-      
-      if (targetStep === 'search') {
-        performExerciseSearch();
-      } else {
-        showWizardStep(targetStep);
-      }
-    });
-  });
-  
-  function startExerciseSearch() {
-    searchQuery = searchInput ? searchInput.value.trim() : '';
-    if (!searchQuery) {
-      showNotification('Please enter an exercise name to search.', 'warning');
-      return;
-    }
-    showWizardStep('2');
-  }
-  
-  function showWizardStep(stepNumber) {
-    const steps = document.querySelectorAll('.wizard-step');
-    steps.forEach(step => step.classList.remove('active'));
-    
+  // Show specific wizard step
+  function showStep(stepNumber) {
+    wizardSteps.forEach(step => step.classList.remove('active'));
     const targetStep = document.getElementById(`step-${stepNumber}`);
     if (targetStep) {
       targetStep.classList.add('active');
     }
   }
   
+  // Initial search functionality
+  if (startSearchBtn) {
+    startSearchBtn.addEventListener('click', function() {
+      const query = exerciseSearchInput.value.trim();
+      if (query) {
+        searchData.query = query;
+        showStep(2);
+      } else {
+        showNotification('Please enter an exercise name to search', 'warning');
+      }
+    });
+  }
+  
+  if (exerciseSearchInput) {
+    exerciseSearchInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        startSearchBtn.click();
+      }
+    });
+  }
+  
+  // Wizard navigation
+  wizardBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const step = this.dataset.step;
+      
+      if (step === 'search') {
+        performExerciseSearch();
+      } else {
+        showStep(parseInt(step));
+      }
+    });
+  });
+  
+  // Option selection
+  optionItems.forEach(item => {
+    item.addEventListener('click', function() {
+      const parent = this.closest('.wizard-step');
+      const siblingItems = parent.querySelectorAll('.option-item');
+      
+      siblingItems.forEach(sibling => sibling.classList.remove('selected'));
+      this.classList.add('selected');
+      
+      const value = this.dataset.value;
+      const stepId = parent.id;
+      
+      if (stepId === 'step-2') {
+        searchData.type = value;
+      } else if (stepId === 'step-3') {
+        searchData.muscle = value;
+      }
+    });
+  });
+  // Perform exercise search
   async function performExerciseSearch() {
+    const exerciseCard = document.querySelector('.exercise-card');
+    const originalContent = exerciseCard.innerHTML;
+    
     try {
       // Show loading state
-      showExerciseResults(`
-        <div class="exercise-loading">
-          <i class="fas fa-spinner fa-spin"></i>
+      exerciseCard.innerHTML = `
+        <div class="card-header">
+          <i class="fas fa-dumbbell"></i>
+          <span>Find Exercises</span>
+        </div>
+        <div class="loading-state">
+          <div class="spinner"></div>
           <p>Searching for exercises...</p>
         </div>
-      `);
+      `;
       
-      // For demo purposes, use mock data. Replace with actual API call to exercise database
-      setTimeout(() => {
-        const mockResults = generateMockExerciseResults();
-        displayExerciseResults(mockResults);
-      }, 1500);
+      // Prepare form data for backend API
+      const formData = new FormData();
+      if (searchData.query) formData.append('name', searchData.query);
+      if (searchData.type) formData.append('type', searchData.type);
+      if (searchData.muscle) formData.append('muscle', searchData.muscle);
+      
+      // Call the backend API (which securely handles the API Ninjas key)
+      const response = await fetch(`${CONFIG.BACKEND_BASE_URL}/exercises`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.exercises && data.exercises.length > 0) {
+        displayExerciseResults(data.exercises);
+        showNotification(`Found ${data.exercises.length} exercises!`, 'success');
+      } else {
+        displayNoResults();
+      }
       
     } catch (error) {
-      console.error('Exercise search error:', error);
-      showNotification('Failed to search exercises. Please try again.', 'error');
-    }
-  }
-  
-  function generateMockExerciseResults() {
-    const exercises = [
-      {
-        name: 'Push-ups',
-        type: 'strength',
-        muscle: 'chest',
-        difficulty: 'beginner',
-        instructions: 'Start in a plank position, lower your body until your chest nearly touches the floor, then push back up.',
-        equipment: 'None'
-      },
-      {
-        name: 'Squats',
-        type: 'strength',
-        muscle: 'legs',
-        difficulty: 'beginner',
-        instructions: 'Stand with feet shoulder-width apart, lower your body as if sitting back into a chair, then return to standing.',
-        equipment: 'None'
-      },
-      {
-        name: 'Bicep Curls',
-        type: 'strength',
-        muscle: 'biceps',
-        difficulty: 'beginner',
-        instructions: 'Hold weights at your sides, curl them up toward your shoulders, then lower back down.',
-        equipment: 'Dumbbells'
-      },
-      {
-        name: 'Planks',
-        type: 'strength',
-        muscle: 'abdominals',
-        difficulty: 'intermediate',
-        instructions: 'Hold a push-up position with your body in a straight line from head to heels.',
-        equipment: 'None'
-      },
-      {
-        name: 'Running',
-        type: 'cardio',
-        muscle: 'legs',
-        difficulty: 'beginner',
-        instructions: 'Maintain a steady pace while keeping good form and breathing rhythm.',
-        equipment: 'None'
-      }
-    ];
-    
-    // Filter based on selections
-    let filtered = exercises;
-    
-    if (searchQuery) {
-      filtered = filtered.filter(ex => 
-        ex.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        ex.muscle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        ex.type.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    
-    if (selectedType) {
-      filtered = filtered.filter(ex => ex.type === selectedType);
-    }
-    
-    if (selectedMuscle) {
-      filtered = filtered.filter(ex => ex.muscle === selectedMuscle);
-    }
-    
-    return filtered.slice(0, 6); // Limit results
-  }
-  
-  function displayExerciseResults(exercises) {
-    if (exercises.length === 0) {
-      showExerciseResults(`
-        <div class="no-exercises">
-          <i class="fas fa-search"></i>
-          <p>No exercises found. Try adjusting your search criteria.</p>
+      console.error('Error searching exercises:', error);
+      exerciseCard.innerHTML = `
+        <div class="card-header">
+          <i class="fas fa-dumbbell"></i>
+          <span>Find Exercises</span>
         </div>
-      `);
-      return;
-    }
-    
-    const resultsHTML = exercises.map(exercise => `
-      <div class="exercise-result-card">
-        <div class="exercise-header">
-          <h4>${exercise.name}</h4>
-          <span class="exercise-type">${exercise.type}</span>
-        </div>
-        <div class="exercise-info">
-          <div class="exercise-meta">
-            <span><i class="fas fa-dumbbell"></i> ${exercise.muscle}</span>
-            <span><i class="fas fa-signal"></i> ${exercise.difficulty}</span>
-            <span><i class="fas fa-tools"></i> ${exercise.equipment}</span>
+        <div class="error-state">
+          <div class="error-icon">
+            <i class="fas fa-exclamation-circle"></i>
           </div>
-          <p class="exercise-instructions">${exercise.instructions}</p>
-        </div>
-        <div class="exercise-actions">
-          <button class="action-btn primary" onclick="saveExercise('${exercise.name}')">
-            <i class="fas fa-bookmark"></i> Save
-          </button>
-          <button class="action-btn secondary" onclick="startExerciseTimer('${exercise.name}')">
-            <i class="fas fa-play"></i> Start
+          <h3>Search Failed</h3>
+          <p>We couldn't find exercises at the moment. Please try again later.</p>
+          <button class="action-btn primary" onclick="location.reload()">
+            <i class="fas fa-refresh"></i>
+            Try Again
           </button>
         </div>
+      `;
+    }  }
+  
+  // Display no results
+  function displayNoResults() {
+    const exerciseCard = document.querySelector('.exercise-card');
+    exerciseCard.innerHTML = `
+      <div class="card-header">
+        <i class="fas fa-dumbbell"></i>
+        <span>Find Exercises</span>
       </div>
-    `).join('');
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="fas fa-search"></i>
+        </div>
+        <h3>No Exercises Found</h3>
+        <p>Try searching with different terms or muscle groups.</p>
+        <button class="action-btn primary" onclick="location.reload()">
+          <i class="fas fa-search"></i>
+          Search Again
+        </button>
+      </div>
+    `;
+  }
+  
+  // Display exercise search results
+  function displayExerciseResults(exercises) {
+    const exerciseCard = document.querySelector('.exercise-card');
     
-    showExerciseResults(`
+    let html = `
+      <div class="card-header">
+        <i class="fas fa-dumbbell"></i>
+        <span>Exercise Results (${exercises.length})</span>
+        <button class="action-btn secondary" onclick="location.reload()" style="margin-left: auto;">
+          <i class="fas fa-search"></i>
+          New Search
+        </button>
+      </div>
       <div class="exercise-results">
-        <h3>Exercise Results (${exercises.length})</h3>
-        <div class="exercise-grid">
-          ${resultsHTML}
+    `;
+    
+    exercises.slice(0, 10).forEach(exercise => { // Limit to 10 results
+      html += `
+        <div class="exercise-item">
+          <div class="exercise-header">
+            <h4>${exercise.name}</h4>
+            <div class="exercise-badges">
+              <span class="badge type">${exercise.type}</span>
+              <span class="badge muscle">${exercise.muscle}</span>
+              <span class="badge difficulty">${exercise.difficulty}</span>
+            </div>
+          </div>
+          <div class="exercise-details">
+            <p><strong>Equipment:</strong> ${exercise.equipment}</p>
+            <p><strong>Instructions:</strong> ${exercise.instructions}</p>
+          </div>
         </div>
-        <div class="search-actions">
-          <button class="action-btn outline" onclick="resetExerciseSearch()">
-            <i class="fas fa-search"></i> New Search
-          </button>
-        </div>
-      </div>
-    `);
+      `;
+    });
+    
+    html += '</div>';
+    exerciseCard.innerHTML = html;
   }
-  
-  function showExerciseResults(html) {
-    // Find or create results container
-    let resultsContainer = document.querySelector('.exercise-results-container');
-    if (!resultsContainer) {
-      resultsContainer = document.createElement('div');
-      resultsContainer.className = 'exercise-results-container';
-      
-      const exerciseCard = document.querySelector('.exercise-card');
-      if (exerciseCard) {
-        exerciseCard.appendChild(resultsContainer);
-      }
-    }
-    
-    resultsContainer.innerHTML = html;
-    resultsContainer.style.display = 'block';
-    
-    // Hide wizard
-    const wizard = document.querySelector('.exercise-wizard');
-    if (wizard) {
-      wizard.style.display = 'none';
-    }
-  }
-}
-
-// Global functions for exercise search
-function saveExercise(exerciseName) {
-  const exercise = {
-    id: generateUniqueId(),
-    name: exerciseName,
-    timestamp: new Date().toISOString(),
-    saved: true
-  };
-  
-  try {
-    const savedExercises = JSON.parse(localStorage.getItem('savedExercises') || '[]');
-    
-    // Check if already saved
-    if (savedExercises.some(ex => ex.name === exerciseName)) {
-      showNotification('Exercise already saved!', 'info');
-      return;
-    }
-    
-    savedExercises.unshift(exercise);
-    localStorage.setItem('savedExercises', JSON.stringify(savedExercises));
-    showNotification('Exercise saved successfully!', 'success');
-  } catch (error) {
-    console.error('Failed to save exercise:', error);
-    showNotification('Failed to save exercise. Please try again.', 'error');
-  }
-}
-
-function startExerciseTimer(exerciseName) {
-  showNotification(`Starting timer for ${exerciseName}. Timer feature coming soon!`, 'info');
-}
-
-function resetExerciseSearch() {
-  // Reset wizard
-  const wizard = document.querySelector('.exercise-wizard');
-  const resultsContainer = document.querySelector('.exercise-results-container');
-  
-  if (wizard) wizard.style.display = 'block';
-  if (resultsContainer) resultsContainer.style.display = 'none';
-  
-  // Reset to step 1
-  const steps = document.querySelectorAll('.wizard-step');
-  steps.forEach(step => step.classList.remove('active'));
-  document.getElementById('step-1').classList.add('active');
-  
-  // Clear selections
-  document.querySelectorAll('.option-item').forEach(opt => opt.classList.remove('selected'));
-  document.querySelectorAll('.muscle-option').forEach(opt => opt.classList.remove('selected'));
-  
-  // Clear search input
-  const searchInput = document.getElementById('exerciseSearchInput');
-  if (searchInput) searchInput.value = '';
 }
