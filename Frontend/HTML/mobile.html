@@ -1284,8 +1284,7 @@ if (typeof switchTab !== 'function') {
             <i class="fas fa-cog"></i>
             <span>Settings</span>
             <i class="fas fa-chevron-right"></i>
-          </div>
-          <a href="#" class="profile-menu-item">
+          </div>          <a href="#" class="profile-menu-item" id="viewHelpSupport">
             <i class="fas fa-question-circle"></i>
             <span>Help & Support</span>
             <i class="fas fa-chevron-right"></i>
@@ -1366,6 +1365,88 @@ if (typeof switchTab !== 'function') {
           </div>
         </div>
         <button class="back-button" id="backToProfileBtnBucket">
+          <i class="fas fa-arrow-left"></i> Back to Profile
+        </button>
+      </div>    </div>
+    <div class="mobile-view hidden" id="helpSupportView">
+      <div class="mobile-header">
+        <h1>Help & Support</h1>
+      </div>
+      <div class="mobile-content">
+        <div class="settings-section">
+          <h2>Need Help?</h2>
+          <p>We're here to support you on your wellness journey!</p>
+          
+          <div class="help-contact-card" style="background:#f8f9fa;border-radius:12px;padding:20px;margin:20px 0;border:1px solid #e9ecef;">
+            <div style="text-align:center;margin-bottom:15px;">
+              <i class="fas fa-envelope" style="font-size:2.5em;color:#5D5FEF;margin-bottom:10px;"></i>
+              <h3 style="margin:0;color:#333;font-size:1.1em;">Contact Us</h3>
+            </div>
+            <div style="text-align:center;margin-bottom:15px;">
+              <p style="margin:5px 0;color:#666;font-size:0.95em;">For any questions, feedback, or support needs, reach out to us:</p>
+              <div style="background:#fff;padding:12px;border-radius:8px;margin:10px 0;border:1px solid #ddd;">
+                <strong style="color:#5D5FEF;font-size:1.05em;">support@mindscribe.me</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="help-faq-section" style="margin-top:25px;">
+            <h3 style="color:#333;margin-bottom:15px;">Frequently Asked Questions</h3>
+            
+            <div class="faq-item" style="background:#fff;border-radius:8px;padding:15px;margin-bottom:10px;border:1px solid #e9ecef;">
+              <div style="font-weight:600;color:#333;margin-bottom:8px;">
+                <i class="fas fa-question-circle" style="color:#5D5FEF;margin-right:8px;"></i>
+                How do I export my journal entries?
+              </div>
+              <p style="margin:0;color:#666;font-size:0.9em;line-height:1.4;">
+                Go to your Profile and tap "Export to PDF" to download your journal entries as a secure PDF file.
+              </p>
+            </div>
+
+            <div class="faq-item" style="background:#fff;border-radius:8px;padding:15px;margin-bottom:10px;border:1px solid #e9ecef;">
+              <div style="font-weight:600;color:#333;margin-bottom:8px;">
+                <i class="fas fa-question-circle" style="color:#5D5FEF;margin-right:8px;"></i>
+                Is my data secure and private?
+              </div>
+              <p style="margin:0;color:#666;font-size:0.9em;line-height:1.4;">
+                Yes! Your privacy is our priority. All your data is encrypted and stored securely. Check our Privacy Policy for more details.
+              </p>
+            </div>
+
+            <div class="faq-item" style="background:#fff;border-radius:8px;padding:15px;margin-bottom:10px;border:1px solid #e9ecef;">
+              <div style="font-weight:600;color:#333;margin-bottom:8px;">
+                <i class="fas fa-question-circle" style="color:#5D5FEF;margin-right:8px;"></i>
+                How do I set up goals and track activities?
+              </div>
+              <p style="margin:0;color:#666;font-size:0.9em;line-height:1.4;">
+                Visit the Goals section from your Profile to set fitness goals, and use the Activity tab to track your daily wellness activities.
+              </p>
+            </div>
+
+            <div class="faq-item" style="background:#fff;border-radius:8px;padding:15px;margin-bottom:10px;border:1px solid #e9ecef;">
+              <div style="font-weight:600;color:#333;margin-bottom:8px;">
+                <i class="fas fa-question-circle" style="color:#5D5FEF;margin-right:8px;"></i>
+                How does the AI chat feature work?
+              </div>
+              <p style="margin:0;color:#666;font-size:0.9em;line-height:1.4;">
+                Our AI assistant can help answer questions about nutrition, mental health, and wellness. Just ask anything and get personalized guidance!
+              </p>
+            </div>
+          </div>
+
+          <div class="help-tips-section" style="margin-top:25px;">
+            <h3 style="color:#5D5FEF;margin-bottom:15px;">Quick Tips</h3>
+            <div style="background:#e8f5e8;border-radius:8px;padding:15px;border-left:4px solid #22c55e;">
+              <ul style="margin:0;padding-left:20px;color:#333;">
+                <li style="margin-bottom:8px;">Use voice recording for quick journal entries on the go</li>
+                <li style="margin-bottom:8px;">Check your History to track patterns in your wellness journey</li>
+                <li style="margin-bottom:8px;">Set up your Bucket List to keep track of life goals</li>
+                <li style="margin-bottom:0;">Enable notifications to stay consistent with your wellness routine</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <button class="back-button" id="backToProfileBtnHelp">
           <i class="fas fa-arrow-left"></i> Back to Profile
         </button>
       </div>
@@ -1792,14 +1873,23 @@ if (typeof switchTab !== 'function') {
             switchTab('goalsView');
           }
         });
-      }
-      // Add navigation for Bucket List
+      }      // Add navigation for Bucket List
       var viewBucketList = document.getElementById('viewBucketList');
       if (viewBucketList) {
         viewBucketList.addEventListener('click', function(e) {
           e.preventDefault();
           if (typeof switchTab === 'function') {
             switchTab('bucketListView');
+          }
+        });
+      }
+      // Add navigation for Help & Support
+      var viewHelpSupport = document.getElementById('viewHelpSupport');
+      if (viewHelpSupport) {
+        viewHelpSupport.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (typeof switchTab === 'function') {
+            switchTab('helpSupportView');
           }
         });
       }
@@ -1811,11 +1901,19 @@ if (typeof switchTab !== 'function') {
             switchTab('profileView');
           }
         });
-      });
-      // Add back button for Bucket List view
+      });      // Add back button for Bucket List view
       var backToProfileBtnBucket = document.getElementById('backToProfileBtnBucket');
       if (backToProfileBtnBucket) {
         backToProfileBtnBucket.addEventListener('click', function() {
+          if (typeof switchTab === 'function') {
+            switchTab('profileView');
+          }
+        });
+      }
+      // Add back button for Help & Support view
+      var backToProfileBtnHelp = document.getElementById('backToProfileBtnHelp');
+      if (backToProfileBtnHelp) {
+        backToProfileBtnHelp.addEventListener('click', function() {
           if (typeof switchTab === 'function') {
             switchTab('profileView');
           }
