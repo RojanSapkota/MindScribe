@@ -151,12 +151,20 @@ document.addEventListener('DOMContentLoaded', function() {
       initializeTermsAndPrivacy();
     }
   };
-  
-  // Settings page functionality
+    // Settings page functionality
   if (viewSettings) {
     viewSettings.addEventListener('click', function(e) {
       e.preventDefault();
       switchTab('settingsView');
+    });
+  }
+
+  // MindScribe Plus page functionality
+  const viewMindScribePlus = document.getElementById('viewMindScribePlus');
+  if (viewMindScribePlus) {
+    viewMindScribePlus.addEventListener('click', function(e) {
+      e.preventDefault();
+      switchTab('mindscribePlusView');
     });
   }
 
