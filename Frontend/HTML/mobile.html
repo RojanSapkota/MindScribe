@@ -1279,12 +1279,17 @@ if (typeof switchTab !== 'function') {
             <i class="fas fa-list-ul"></i>
             <span>Bucket List</span>
             <i class="fas fa-chevron-right"></i>
-          </a>
-          <div class="profile-menu-item" id="viewSettings">
+          </a>          <div class="profile-menu-item" id="viewSettings">
             <i class="fas fa-cog"></i>
             <span>Settings</span>
             <i class="fas fa-chevron-right"></i>
-          </div>          <a href="#" class="profile-menu-item" id="viewHelpSupport">
+          </div>
+          <div class="profile-menu-item" id="viewMindScribePlus" style="background:linear-gradient(135deg,rgba(93,95,239,0.1) 0%,rgba(52,211,153,0.1) 100%);border:1px solid rgba(93,95,239,0.2);">
+            <i class="fas fa-crown" style="color:#FFD700;"></i>
+            <span style="color:#5D5FEF;font-weight:600;">MindScribe Plus</span>
+            <i class="fas fa-chevron-right"></i>
+          </div>
+          <a href="#" class="profile-menu-item" id="viewHelpSupport">
             <i class="fas fa-question-circle"></i>
             <span>Help & Support</span>
             <i class="fas fa-chevron-right"></i>
@@ -1501,8 +1506,7 @@ if (typeof switchTab !== 'function') {
               <input type="checkbox" checked>
               <span class="toggle-slider"></span>
             </label>
-          </div>
-        </div>
+          </div>        </div>
     
         <div class="settings-section">
           <h2>Account</h2>
@@ -1567,6 +1571,121 @@ if (typeof switchTab !== 'function') {
         </div>
         
         <button class="back-button" id="backToProfileBtn">
+          <i class="fas fa-arrow-left"></i> Back to Profile
+        </button>      </div>
+    </div>
+    
+    <div class="mobile-view hidden" id="mindscribePlusView">
+      <div class="mobile-header">
+        <h1>MindScribe Plus</h1>
+      </div>
+      
+      <div class="mobile-content">
+        <div class="premium-hero" style="text-align:center;padding:20px;background:linear-gradient(135deg,#5D5FEF 0%,#34D399 100%);border-radius:16px;margin-bottom:20px;color:#fff;">
+          <i class="fas fa-crown" style="font-size:3em;margin-bottom:10px;color:#FFD700;"></i>
+          <h2 style="margin:10px 0;font-size:1.4em;">MindScribe Plus</h2>
+          <p style="margin:0;opacity:0.9;font-size:1em;">Unlock the full potential of your wellness journey</p>
+        </div>
+
+        <div class="premium-pricing" style="text-align:center;margin-bottom:25px;">
+          <div class="pricing-card" style="background:#f8f9fa;border-radius:12px;padding:20px;border:2px solid #5D5FEF;">
+            <div style="font-size:2.5em;font-weight:bold;color:#5D5FEF;margin-bottom:5px;">$4.99</div>
+            <div style="color:#666;margin-bottom:15px;">per month</div>
+            <div style="background:#5D5FEF;color:#fff;padding:8px 16px;border-radius:20px;display:inline-block;font-size:0.9em;">
+              7-day free trial
+            </div>
+          </div>
+        </div>
+
+        <div class="premium-features">
+          <h3 style="margin-bottom:15px;color:#5D5FEF;">Premium Features</h3>
+          
+          <div class="feature-item" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+            <div style="background:#5D5FEF;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-brain" style="font-size:0.9em;"></i>
+            </div>
+            <div>
+              <h4 style="margin:0;font-size:1em;color:#5D5FEF;">Advanced AI Insights</h4>
+              <p style="margin:0;font-size:0.85em;color:#666;">Get deeper analysis of your mood patterns and personalized recommendations</p>
+            </div>
+          </div>
+
+          <div class="feature-item" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+            <div style="background:#34D399;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-chart-line" style="font-size:0.9em;"></i>
+            </div>
+            <div>
+              <h4 style="margin:0;font-size:1em;color:#5D5FEF;">Detailed Analytics</h4>
+              <p style="margin:0;font-size:0.85em;color:#666;">Track progress with comprehensive charts and wellness metrics</p>
+            </div>
+          </div>
+
+          <div class="feature-item" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+            <div style="background:#FF6B6B;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-robot" style="font-size:0.9em;"></i>
+            </div>
+            <div>
+              <h4 style="margin:0;font-size:1em;color:#5D5FEF;">Unlimited AI Chat</h4>
+              <p style="margin:0;font-size:0.85em;color:#666;">Chat with our AI assistant without daily limits</p>
+            </div>
+          </div>
+
+          <div class="feature-item" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+            <div style="background:#9333EA;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-cloud" style="font-size:0.9em;"></i>
+            </div>
+            <div>
+              <h4 style="margin:0;font-size:1em;color:#5D5FEF;">Cloud Backup</h4>
+              <p style="margin:0;font-size:0.85em;color:#666;">Secure cloud storage for all your journal entries and data</p>
+            </div>
+          </div>
+
+          <div class="feature-item" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+            <div style="background:#F59E0B;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-calendar-alt" style="font-size:0.9em;"></i>
+            </div>
+            <div>
+              <h4 style="margin:0;font-size:1em;color:#5D5FEF;">Custom Reminders</h4>
+              <p style="margin:0;font-size:0.85em;color:#666;">Set personalized reminders for journaling and wellness activities</p>
+            </div>
+          </div>
+
+          <div class="feature-item" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+            <div style="background:#06B6D4;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-download" style="font-size:0.9em;"></i>
+            </div>
+            <div>
+              <h4 style="margin:0;font-size:1em;color:#5D5FEF;">Export & Share</h4>
+              <p style="margin:0;font-size:0.85em;color:#666;">Export your data in multiple formats and share insights</p>
+            </div>
+          </div>
+
+          <div class="feature-item" style="display:flex;align-items:center;gap:12px;padding:12px 0;">
+            <div style="background:#EC4899;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-headset" style="font-size:0.9em;"></i>
+            </div>
+            <div>
+              <h4 style="margin:0;font-size:1em;color:#5D5FEF;">Priority Support</h4>
+              <p style="margin:0;font-size:0.85em;color:#666;">Get faster response times and dedicated customer support</p>
+            </div>
+          </div>
+        </div>        <div class="premium-cta" style="margin-top:25px;">
+          <a href="https://www.paypal.com/ncp/payment/ZJ3QSH6TMK3KW" target="_blank" style="text-decoration:none;">
+            <button class="premium-subscribe-btn" id="subscribeBtn" style="width:100%;background:linear-gradient(135deg,#5D5FEF 0%,#34D399 100%);color:#fff;border:none;padding:16px;border-radius:12px;font-size:1.1em;font-weight:600;box-shadow:0 4px 12px rgba(93,95,239,0.3);margin-bottom:10px;cursor:pointer;">
+              <i class="fas fa-crown" style="margin-right:8px;"></i>
+              Subscribe Now - $4.99/month
+            </button>
+          </a>
+          <p style="text-align:center;font-size:0.85em;color:#666;margin:0;">
+            Secure PayPal checkout • Cancel anytime
+          </p>
+        </div>
+
+        <div class="current-plan" style="background:#e8f5e8;border-radius:8px;padding:15px;margin-top:20px;text-align:center;">
+          <h4 style="margin:0 0 5px 0;color:#22c55e;">Current Plan: Free</h4>
+          <p style="margin:0;font-size:0.9em;color:#666;">You're currently using the free version of MindScribe</p>
+        </div>
+          <button class="back-button" id="backToProfileBtnFromPlus">
           <i class="fas fa-arrow-left"></i> Back to Profile
         </button>
       </div>
@@ -1688,7 +1807,7 @@ if (typeof switchTab !== 'function') {
 
               <div class="terms-section">
                 <h3>10. Contact Us</h3>
-                <p>If you have questions or concerns about this Privacy Policy or your data, please contact us at <a href="mailto:mindscribe@rojansapkota.com.np">mindscribe@rojansapkota.com.np</a>.</p>
+                <p>If you have questions or concerns about this Privacy Policy or your data, please contact us at <a href="mailto:contact@mindscribe.me">contact@mindscribe.me</a>.</p>
               </div>
             </div>
         </div>
@@ -1909,11 +2028,19 @@ if (typeof switchTab !== 'function') {
             switchTab('profileView');
           }
         });
-      }
-      // Add back button for Help & Support view
+      }      // Add back button for Help & Support view
       var backToProfileBtnHelp = document.getElementById('backToProfileBtnHelp');
       if (backToProfileBtnHelp) {
         backToProfileBtnHelp.addEventListener('click', function() {
+          if (typeof switchTab === 'function') {
+            switchTab('profileView');
+          }
+        });
+      }
+      // Add back button for MindScribe Plus view
+      var backToProfileBtnFromPlus = document.getElementById('backToProfileBtnFromPlus');
+      if (backToProfileBtnFromPlus) {
+        backToProfileBtnFromPlus.addEventListener('click', function() {
           if (typeof switchTab === 'function') {
             switchTab('profileView');
           }
