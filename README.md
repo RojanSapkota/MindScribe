@@ -26,9 +26,8 @@ Through a seamless voice interface, users can speak their thoughts, which are tr
 
 ---
 
-## 📸 HackaTime Progress  
-![](https://hackatime-badge.hackclub.com/U08RHUDMF9T/MindScribe)  
-![](https://github-readme-stats.hackclub.dev/api/wakatime?username=2003&api_domain=hackatime.hackclub.com&theme=shadow_green&custom_title=Hackatime+Stats&layout=compact&cache_seconds=0&langs_count=8)
+## 👤 Visitors
+
 </br><img src="https://profile-counter.glitch.me/RojanGamingYT-MindScribe/count.svg" alt="Visitor Counter"/>
 
 ---
