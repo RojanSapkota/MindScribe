@@ -152,8 +152,7 @@
           }
         });
         </script>
-        
-        <div class="stats-cards">
+          <div class="stats-cards">
           <div class="stat-card">
             <div class="stat-icon" style="background-color: rgba(93, 95, 239, 0.1); color: var(--primary);">
               <i class="fas fa-utensils"></i>
@@ -184,7 +183,7 @@
             <div class="meter-label" id="nutritionStyleLabel">Click to analyze your style</div>
           </div>
         </div>
-        
+
         <div class="section-title">
           <h3>Quick Actions</h3>
         </div>
@@ -206,6 +205,109 @@
             <span>Live Chat</span>
           </button>
         </div>
+        </div>
+
+                <!-- Missions Section -->
+        <div class="missions-section">
+          <div class="section-title">
+            <h3>Today's Missions <i class="fas fa-flag" style="color: #F59E0B; margin-left: 8px;"></i></h3>
+          </div>
+          
+          <div class="missions-container" id="missionsContainer">
+            <!-- Daily missions will be populated here -->
+            <div class="mission-card" id="dailyMission1">
+              <div class="mission-icon">
+                <i class="fas fa-camera" style="color: #5D5FEF;"></i>
+              </div>
+              <div class="mission-content">
+                <h4>Scan a Meal</h4>
+                <p>Take a photo and analyze your food</p>
+                <div class="mission-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;" id="mission1Progress"></div>
+                  </div>
+                  <span class="progress-text" id="mission1Text">0/1</span>
+                </div>
+              </div>
+              <div class="mission-reward">
+                <span class="reward-points">+10 XP</span>
+              </div>
+            </div>
+
+            <div class="mission-card" id="dailyMission2">
+              <div class="mission-icon">
+                <i class="fas fa-pen" style="color: #34D399;"></i>
+              </div>
+              <div class="mission-content">
+                <h4>Journal Entry</h4>
+                <p>Record your thoughts and feelings</p>
+                <div class="mission-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;" id="mission2Progress"></div>
+                  </div>
+                  <span class="progress-text" id="mission2Text">0/1</span>
+                </div>
+              </div>
+              <div class="mission-reward">
+                <span class="reward-points">+15 XP</span>
+              </div>
+            </div>
+
+            <div class="mission-card" id="dailyMission3">
+              <div class="mission-icon">
+                <i class="fas fa-comments" style="color: #F59E0B;"></i>
+              </div>
+              <div class="mission-content">
+                <h4>Chat with AI</h4>
+                <p>Have a conversation with your AI companion</p>
+                <div class="mission-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;" id="mission3Progress"></div>
+                  </div>
+                  <span class="progress-text" id="mission3Text">0/1</span>
+                </div>
+              </div>
+              <div class="mission-reward">
+                <span class="reward-points">+8 XP</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly Mission -->
+          <div class="weekly-mission-card" id="weeklyMissionCard">
+            <div class="weekly-mission-header">
+              <h3><i class="fas fa-star" style="color: #FFD700;"></i> Weekly Challenge</h3>
+            </div>
+            <div class="weekly-mission-content">
+              <h4 id="weeklyMissionTitle">Complete 5 Food Scans</h4>
+              <p id="weeklyMissionDesc">Scan and analyze 5 different meals this week</p>
+              <div class="weekly-progress">
+                <div class="progress-bar large">
+                  <div class="progress-fill" style="width: 0%;" id="weeklyMissionProgress"></div>
+                </div>
+                <div class="progress-info">
+                  <span class="progress-text" id="weeklyMissionText">0/5</span>
+                  <span class="reward-points large">+50 XP</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mission Stats -->
+          <div class="mission-stats">
+            <div class="stat-item">
+              <span class="stat-value" id="totalXP">0</span>
+              <span class="stat-label">Total XP</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="completedMissions">0</span>
+              <span class="stat-label">Completed Today</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="missionStreak">0</span>
+              <span class="stat-label">Day Streak</span>
+            </div>
+          </div>
         </div>
         
         <div class="section-title">
