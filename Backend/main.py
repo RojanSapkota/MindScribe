@@ -276,7 +276,7 @@ async def send_otp_email(email: str, otp: str):
         msg.attach(MIMEText(body, 'html'))
         
         text_body = f"""
-        Welcome to Mindscribe!
+        Welcome to MindScribe!
         
         Your One-Time Password (OTP) for account verification is: {otp}
         
@@ -1162,7 +1162,7 @@ async def analyze_food(user_email: str = Form(...), file: UploadFile = File(...)
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to Mindscribe API!","status": "200"}
+    return {"message": "Welcome to MindScribe API!","status": "200"}
 
 if __name__ == "__main__":
     import uvicorn
