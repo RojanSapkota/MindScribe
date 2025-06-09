@@ -33,7 +33,7 @@ if not API_KEY:
     raise ValueError("LLM Environment variable is not set.")
 
 FOOD_API_KEY = os.getenv("FOOD_API_KEY")
-if not API_KEY:
+if not FOOD_API_KEY:
     raise ValueError("FOOD_API_KEY environment variable is not set.")
 
 # Create FastAPI app and add CORS middleware ONCE at the top
