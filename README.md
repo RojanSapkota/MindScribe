@@ -15,7 +15,7 @@ Through a seamless voice interface, users can speak their thoughts, which are tr
 ---
 
 ## 💡 Features
-- 🎙️ **Voice-to-text journaling** with powered by Whisper/JS
+- 🎙️ **Voice-to-text journaling** powered by Whisper/JS
 - 🧠 **Sentiment & emotion analysis** (NLP-based)
 - 💬 **GPT-based reflections** tailored to user tone.
 - 📊 **Mood, food, and activity** trend visualizations
