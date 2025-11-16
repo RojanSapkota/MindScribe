@@ -28,7 +28,7 @@ Through a seamless voice interface, users can speak their thoughts, which are tr
 
 ## 👤 Visitors
 
-</br><img src="https://profile-counter.glitch.me/RojanGamingYT-MindScribe/count.svg" alt="Visitor Counter"/>
+</br><img src="https://profile-counter.deno.dev/rojansapkota-MindScribe/count.svg" alt="Visitor Counter"/>
 
 ---
 
